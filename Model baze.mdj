@@ -2839,16 +2839,16 @@
 										"$ref": "AAAAAAGL8maAiNg80sw="
 									},
 									"font": "Arial;13;0",
-									"left": 362,
+									"left": 361,
 									"top": 228,
-									"width": 19.5126953125,
+									"width": 21.68359375,
 									"height": 13,
 									"alpha": 0.5235987755982988,
 									"distance": 25,
 									"hostEdge": {
 										"$ref": "AAAAAAGL8maAiNg+gWk="
 									},
-									"text": "0..*"
+									"text": "0..1"
 								},
 								{
 									"_type": "UMLQualifierCompartmentView",
@@ -5722,7 +5722,7 @@
 								"reference": {
 									"$ref": "AAAAAAGL8loHJdGo9Y0="
 								},
-								"multiplicity": "0..*"
+								"multiplicity": "0..1"
 							}
 						},
 						{
