@@ -1,12 +1,14 @@
-package com.example.SocialNetwork.model;
+package com.example.SocialNetwork.entities;
 
 
 import jakarta.persistence.*;
+import lombok.Data;
 
 import java.util.ArrayList;
 
 @Entity
 @Table(name="socialgroup")
+@Data
 public class SocialGroup {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

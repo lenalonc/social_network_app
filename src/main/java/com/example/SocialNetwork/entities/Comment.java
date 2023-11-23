@@ -1,12 +1,14 @@
-package com.example.SocialNetwork.model;
+package com.example.SocialNetwork.entities;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
 import java.util.ArrayList;
 import java.util.Date;
 
 @Entity
 @Table(name = "comment")
+@Data
 public class Comment {
 
     @Id
