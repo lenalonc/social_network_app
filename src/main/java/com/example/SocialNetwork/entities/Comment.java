@@ -1,11 +1,14 @@
-package com.example.SocialNetwork.model;
+package com.example.SocialNetwork.entities;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 @Entity
 @Table(name = "comment")
+@Data
 public class Comment {
 
     @Id
@@ -19,8 +22,8 @@ public class Comment {
     private Date date;
 
     @OneToMany
-    @JoinColumn(name = "id_parent_com", nullable = true)
-    private Comment parentComment;
+    @JoinColumn(name = "id")
+    private ArrayList<Comment> parentComment;
 
 
     @ManyToOne

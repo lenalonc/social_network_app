@@ -1,21 +1,20 @@
-package com.example.SocialNetwork.model;
+package com.example.SocialNetwork.entities;
 
 import jakarta.persistence.*;
+import lombok.Data;
+
 import java.util.Date;
 
 @Entity
-@Table(name = "event")
-public class Event {
-
+@Table(name = "groupmember")
+@Data
+public class GroupMember {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "date", nullable = false)
-    private Date date;
-
-    @Column(name = "place", nullable = false, length = 50)
-    private String place;
+    @Column(name = "dateJoined", nullable = false)
+    private Date dateJoined;
 
     @ManyToOne
     @JoinColumn(name = "id_user", nullable = false)
@@ -24,6 +23,5 @@ public class Event {
     @ManyToOne
     @JoinColumn(name = "id_social_group", nullable = false)
     private SocialGroup socialGroup;
-
 
 }

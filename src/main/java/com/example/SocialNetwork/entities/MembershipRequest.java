@@ -1,9 +1,11 @@
-package com.example.SocialNetwork.model;
+package com.example.SocialNetwork.entities;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
 @Entity
 @Table(name = "membershiprequest")
+@Data
 public class MembershipRequest {
 
     @Id
@@ -13,8 +15,8 @@ public class MembershipRequest {
     @Column(name = "status", nullable = false)
     private RequestStatus requestStatus;
 
-    @OneToMany
-    @JoinColumn(name = "id_group")
+    @ManyToOne
+    @JoinColumn(name = "id_social_group", nullable = false)
     private SocialGroup socialGroup;
 
     @ManyToOne

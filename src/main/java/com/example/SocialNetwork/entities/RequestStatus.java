@@ -1,4 +1,4 @@
-package com.example.SocialNetwork.model;
+package com.example.SocialNetwork.entities;
 
 public enum RequestStatus {
     ACCEPTED, PENDING, REJECTED;

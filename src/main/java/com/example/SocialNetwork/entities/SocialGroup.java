@@ -1,10 +1,14 @@
-package com.example.SocialNetwork.model;
+package com.example.SocialNetwork.entities;
 
 
 import jakarta.persistence.*;
+import lombok.Data;
+
+import java.util.ArrayList;
 
 @Entity
 @Table(name="socialgroup")
+@Data
 public class SocialGroup {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,7 +21,9 @@ public class SocialGroup {
     private boolean type;
 
     @ManyToOne
-    @JoinColumn(name = "id_admin", nullable = false)
+    @JoinColumn(name = "id_user", nullable = false)
     private User user;
 
+    @OneToMany(mappedBy = "socialGroup")
+    private ArrayList<MembershipRequest> membershipRequest;
 }
