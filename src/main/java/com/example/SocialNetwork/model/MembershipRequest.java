@@ -11,11 +11,11 @@ public class MembershipRequest {
     private Long id;
 
     @Column(name = "status", nullable = false)
-    private Byte requestStatus;
+    private RequestStatus requestStatus;
 
     @OneToMany
-    @JoinColumn(name = "id_admin")
-    private User admin;
+    @JoinColumn(name = "id_group")
+    private SocialGroup socialGroup;
 
     @ManyToOne
     @JoinColumn(name = "id_user", nullable = false)
