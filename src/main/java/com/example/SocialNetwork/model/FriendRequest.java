@@ -10,7 +10,7 @@ public class FriendRequest {
     private Long id;
 
     @Column(name = "status", nullable = false)
-    private boolean status;
+    private byte status;
 
     @ManyToOne
     @JoinColumn(name = "id_user1", nullable = false)
