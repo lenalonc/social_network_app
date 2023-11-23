@@ -3,6 +3,8 @@ package com.example.SocialNetwork.model;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
+
 @Entity
 @Table(name="socialgroup")
 public class SocialGroup {
@@ -17,7 +19,9 @@ public class SocialGroup {
     private boolean type;
 
     @ManyToOne
-    @JoinColumn(name = "id_admin", nullable = false)
+    @JoinColumn(name = "id_user", nullable = false)
     private User user;
 
+    @OneToMany(mappedBy = "socialGroup")
+    private ArrayList<MembershipRequest> membershipRequest;
 }

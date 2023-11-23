@@ -2,6 +2,7 @@ package com.example.SocialNetwork.model;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 @Entity
@@ -19,8 +20,8 @@ public class Comment {
     private Date date;
 
     @OneToMany
-    @JoinColumn(name = "id_parent_com", nullable = true)
-    private Comment parentComment;
+    @JoinColumn(name = "id")
+    private ArrayList<Comment> parentComment;
 
 
     @ManyToOne
