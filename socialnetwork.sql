@@ -148,12 +148,12 @@ DROP TABLE IF EXISTS `membershiprequest`;
 CREATE TABLE `membershiprequest` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `status` tinyint NOT NULL,
-  `id_admin` bigint NOT NULL,
+  `id_social_group` bigint NOT NULL,
   `id_user` bigint NOT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_mr_user_idx` (`id_user`),
-  KEY `fk_mr_admin_idx` (`id_admin`),
-  CONSTRAINT `fk_mr_admin` FOREIGN KEY (`id_admin`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  KEY `fk_mr_sg_idx` (`id_social_group`),
+  CONSTRAINT `fk_mr_sg` FOREIGN KEY (`id_social_group`) REFERENCES `socialgroup` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk_mr_user` FOREIGN KEY (`id_user`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -262,4 +262,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-11-22 14:43:24
+-- Dump completed on 2023-11-23 13:15:26
