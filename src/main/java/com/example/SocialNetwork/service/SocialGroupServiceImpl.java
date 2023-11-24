@@ -6,14 +6,13 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
-public class SocialGroupImpl implements SocialGroupService{
+public class SocialGroupServiceImpl implements SocialGroupService{
 
     private SocialGroupRepository groupRepository;
 
-    public SocialGroupImpl(SocialGroupRepository groupRepository){
+    public SocialGroupServiceImpl(SocialGroupRepository groupRepository){
         this.groupRepository = groupRepository;
     }
     @Override

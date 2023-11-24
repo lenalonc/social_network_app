@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/apiSG")
+@RequestMapping("/socialgroup")
 public class SocialGroupController {
     private SocialGroupService groupService;
     private UserService userService;
@@ -24,7 +24,7 @@ public class SocialGroupController {
         return "Hello Levi9";
     }
 
-    @PostMapping("/createGroup")
+    @PostMapping("/")
     public String createGroup(@RequestBody SocialGroup group) {
         User user = userService.findByID(1L);
         group.setUser(user);
@@ -32,12 +32,12 @@ public class SocialGroupController {
         return "Usmesno sacuvana grupa ::))";
     }
 
-    @GetMapping("/socialGroups")
+    @GetMapping("/all")
     public List<SocialGroup> showAllSocialGroups(){
         return groupService.getAllSocialGroups();
     }
 
-    @GetMapping("/socialGroups/{name}")
+    @GetMapping("all/{name}")
     public List<SocialGroup> getUserById(@PathVariable String name) {
         List<SocialGroup> socialGroup = groupService.getSocialGroupByName(name);
         return socialGroup;
