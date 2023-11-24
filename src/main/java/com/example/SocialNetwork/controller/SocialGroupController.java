@@ -46,7 +46,7 @@ public class SocialGroupController {
         return groupService.getSocialGroupById(id);
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     public String deleteSocialGroupById(@PathVariable Long id) {
         groupService.deleteSocialGroupById(id);
 
