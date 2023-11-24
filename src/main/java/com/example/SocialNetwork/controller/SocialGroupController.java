@@ -11,8 +11,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/socialgroup")
 public class SocialGroupController {
-    private SocialGroupService groupService;
-    private UserService userService;
+    private final SocialGroupService groupService;
+    private final UserService userService;
 
     public SocialGroupController(SocialGroupService groupService, UserService userService) {
         this.groupService = groupService;
@@ -39,7 +39,6 @@ public class SocialGroupController {
 
     @GetMapping("all/{name}")
     public List<SocialGroup> getUserById(@PathVariable String name) {
-        List<SocialGroup> socialGroup = groupService.getSocialGroupByName(name);
-        return socialGroup;
+        return groupService.getSocialGroupByName(name);
     }
 }
