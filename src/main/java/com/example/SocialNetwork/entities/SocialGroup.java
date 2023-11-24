@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name="socialgroup")
@@ -26,4 +27,7 @@ public class SocialGroup {
 
     @OneToMany(mappedBy = "socialGroup")
     private ArrayList<MembershipRequest> membershipRequest;
+
+    @ManyToMany(cascade = CascadeType.ALL, mappedBy = "socialGroups")
+    private List<User> users;
 }

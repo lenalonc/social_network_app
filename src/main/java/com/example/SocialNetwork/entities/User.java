@@ -5,8 +5,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Entity
-@Table(name="user")
+@Table(name = "user")
 @Data
 public class User {
     @Id
@@ -16,12 +18,21 @@ public class User {
 
     @Column(name = "email", nullable = false, length = 50)
     private String email;
-    @Column(name="username", nullable = false, length = 50)
+    @Column(name = "username", nullable = false, length = 50)
     private String username;
 
-    @Column(name="active",nullable = false)
+    @Column(name = "active", nullable = false)
     private boolean active;
 
-
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(name = "groupmember",
+            joinColumns = {
+                    @JoinColumn(name = "id_user")
+            },
+            inverseJoinColumns = {
+                    @JoinColumn(name = "id_social_group")
+            }
+    )
+    private List<SocialGroup> socialGroups;
 
 }
