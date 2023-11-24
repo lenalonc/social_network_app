@@ -1,11 +1,13 @@
 package com.example.SocialNetwork.service;
 
 import com.example.SocialNetwork.entities.SocialGroup;
+import com.example.SocialNetwork.entities.User;
 import com.example.SocialNetwork.repository.SocialGroupRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class SocialGroupServiceImpl implements SocialGroupService{
@@ -36,5 +38,22 @@ public class SocialGroupServiceImpl implements SocialGroupService{
             }
         }
         return socialGroups;
+    }
+
+    @Override
+    public void deleteSocialGroupById(Long id) {
+        SocialGroup temGroup = groupRepository.findById(id).get();
+        if(temGroup!=null){
+            groupRepository.deleteById(id);
+        }
+    }
+
+    @Override
+    public SocialGroup getSocialGroupById(Long id) {
+        Optional<SocialGroup> socialGroup = groupRepository.findById(id);
+        if(socialGroup.isPresent()){
+            return socialGroup.get();
+        }
+        return null;
     }
 }

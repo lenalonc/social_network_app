@@ -29,7 +29,7 @@ public class SocialGroupController {
         User user = userService.findByID(1L);
         group.setUser(user);
         groupService.saveGroup(group);
-        return "Usmesno sacuvana grupa ::))";
+        return "Usmesno sacuvana grupa";
     }
 
     @GetMapping("/all")
@@ -38,7 +38,19 @@ public class SocialGroupController {
     }
 
     @GetMapping("all/{name}")
-    public List<SocialGroup> getUserById(@PathVariable String name) {
+    public List<SocialGroup> getSocialGroupByName(@PathVariable String name) {
         return groupService.getSocialGroupByName(name);
     }
+    @GetMapping("all/{id}")
+    public SocialGroup getSocialGroupById(@PathVariable Long id) {
+        return groupService.getSocialGroupById(id);
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public String deleteSocialGroupById(@PathVariable Long id) {
+        groupService.deleteSocialGroupById(id);
+
+        return "Usesno ste obrisali grupu";
+    }
+
 }

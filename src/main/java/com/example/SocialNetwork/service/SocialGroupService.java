@@ -10,4 +10,8 @@ public interface SocialGroupService {
     List<SocialGroup> getAllSocialGroups();
 
     List<SocialGroup> getSocialGroupByName(String name);
+
+    void deleteSocialGroupById(Long id);
+
+    SocialGroup getSocialGroupById(Long id);
 }
