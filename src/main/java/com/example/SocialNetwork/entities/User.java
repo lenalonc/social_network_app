@@ -21,6 +21,9 @@ public class User {
     @Column(name = "username", nullable = false, length = 50)
     private String username;
 
+    @Column(name = "password", nullable = false)
+    private String password;
+
     @Column(name = "active", nullable = false)
     private boolean active;
 
@@ -34,5 +37,8 @@ public class User {
             }
     )
     private List<SocialGroup> socialGroups;
+
+    @OneToMany(mappedBy = "user")
+    private List<Post> posts;
 
 }

@@ -1,9 +1,12 @@
 package com.example.SocialNetwork.entities;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "post")
@@ -15,7 +18,8 @@ public class Post {
     private Long id;
 
     @Column(name = "date", nullable = false)
-    private Date date;
+    @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
+    private LocalDateTime date;
 
     @Column(name = "text", nullable = false)
     private String text;
@@ -31,8 +35,11 @@ public class Post {
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "id_social_group", nullable = false)
+    @JoinColumn(name = "id_social_group")
     private SocialGroup  socialGroup;
+
+    @OneToMany(mappedBy = "post")
+    private List<Comment> comments;
 
 
 
