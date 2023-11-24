@@ -22,11 +22,11 @@ public class SocialGroup {
     private boolean type;
 
     @ManyToOne
-    @JoinColumn(name = "id_user", nullable = false)
+    @JoinColumn(name = "id_admin", nullable = false)
     private User user;
 
-    @OneToMany(mappedBy = "socialGroup")
-    private ArrayList<MembershipRequest> membershipRequest;
+//    @OneToMany(mappedBy = "socialGroup")
+//    private ArrayList<MembershipRequest> membershipRequest;
 
     @ManyToMany(cascade = CascadeType.ALL, mappedBy = "socialGroups")
     private List<User> users;
