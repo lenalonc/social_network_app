@@ -15,18 +15,28 @@ public class PostController {
 
 private PostService postService;
 
-
-
-
-//ova metida treba da se dovrsi
+//ova metoda trreba da se odradi kad budem imali login
     @GetMapping("/all/{id}")
     public List<Post> getAllPostsByUser(@PathVariable Long id){
         return postService.getAllPostsByUser(id);
+    }
+    @GetMapping("/all")
+    public List<Post> getAllPostsByLoggedInUser(){
+        return postService.getAllPostsByLoggedInUser();
+    }
+    @GetMapping("/all/group/{id}")
+    public List<Post> getAllPostsBySocialGroup(@PathVariable Long id){
+        return postService.getAllPostsBySocialGroup(id);
     }
 
     @PostMapping("/")
     public String createPost(@RequestBody Post post) {
         postService.createPost(post);
+        return "Bravo";
+    }
+
+    @PostMapping("/group_post")
+    public String createPostInGroup(@RequestBody Post post){
         return "Bravo";
     }
 

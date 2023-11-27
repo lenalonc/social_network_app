@@ -1,11 +1,14 @@
 package com.example.SocialNetwork.service;
 
 import com.example.SocialNetwork.entities.Post;
+import com.example.SocialNetwork.entities.SocialGroup;
 import com.example.SocialNetwork.repository.PostRepository;
+import com.example.SocialNetwork.repository.SocialGroupRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -13,16 +16,57 @@ import java.util.List;
 public class PostServiceImpl implements PostService{
 
     PostRepository postRepository;
+    SocialGroupRepository socialGroupRepository;
+
+    @Override
+    public List<Post> getAllPostsByUser(Long id) {
+        List<Post> userPosts = postRepository.findAllById_User(id);
+
+        return getUnexpiredPosts(userPosts);
+    }
+
+    @Override
+    public List<Post> getAllPostsByLoggedInUser() {
+        //TODO Kada bude uradjen login, onda samo treba preko ulogovanog uzeti sve njegove objave
+//        List<Post> userPosts = postRepository.findAllById_User(id_user);
+        //return getUnexpiredPosts(id_logeedUser);
+        return null;
+    }
+
+    @Override
+    public List<Post> getAllPostsBySocialGroup(Long id) {
+        //TODO Uraditi proveru da je ulogovani korisnik u grupi u kojoj se traze objave
+
+        List<Post> postsInGroup = postRepository.findAllById_Social_Group(id);
+
+        return getUnexpiredPosts(postsInGroup);
+    }
 
     @Override
     public Post createPost(Post post) {
-        //post.setDate(LocalDateTime.now());
-
+        post.setDate(LocalDateTime.now());
         post.setDeleted(false);
-        //TODO: ulogovani user se stavlja kao user id
-        //TODO: metod za kreiranje posta u grupi
+        //TODO Dodati ID ulogovanog korisnika kao korisnika koji je napravio objavu
 
       return postRepository.save(post);
+    }
+
+    @Override
+    public Post createPostInGroup(Post post, SocialGroup socialGroup) {
+        //TODO Kada bude sredjen email servis, onda treba poslati notifikacije svim clanovima grupe
+        //TODO Uzeti ulogovanog usera i proveriti da li je on clan grupe u kojoj vrsi objavu
+
+        post.setDate(LocalDateTime.now());
+        post.setDeleted(false);
+        //TODO: ulogovani user se stavlja kao user id
+
+        List<Post> socialGroupPosts = socialGroup.getPosts();
+        socialGroupPosts.add(post);
+        socialGroupRepository.save(socialGroup);
+        post.setSocialGroup(socialGroup);
+
+        return postRepository.save(post);
+
     }
 
     @Override
@@ -37,16 +81,6 @@ public class PostServiceImpl implements PostService{
             }
         }
         return postRepository.save(tempPost);
-    }
-
-    @Override
-    public List<Post> getAllPostsByUser(Long id) {
-        return null;
-    }
-
-    @Override
-    public List<Post> getAllPosts() {
-        return postRepository.findAll();
     }
 
     @Override
@@ -66,5 +100,15 @@ public class PostServiceImpl implements PostService{
         Post tempPost = postRepository.findById(id).get();
         tempPost.setType(false);
         return postRepository.save(tempPost);
+    }
+
+
+    private List<Post> getUnexpiredPosts(List<Post> unfilteredPosts){
+        List <Post> unexpiredPosts = new ArrayList<>();
+        for(Post post : unfilteredPosts) {
+            if(!post.getDate().isAfter(post.getDate().plusHours(24)))
+                unexpiredPosts.add(post);
+        }
+        return unexpiredPosts;
     }
 }
