@@ -37,4 +37,9 @@ public class RequestsServiceImpl implements RequestService{
             reqestsRepository.deleteById(id);
         }
     }
+
+    @Override
+    public void saveRequest(MembershipRequest membershipRequest) {
+        reqestsRepository.save(membershipRequest);
+    }
 }

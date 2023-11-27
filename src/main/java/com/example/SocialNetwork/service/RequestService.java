@@ -12,4 +12,6 @@ public interface RequestService {
     MembershipRequest getAllRequestsById(Long id);
 
     void deleteRequestById(Long id);
+
+    void saveRequest(MembershipRequest membershipRequest);
 }

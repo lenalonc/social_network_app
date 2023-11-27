@@ -1,5 +1,6 @@
 package com.example.SocialNetwork.controller;
 
+import com.example.SocialNetwork.configuration.MyRequest;
 import com.example.SocialNetwork.entities.GroupMember;
 import com.example.SocialNetwork.entities.MembershipRequest;
 import com.example.SocialNetwork.entities.SocialGroup;
@@ -15,7 +16,7 @@ import java.util.Date;
 
 @RestController
 @RequestMapping("/groupmember")
-public class GroupMemberController {
+public class GroupMemberController extends MyRequest {
     private final GroupMemberService memberService;
     private final RequestService requestService;
 
@@ -24,7 +25,7 @@ public class GroupMemberController {
         this.memberService =  memberService;
         this.requestService = requestService;
     }
-    @PostMapping("/write")
+    @PostMapping("/")
     public String approveRequest(@RequestBody MyRequest id) {
         MembershipRequest membershipRequest = requestService.getAllRequestsById(id.getId());
         if (membershipRequest == null)
@@ -46,9 +47,4 @@ public class GroupMemberController {
     }
 
 }
-class MyRequest{
-    private Long id;
-    public Long getId() {
-        return id;
-    }
-}
+
