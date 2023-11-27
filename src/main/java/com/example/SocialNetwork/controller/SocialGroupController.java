@@ -61,10 +61,10 @@ public class SocialGroupController extends MyRequest {
     @PostMapping("/request")
     public String createMembershipReques(@RequestBody MyRequest id) {
         SocialGroup socialGroup = groupService.getSocialGroupById(id.getId());
-        //ovo je zakucano
+
         User u = new User();
         u.setId(1L);
-        /////////////////////
+
         MembershipRequest membershipRequest = new MembershipRequest();
         membershipRequest.setSocialGroup(socialGroup);
         membershipRequest.setUser(u);
