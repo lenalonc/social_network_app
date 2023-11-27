@@ -3,28 +3,31 @@ package com.example.SocialNetwork.service;
 import com.example.SocialNetwork.entities.FriendRequest;
 import com.example.SocialNetwork.entities.User;
 import com.example.SocialNetwork.repository.FriendRequestRepository;
+import com.example.SocialNetwork.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 public class FriendRequestServiceImpl implements FriendRequestService{
-
+    private UserRepository userRepository;
     private FriendRequestRepository friendRequestRepository;
 
-    public FriendRequestServiceImpl(FriendRequestRepository friendRequestRepository) {
+    public FriendRequestServiceImpl(FriendRequestRepository friendRequestRepository, UserRepository userRepository) {
         this.friendRequestRepository = friendRequestRepository;
+        this.userRepository = userRepository;
     }
     @Override
     public String sendFriendRequest(FriendRequest friendRequest) {
-        User user1 = friendRequest.getUser1();
-        User user2 = friendRequest.getUser2();
-
-        if(user1.getId() == user2.getId()) {
-            return "NE MOZES POSLATI SAM SEBI ZAHTEV AAAAAAA";
+        Long user1Id = friendRequest.getId_user1();
+        Long user2Id = friendRequest.getId_user2();
+        if (user1Id.equals(user2Id)) {
+            return "You can't send a friend request to yourself";
         }
-        friendRequestRepository.save(friendRequest);
-        return "Uspesno poslat zahtev";
+        FriendRequest save = friendRequestRepository.save(friendRequest);
+        User byId = userRepository.getById(user1Id);
+        byId.getFriendRequestSet().add(save);
+        return "Friend request sent";
     }
 
     @Override

@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "user")
@@ -30,7 +31,7 @@ public class User {
 
     @Column(name = "admin", nullable = false)
     private boolean admin;
-/*
+
     @ManyToMany
     @JoinTable(name="friends",
             joinColumns = {
@@ -41,7 +42,7 @@ public class User {
             }
     )
     private List<Friends> friends;
-*/
+
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "groupmember",
             joinColumns = {
@@ -65,6 +66,11 @@ public class User {
     )
 
     private List<FriendRequest> friendRequests;
+
+    @ManyToMany
+    @JoinTable(name = "userfriendrequest", joinColumns = @JoinColumn(name = "user.id"), inverseJoinColumns = @JoinColumn(name = "friendrequest.id"))
+    private Set<FriendRequest> friendRequestSet;
+
 
     @OneToMany(mappedBy = "user")
     private List<Post> posts;
