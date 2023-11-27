@@ -6,24 +6,25 @@ import com.example.SocialNetwork.entities.MembershipRequest;
 import com.example.SocialNetwork.entities.SocialGroup;
 import com.example.SocialNetwork.entities.User;
 import com.example.SocialNetwork.service.GroupMemberService;
-import com.example.SocialNetwork.service.RequestService;
-import com.example.SocialNetwork.service.SocialGroupService;
+import com.example.SocialNetwork.service.MembershipRequestService;
 import com.example.SocialNetwork.service.UserService;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
-import java.util.Date;
+import java.util.*;
 
 @RestController
 @RequestMapping("/groupmember")
 public class GroupMemberController extends MyRequest {
     private final GroupMemberService memberService;
-    private final RequestService requestService;
+    private final MembershipRequestService requestService;
+    private final UserService userService;
 
     public GroupMemberController(GroupMemberService memberService,
-                                 RequestService requestService) {
+                                 MembershipRequestService requestService,
+                                 UserService userService) {
         this.memberService =  memberService;
         this.requestService = requestService;
+        this.userService = userService;
     }
     @PostMapping("/")
     public String approveRequest(@RequestBody MyRequest id) {
@@ -46,5 +47,17 @@ public class GroupMemberController extends MyRequest {
         return "Vas zahtev za uclanjenje grupe je prihvacen!";
     }
 
+
+    @GetMapping("/group/{id}")
+    public List<String> showAllUsers(@PathVariable Long id){
+        List<String> users = new ArrayList<>();
+        List<Long> groupMember = memberService.getAllGroupMembers(id);
+
+        for(int i = 0; i < groupMember.size(); i++){
+             users.add(userService.findByID(groupMember.get(i)).getUsername());
+            //System.out.println(userService.findByID(groupMember.get(i)).getUsername());
+        }
+        return users;
+    }
 }
 

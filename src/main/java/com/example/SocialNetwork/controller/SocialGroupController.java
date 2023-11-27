@@ -2,7 +2,8 @@ package com.example.SocialNetwork.controller;
 
 import com.example.SocialNetwork.configuration.MyRequest;
 import com.example.SocialNetwork.entities.*;
-import com.example.SocialNetwork.service.RequestService;
+import com.example.SocialNetwork.service.GroupMemberServiceImpl;
+import com.example.SocialNetwork.service.MembershipRequestService;
 import com.example.SocialNetwork.service.SocialGroupService;
 import com.example.SocialNetwork.service.UserService;
 import org.springframework.web.bind.annotation.*;
@@ -14,10 +15,10 @@ import java.util.List;
 public class SocialGroupController extends MyRequest {
     private final SocialGroupService groupService;
     private final UserService userService;
-    private final RequestService requestService;
+    private final MembershipRequestService requestService;
 
     public SocialGroupController(SocialGroupService groupService, UserService userService,
-                                 RequestService requestService) {
+                                 MembershipRequestService requestService) {
         this.groupService = groupService;
         this.userService = userService;
         this.requestService = requestService;
@@ -62,7 +63,7 @@ public class SocialGroupController extends MyRequest {
         SocialGroup socialGroup = groupService.getSocialGroupById(id.getId());
         //ovo je zakucano
         User u = new User();
-        u.setId(3L);
+        u.setId(1L);
         /////////////////////
         MembershipRequest membershipRequest = new MembershipRequest();
         membershipRequest.setSocialGroup(socialGroup);

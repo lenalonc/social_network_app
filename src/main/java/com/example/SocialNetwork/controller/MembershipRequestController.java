@@ -1,21 +1,18 @@
 package com.example.SocialNetwork.controller;
 
 import com.example.SocialNetwork.entities.MembershipRequest;
-import com.example.SocialNetwork.entities.SocialGroup;
-import com.example.SocialNetwork.service.RequestService;
-import com.example.SocialNetwork.service.SocialGroupService;
+import com.example.SocialNetwork.service.MembershipRequestService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import org.springframework.web.servlet.view.RedirectView;
 
 @RestController
 @RequestMapping("/requests")
 public class MembershipRequestController {
-    private final RequestService requestService;
+    private final MembershipRequestService requestService;
     private Long id;
 
-    public MembershipRequestController(RequestService requestService){
+    public MembershipRequestController(MembershipRequestService requestService){
         this.requestService = requestService;
     }
 
@@ -33,6 +30,6 @@ public class MembershipRequestController {
     public String deleteRequestById(@PathVariable Long id) {
         requestService.deleteRequestById(id);
 
-        return "Usesno ste obrisali grupu";
+        return "Usesno ste obrisali zahtev";
     }
 }

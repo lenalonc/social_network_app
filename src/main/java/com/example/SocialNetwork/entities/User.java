@@ -1,15 +1,16 @@
 package com.example.SocialNetwork.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
 @Entity
 @Table(name = "user")
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -50,6 +51,7 @@ public class User {
                     @JoinColumn(name = "id_social_group")
             }
     )
+
     private List<SocialGroup> socialGroups;
 
     @ManyToMany
@@ -61,6 +63,7 @@ public class User {
                     @JoinColumn(name = "id_user2")
             }
     )
+
     private List<FriendRequest> friendRequests;
 
 }

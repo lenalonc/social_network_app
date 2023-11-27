@@ -25,8 +25,7 @@ public class SocialGroupServiceImpl implements SocialGroupService{
 
     @Override
     public List<SocialGroup> getAllSocialGroups() {
-        List<SocialGroup> socialGroups = groupRepository.findAll();
-        return socialGroups;
+        return groupRepository.findAll();
     }
 
     @Override

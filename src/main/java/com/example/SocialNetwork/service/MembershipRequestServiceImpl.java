@@ -1,19 +1,18 @@
 package com.example.SocialNetwork.service;
 
 import com.example.SocialNetwork.entities.MembershipRequest;
-import com.example.SocialNetwork.entities.SocialGroup;
-import com.example.SocialNetwork.repository.ReqestsRepository;
+import com.example.SocialNetwork.repository.MembershipRequestRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
-public class RequestsServiceImpl implements RequestService{
+public class MembershipRequestServiceImpl implements MembershipRequestService {
 
-    private ReqestsRepository reqestsRepository;
+    private MembershipRequestRepository reqestsRepository;
 
-    public RequestsServiceImpl(ReqestsRepository reqestsRepository){
+    public MembershipRequestServiceImpl(MembershipRequestRepository reqestsRepository){
         this.reqestsRepository = reqestsRepository;
     }
     @Override
