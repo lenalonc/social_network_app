@@ -1,6 +1,7 @@
 package com.example.SocialNetwork.controller;
 
 import com.example.SocialNetwork.entities.GroupMember;
+import com.example.SocialNetwork.entities.MembershipRequest;
 import com.example.SocialNetwork.entities.SocialGroup;
 import com.example.SocialNetwork.entities.User;
 import com.example.SocialNetwork.service.SocialGroupService;
@@ -53,6 +54,5 @@ public class SocialGroupController {
 
         return "Usesno ste obrisali grupu";
     }
-
 
 }

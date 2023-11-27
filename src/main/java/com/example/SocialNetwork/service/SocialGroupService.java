@@ -1,5 +1,6 @@
 package com.example.SocialNetwork.service;
 
+import com.example.SocialNetwork.entities.MembershipRequest;
 import com.example.SocialNetwork.entities.SocialGroup;
 
 import java.util.List;
@@ -14,4 +15,5 @@ public interface SocialGroupService {
     void deleteSocialGroupById(Long id);
 
     SocialGroup getSocialGroupById(Long id);
+
 }
