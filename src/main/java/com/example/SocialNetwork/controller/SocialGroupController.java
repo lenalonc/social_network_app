@@ -1,8 +1,9 @@
 package com.example.SocialNetwork.controller;
 
-import com.example.SocialNetwork.entities.GroupMember;
-import com.example.SocialNetwork.entities.SocialGroup;
-import com.example.SocialNetwork.entities.User;
+import com.example.SocialNetwork.configuration.MyRequest;
+import com.example.SocialNetwork.entities.*;
+import com.example.SocialNetwork.service.GroupMemberServiceImpl;
+import com.example.SocialNetwork.service.MembershipRequestService;
 import com.example.SocialNetwork.service.SocialGroupService;
 import com.example.SocialNetwork.service.UserService;
 import org.springframework.web.bind.annotation.*;
@@ -11,13 +12,16 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/socialgroup")
-public class SocialGroupController {
+public class SocialGroupController extends MyRequest {
     private final SocialGroupService groupService;
     private final UserService userService;
+    private final MembershipRequestService requestService;
 
-    public SocialGroupController(SocialGroupService groupService, UserService userService) {
+    public SocialGroupController(SocialGroupService groupService, UserService userService,
+                                 MembershipRequestService requestService) {
         this.groupService = groupService;
         this.userService = userService;
+        this.requestService = requestService;
     }
 
     @GetMapping("/hello")
@@ -54,5 +58,20 @@ public class SocialGroupController {
         return "Usesno ste obrisali grupu";
     }
 
+    @PostMapping("/request")
+    public String createMembershipReques(@RequestBody MyRequest id) {
+        SocialGroup socialGroup = groupService.getSocialGroupById(id.getId());
 
+        User u = new User();
+        u.setId(1L);
+
+        MembershipRequest membershipRequest = new MembershipRequest();
+        membershipRequest.setSocialGroup(socialGroup);
+        membershipRequest.setUser(u);
+        membershipRequest.setRequestStatus(RequestStatus.PENDING);
+
+        requestService.saveRequest(membershipRequest);
+
+        return "Uspesno ste poslali request za uclanjnje u grupi";
+    }
 }
