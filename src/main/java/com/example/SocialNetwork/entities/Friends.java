@@ -14,7 +14,7 @@ public class Friends {
     private FriendsId id;*/
 
     @Id
-    private Long id3;
+    private Long id;
 
     @ManyToOne
     @JoinColumn(name = "user1Id", nullable = false)

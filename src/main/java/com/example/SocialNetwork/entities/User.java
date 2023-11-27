@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "user")
@@ -51,7 +52,7 @@ public class User {
             }
     )
     private List<SocialGroup> socialGroups;
-
+/*
     @ManyToMany
     @JoinTable(name = "friendrequest",
             joinColumns = {
@@ -62,5 +63,11 @@ public class User {
             }
     )
     private List<FriendRequest> friendRequests;
+
+*/
+    @ManyToMany
+    @JoinTable(name = "userfriendrequest", joinColumns = @JoinColumn(name = "user.id"), inverseJoinColumns = @JoinColumn(name = "friendrequest.id"))
+    private Set<FriendRequest> friendRequestSet;
+
 
 }

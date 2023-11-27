@@ -22,8 +22,8 @@ public class FriendRequestController {
         return friendRequestService.sendFriendRequest(friendRequest);
     }
 
-    /*@GetMapping("/{id}")
-    public List<FriendRequest> getAllRequests(@PathVariable Long id) {
-        return friendRequestService.getAllRequests(id);
-    }*/
+    @GetMapping("/")
+    public List<FriendRequest> getAllRequests(@RequestParam(name = "uid") Long uid) {
+        return friendRequestService.getAllRequests(uid);
+    }
 }
