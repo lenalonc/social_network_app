@@ -18,7 +18,7 @@ public interface PostService {
 
     Post createPost(Post post);
 
-    Post createPostInGroup(Post post, SocialGroup socialGroup);
+    Post createPostInGroup(Post post, Long groupId);
 
     Post updatePost(Long id, Post post);
 

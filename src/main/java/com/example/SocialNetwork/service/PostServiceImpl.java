@@ -13,10 +13,10 @@ import java.util.List;
 
 @Service
 @AllArgsConstructor
-public class PostServiceImpl implements PostService{
+public class PostServiceImpl implements PostService {
 
-    PostRepository postRepository;
-    SocialGroupRepository socialGroupRepository;
+    private PostRepository postRepository;
+    private SocialGroupRepository socialGroupRepository;
 
     @Override
     public List<Post> getAllPostsByUser(Long id) {
@@ -48,17 +48,20 @@ public class PostServiceImpl implements PostService{
         post.setDeleted(false);
         //TODO Dodati ID ulogovanog korisnika kao korisnika koji je napravio objavu
 
-      return postRepository.save(post);
+        return postRepository.save(post);
     }
 
     @Override
-    public Post createPostInGroup(Post post, SocialGroup socialGroup) {
+    public Post createPostInGroup(Post post, Long groupId) {
         //TODO Kada bude sredjen email servis, onda treba poslati notifikacije svim clanovima grupe
         //TODO Uzeti ulogovanog usera i proveriti da li je on clan grupe u kojoj vrsi objavu
 
         post.setDate(LocalDateTime.now());
         post.setDeleted(false);
         //TODO: ulogovani user se stavlja kao user id
+
+        //TODO Baciti gresku ako nema grupe sa ovim ID-om
+        SocialGroup socialGroup = socialGroupRepository.findById(groupId).get();
 
         List<Post> socialGroupPosts = socialGroup.getPosts();
         socialGroupPosts.add(post);
@@ -75,8 +78,8 @@ public class PostServiceImpl implements PostService{
 
         //TODO Da se proveri da li je ulogovani korisnik isti kao ovaj sto apdejtuje post
 
-        if(tempPost != null){
-            if(post.getText() != null && !post.getText().equals("") && post.getText() != tempPost.getText()) {
+        if (tempPost != null) {
+            if (post.getText() != null && !post.getText().equals("") && post.getText() != tempPost.getText()) {
                 tempPost.setText(post.getText());
             }
         }
@@ -103,11 +106,10 @@ public class PostServiceImpl implements PostService{
     }
 
 
-    private List<Post> getUnexpiredPosts(List<Post> unfilteredPosts){
-        List <Post> unexpiredPosts = new ArrayList<>();
-        for(Post post : unfilteredPosts) {
-            if(!post.getDate().isAfter(post.getDate().plusHours(24)))
-                unexpiredPosts.add(post);
+    private List<Post> getUnexpiredPosts(List<Post> unfilteredPosts) {
+        List<Post> unexpiredPosts = new ArrayList<>();
+        for (Post post : unfilteredPosts) {
+            if (!post.getDate().isAfter(post.getDate().plusHours(24))) unexpiredPosts.add(post);
         }
         return unexpiredPosts;
     }
