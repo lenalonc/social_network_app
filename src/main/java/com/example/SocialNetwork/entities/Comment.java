@@ -23,8 +23,11 @@ public class Comment {
 
     @OneToMany
     @JoinColumn(name = "id")
-    private ArrayList<Comment> parentComment;
+    private ArrayList<Comment> replies;
 
+    @ManyToOne
+    @JoinColumn(name = "id_parent_id")
+    private Comment parentComment;
 
     @ManyToOne
     @JoinColumn(name = "id_post", nullable = false)
@@ -33,7 +36,6 @@ public class Comment {
     @ManyToOne
     @JoinColumn(name = "id_user", nullable = false)
     private User user;
-
 
 
 

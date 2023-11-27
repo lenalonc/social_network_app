@@ -63,4 +63,7 @@ public class User {
     )
     private List<FriendRequest> friendRequests;
 
+    @OneToMany(mappedBy = "user")
+    private List<Post> posts;
+
 }
