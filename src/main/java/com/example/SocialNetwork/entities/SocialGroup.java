@@ -25,8 +25,8 @@ public class SocialGroup {
     @JoinColumn(name = "id_admin", nullable = false)
     private User user;
 
-    @OneToMany(mappedBy = "socialGroup")
-    private List<MembershipRequest> membershipRequest;
+//    @OneToMany(mappedBy = "socialGroup")
+//    private ArrayList<MembershipRequest> membershipRequest;
 
     @ManyToMany(cascade = CascadeType.ALL, mappedBy = "socialGroups")
     private List<User> users;

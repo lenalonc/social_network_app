@@ -14,7 +14,7 @@ public class GroupMember {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "dateJoined", nullable = false)
+    @Column(name = "date_joined", nullable = false)
     private Date dateJoined;
 
     @ManyToOne

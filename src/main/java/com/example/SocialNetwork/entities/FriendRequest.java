@@ -13,7 +13,7 @@ public class FriendRequest {
     private Long id;
 
     @Column(name = "status", nullable = false)
-    private RequestStatus status;
+    private RequestStatus status = RequestStatus.PENDING;
 
     @ManyToOne
     @JoinColumn(name = "id_user1", nullable = false)

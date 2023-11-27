@@ -21,12 +21,26 @@ public class User {
     @Column(name = "username", nullable = false, length = 50)
     private String username;
 
-    @Column(name = "password", nullable = false)
+    @Column(name = "password", nullable = false, length = 50)
     private String password;
 
     @Column(name = "active", nullable = false)
     private boolean active;
 
+    @Column(name = "admin", nullable = false)
+    private boolean admin;
+/*
+    @ManyToMany
+    @JoinTable(name="friends",
+            joinColumns = {
+                    @JoinColumn(name = "id_user1")
+            },
+            inverseJoinColumns = {
+                    @JoinColumn(name = "id_user2")
+            }
+    )
+    private List<Friends> friends;
+*/
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "groupmember",
             joinColumns = {
@@ -37,6 +51,17 @@ public class User {
             }
     )
     private List<SocialGroup> socialGroups;
+
+    @ManyToMany
+    @JoinTable(name = "friendrequest",
+            joinColumns = {
+                    @JoinColumn(name = "id_user1")
+            },
+            inverseJoinColumns = {
+                    @JoinColumn(name = "id_user2")
+            }
+    )
+    private List<FriendRequest> friendRequests;
 
     @OneToMany(mappedBy = "user")
     private List<Post> posts;

@@ -37,4 +37,11 @@ public class Comment {
     @JoinColumn(name = "id_user", nullable = false)
     private User user;
 
+
+
+
+
+
+
+
 }
