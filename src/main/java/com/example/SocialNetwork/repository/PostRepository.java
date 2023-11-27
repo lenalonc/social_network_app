@@ -11,7 +11,6 @@ import java.util.List;
 public interface PostRepository extends JpaRepository<Post, Long> {
 
     List<Post> findAllById_User(Long id);
-
     List<Post> findAllById_Social_Group(Long id);
 
 }

@@ -18,6 +18,7 @@ public class User {
 
     @Column(name = "email", nullable = false, length = 50)
     private String email;
+
     @Column(name = "username", nullable = false, length = 50)
     private String username;
 
@@ -65,5 +66,8 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     private List<Post> posts;
+
+    @OneToMany(mappedBy = "user")
+    private List<Comment> comments;
 
 }
