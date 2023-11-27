@@ -5,9 +5,13 @@ import com.example.SocialNetwork.entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-@Repository
-public interface PostRepository extends JpaRepository <Post, Long> {
+import java.util.List;
 
-    Post findAllById_User(User user);
+@Repository
+public interface PostRepository extends JpaRepository<Post, Long> {
+
+    List<Post> findAllById_User(Long id);
+
+    List<Post> findAllById_Social_Group(Long id);
 
 }

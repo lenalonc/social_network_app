@@ -1,6 +1,7 @@
 package com.example.SocialNetwork.service;
 
 import com.example.SocialNetwork.entities.Post;
+import com.example.SocialNetwork.entities.SocialGroup;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -9,14 +10,17 @@ import java.util.List;
 public interface PostService {
 
 
-    Post createPost(Post post);
-
-    Post updatePost(Long id, Post post);
-
-
     List<Post> getAllPostsByUser(Long id);
 
-    List<Post> getAllPosts();
+    List<Post> getAllPostsByLoggedInUser();
+
+    List<Post> getAllPostsBySocialGroup(Long id);
+
+    Post createPost(Post post);
+
+    Post createPostInGroup(Post post, Long groupId);
+
+    Post updatePost(Long id, Post post);
 
     void deletePostById(Long id);
 
