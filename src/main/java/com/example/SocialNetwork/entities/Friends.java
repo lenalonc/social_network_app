@@ -9,18 +9,19 @@ import java.util.List;
 @Table(name = "friends")
 @Data
 public class Friends {
-
+/*
     @EmbeddedId
-    private FriendsId id;
+    private FriendsId id;*/
+
+    @Id
+    private Long id3;
 
     @ManyToOne
-    @MapsId("user1Id")
-    @JoinColumn(name = "id_user1", nullable = false)
+    @JoinColumn(name = "user1Id", nullable = false)
     private User user1Id;
 
     @ManyToOne
-    @MapsId("user2Id")
-    @JoinColumn (name = "id_user2", nullable = false)
+    @JoinColumn (name = "user2Id", nullable = false)
     private User user2Id;
 
 

@@ -29,7 +29,7 @@ public class User {
 
     @Column(name = "admin", nullable = false)
     private boolean admin;
-/*
+
     @ManyToMany
     @JoinTable(name="friends",
             joinColumns = {
@@ -40,7 +40,7 @@ public class User {
             }
     )
     private List<Friends> friends;
-*/
+
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "groupmember",
             joinColumns = {
