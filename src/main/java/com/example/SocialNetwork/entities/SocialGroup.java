@@ -30,4 +30,7 @@ public class SocialGroup {
 
     @ManyToMany(cascade = CascadeType.ALL, mappedBy = "socialGroups")
     private List<User> users;
+
+    @OneToMany(mappedBy = "socialGroup")
+    private List<Post> posts;
 }

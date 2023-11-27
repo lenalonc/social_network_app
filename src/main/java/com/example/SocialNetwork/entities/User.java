@@ -52,7 +52,7 @@ public class User {
             }
     )
     private List<SocialGroup> socialGroups;
-/*
+
     @ManyToMany
     @JoinTable(name = "friendrequest",
             joinColumns = {
@@ -64,10 +64,12 @@ public class User {
     )
     private List<FriendRequest> friendRequests;
 
-*/
     @ManyToMany
     @JoinTable(name = "userfriendrequest", joinColumns = @JoinColumn(name = "user.id"), inverseJoinColumns = @JoinColumn(name = "friendrequest.id"))
     private Set<FriendRequest> friendRequestSet;
 
+
+    @OneToMany(mappedBy = "user")
+    private List<Post> posts;
 
 }
