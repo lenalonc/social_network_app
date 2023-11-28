@@ -1,9 +1,9 @@
 package com.example.SocialNetwork.repository;
 
-import com.example.SocialNetwork.entities.Friends;
+import com.example.SocialNetwork.entities.MembershipRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface FriendsRepository extends JpaRepository<Friends, Long> {
+public interface MembershipRequestRepository extends JpaRepository<MembershipRequest, Long> {
 }

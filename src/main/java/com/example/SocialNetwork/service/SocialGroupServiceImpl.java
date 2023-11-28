@@ -1,5 +1,6 @@
 package com.example.SocialNetwork.service;
 
+import com.example.SocialNetwork.entities.MembershipRequest;
 import com.example.SocialNetwork.entities.SocialGroup;
 import com.example.SocialNetwork.entities.User;
 import com.example.SocialNetwork.repository.SocialGroupRepository;
@@ -24,8 +25,7 @@ public class SocialGroupServiceImpl implements SocialGroupService{
 
     @Override
     public List<SocialGroup> getAllSocialGroups() {
-        List<SocialGroup> socialGroups = groupRepository.findAll();
-        return socialGroups;
+        return groupRepository.findAll();
     }
 
     @Override

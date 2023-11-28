@@ -2,10 +2,17 @@ package com.example.SocialNetwork.entities;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.sql.Date;
 
 @Entity
 @Table(name = "friendrequest")
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
 public class FriendRequest {
 
     @Id
@@ -15,11 +22,10 @@ public class FriendRequest {
     @Column(name = "status", nullable = false)
     private RequestStatus status = RequestStatus.PENDING;
 
-    @ManyToOne
-    @JoinColumn(name = "id_user1", nullable = false)
-    private User user1;
+    private Long id_user1;
 
-    @ManyToOne
-    @JoinColumn(name = "id_user2", nullable = false)
-    private User user2;
+    private Long id_user2;
+
+    @Column(name = "date", nullable = false)
+    private Date date;
 }

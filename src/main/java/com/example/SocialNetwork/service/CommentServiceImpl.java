@@ -19,7 +19,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public List<Comment> getAllCommentsForPost(Long id) {
-        return commentRepository.findAllById_PostOrderByDate(id);
+        return commentRepository.findAllByPostIdOrderByDate(id);
     }
 
     @Override

@@ -1,7 +1,9 @@
 package com.example.SocialNetwork.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -9,14 +11,16 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "user")
 @EqualsAndHashCode(callSuper = false)
 @Builder
-@Data
 @AllArgsConstructor
+@Getter
+@Setter
 @NoArgsConstructor
 public class User {
     @Id
@@ -39,8 +43,8 @@ public class User {
 
     @Column(name = "admin", nullable = false)
     private boolean admin;
-/*
-    @ManyToMany
+
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name="friends",
             joinColumns = {
                     @JoinColumn(name = "id_user1")
@@ -50,8 +54,8 @@ public class User {
             }
     )
     private List<Friends> friends;
-*/
-    @ManyToMany(cascade = CascadeType.ALL)
+
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(name = "groupmember",
             joinColumns = {
                     @JoinColumn(name = "id_user")
@@ -60,9 +64,10 @@ public class User {
                     @JoinColumn(name = "id_social_group")
             }
     )
+
     private List<SocialGroup> socialGroups;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "friendrequest",
             joinColumns = {
                     @JoinColumn(name = "id_user1")
@@ -71,10 +76,16 @@ public class User {
                     @JoinColumn(name = "id_user2")
             }
     )
+
     private List<FriendRequest> friendRequests;
 
-    @OneToMany(mappedBy = "user")
-    private List<Post> posts;
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "userfriendrequest", joinColumns = @JoinColumn(name = "user.id"), inverseJoinColumns = @JoinColumn(name = "friendrequest.id"))
+    private Set<FriendRequest> friendRequestSet;
+
+
+    /*@OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private List<Post> posts;*/
 
     @OneToMany(mappedBy = "user")
     private List<Comment> comments;
