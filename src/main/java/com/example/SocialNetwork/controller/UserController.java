@@ -36,13 +36,11 @@ public class UserController {
         return "Bravo";
     }
 
-    // NECE RADITI DOK SE NE SREDI SOCIALGROUP I NE POPUNI BAREM 1 RED U GROUPMEMBER TABELI
     @GetMapping("/")
     public List<User> showAllUsers() {
         return userService.getAllUsers();
     }
 
-    // NECE RADITI DOK SE NE SREDI SOCIALGROUP I NE POPUNI BAREM 1 RED U GROUPMEMBER TABELI
     @DeleteMapping("/{id}")
     public String deleteUserById(@PathVariable Long id) {
         userService.deleteUserById(id);
@@ -55,4 +53,5 @@ public class UserController {
         User user = userService.findByID(id);
         return user;
     }
+
 }
