@@ -28,4 +28,8 @@ public class FriendRequest {
 
     @Column(name = "date", nullable = false)
     private Date date;
+
+    public RequestStatus isAccepted() {
+        return status;
+    }
 }
