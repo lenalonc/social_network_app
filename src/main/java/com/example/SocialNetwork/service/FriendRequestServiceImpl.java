@@ -53,22 +53,23 @@ public class FriendRequestServiceImpl implements FriendRequestService{
         Optional<User> user2 = userRepository.findById(user2Id);
 
         if(user1.isPresent() && user2.isPresent()){
-             User userPrvi = user1.get();
-             User userDrugi = user2.get();
-             return processRequest(userPrvi, userDrugi, status);
+             User firstUser = user1.get();
+             User secondUser = user2.get();
+             return processRequest(firstUser, secondUser, status);
         }
           return "User not found";
     }
 
-    private String processRequest(User userPrvi, User userDrugi, Long status) {
+    private String processRequest(User firstUser, User secondUser, Long status) {
         if (status == 0) {
+
             Friends newFriend = new Friends();
-            newFriend.setUser1Id(userPrvi);
-            newFriend.setUser2Id(userDrugi);
+            newFriend.setUser1Id(firstUser);
+            newFriend.setUser2Id(secondUser);
             friendsService.saveFriends(newFriend);
 
-            userPrvi.getFriends().add(newFriend);
-            userDrugi.getFriends().add(newFriend);
+            firstUser.getFriends().add(newFriend);
+            secondUser.getFriends().add(newFriend);
             return "Friend request accepted";
         } else if (status == 1) {
             return "Friend request already on pending list";
