@@ -1,11 +1,11 @@
 package com.example.SocialNetwork.controller;
 
 import com.example.SocialNetwork.entities.Friends;
+import com.example.SocialNetwork.entities.User;
 import com.example.SocialNetwork.service.FriendsService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/friends")
@@ -20,5 +20,10 @@ public class FriendsController {
     @PostMapping("/")
     public void sendFriendRequest(@RequestBody Friends friends) {
         friendsService.saveFriends(friends);
+    }
+
+    @GetMapping("/")
+    public List<User> getFriendsByUser(@RequestParam("user1Id") Long userId) {
+        return friendsService.getFriendsByUser(userId);
     }
 }
