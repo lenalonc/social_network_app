@@ -68,7 +68,7 @@ public class User {
     private List<FriendRequest> friendRequests;
 
     @ManyToMany()
-    @JoinTable(name = "userfriendrequest", joinColumns = @JoinColumn(name = "user.id"), inverseJoinColumns = @JoinColumn(name = "friendrequest.id"))
+    @JoinTable(name = "user_friendrequest", joinColumns = @JoinColumn(name = "user.id"), inverseJoinColumns = @JoinColumn(name = "friendrequest.id"))
     private Set<FriendRequest> friendRequestSet;
 
 

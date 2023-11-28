@@ -26,4 +26,9 @@ public class FriendRequestController {
     public List<FriendRequest> getAllRequests(@RequestParam(name = "uid") Long uid) {
         return friendRequestService.getAllRequests(uid);
     }
+
+    @PutMapping("/respond")
+    public String respondToRequest(@RequestParam(name = "id") Long id, @RequestParam(name = "status") Long status) {
+        return friendRequestService.respondToRequest(id, status);
+    }
 }

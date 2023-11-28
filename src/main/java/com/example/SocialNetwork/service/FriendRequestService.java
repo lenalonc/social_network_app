@@ -8,4 +8,6 @@ public interface FriendRequestService {
     String sendFriendRequest(FriendRequest friendRequest);
 
     List<FriendRequest> getAllRequests(Long id);
+
+    String respondToRequest(Long id, Long status);
 }
