@@ -1,10 +1,10 @@
 CREATE DATABASE  IF NOT EXISTS `socialnetwork` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
 USE `socialnetwork`;
--- MySQL dump 10.13  Distrib 8.0.34, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 8.0.33, for macos13 (arm64)
 --
 -- Host: localhost    Database: socialnetwork
 -- ------------------------------------------------------
--- Server version	8.0.33
+-- Server version	8.1.0
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -109,7 +109,7 @@ CREATE TABLE `flyway_schema_history` (
 
 LOCK TABLES `flyway_schema_history` WRITE;
 /*!40000 ALTER TABLE `flyway_schema_history` DISABLE KEYS */;
-INSERT INTO `flyway_schema_history` VALUES (1,'1','initial table','SQL','V1__initial_table.sql',1170568830,'root','2023-11-24 14:09:22',267,1),(2,'2','post table update 2.0','SQL','V2__post_table_update_2.0.sql',911458947,'root','2023-11-27 08:49:00',396,1),(3,'3','group member table','SQL','V3__group_member_table.sql',-2128056151,'root','2023-11-27 08:49:01',310,1),(4,'4','friendshiprequest table update 4.0','SQL','V4__friendshiprequest_table_update_4.0.sql',-237481466,'root','2023-11-27 13:24:44',419,1);
+INSERT INTO `flyway_schema_history` VALUES (1,'1','initial table','SQL','V1__initial_table.sql',-971161228,'root','2023-11-28 11:56:55',97,1),(2,'2','user friendrequest table creation','SQL','V2__user_friendrequest_table_creation.sql',-379615196,'root','2023-11-28 12:03:36',23,1),(3,'3','small user and friend request changes','SQL','V3__small_user_and_friend_request_changes.sql',1076154735,'root','2023-11-28 12:11:25',48,1);
 /*!40000 ALTER TABLE `flyway_schema_history` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -131,7 +131,7 @@ CREATE TABLE `friendrequest` (
   KEY `fk_fr_user2_idx` (`id_user2`),
   CONSTRAINT `fk_fr_user1` FOREIGN KEY (`id_user1`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk_fr_user2` FOREIGN KEY (`id_user2`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -154,18 +154,11 @@ CREATE TABLE `friends` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `id_user1` bigint NOT NULL,
   `id_user2` bigint NOT NULL,
-  `user1id` bigint NOT NULL,
-  `user2id` bigint NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `fk_fri_user1_idx` (`id_user1`),
-  KEY `fk_fri_user2_idx` (`id_user2`),
-  KEY `FK9frbfcupweg4wo4k0nyynnq5g` (`user1id`),
-  KEY `FKhm5aq6dmilo6xj2oe10vk6q90` (`user2id`),
-  CONSTRAINT `FK8pod4x6tu1ogmut8n1smlcjt3` FOREIGN KEY (`id_user2`) REFERENCES `friends` (`id`),
-  CONSTRAINT `FK9frbfcupweg4wo4k0nyynnq5g` FOREIGN KEY (`user1id`) REFERENCES `user` (`id`),
-  CONSTRAINT `fk_fri_user1` FOREIGN KEY (`id_user1`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `fk_fri_user2` FOREIGN KEY (`id_user2`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `FKhm5aq6dmilo6xj2oe10vk6q90` FOREIGN KEY (`user2id`) REFERENCES `user` (`id`)
+  KEY `fk_friends_user2_idx` (`id_user2`),
+  KEY `fk_friends_user1` (`id_user1`),
+  CONSTRAINT `fk_friends_user1` FOREIGN KEY (`id_user1`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_friends_user2` FOREIGN KEY (`id_user2`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -247,8 +240,8 @@ CREATE TABLE `post` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `date` datetime NOT NULL,
   `text` varchar(255) NOT NULL,
-  `type` bit(1) NOT NULL,
-  `deleted` bit(1) NOT NULL,
+  `type` tinyint NOT NULL,
+  `deleted` tinyint NOT NULL,
   `id_user` bigint NOT NULL,
   `id_social_group` bigint DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -279,7 +272,7 @@ CREATE TABLE `socialgroup` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `name` varchar(50) NOT NULL,
   `id_admin` bigint NOT NULL,
-  `type` bit(1) NOT NULL,
+  `type` tinyint NOT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_sg_admin_idx` (`id_admin`),
   CONSTRAINT `fk_sg_admin` FOREIGN KEY (`id_admin`) REFERENCES `user` (`id`) ON UPDATE CASCADE
@@ -306,8 +299,8 @@ CREATE TABLE `user` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `email` varchar(50) NOT NULL,
   `username` varchar(50) NOT NULL,
-  `password` varchar(50) NOT NULL,
-  `active` bit(1) NOT NULL,
+  `password` varchar(100) DEFAULT NULL,
+  `active` tinyint NOT NULL,
   `admin` tinyint(1) NOT NULL DEFAULT '0',
   `donotdisturb` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -322,8 +315,33 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,'mika@levi9.com','mika','mika123',_binary '',1,NULL),(2,'zika@levi9.com','zika','zika123',_binary '',1,NULL),(3,'pera@levi9.com','pera','pera123',_binary '',1,NULL);
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `user_friendrequest`
+--
+
+DROP TABLE IF EXISTS `user_friendrequest`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `user_friendrequest` (
+  `user_id` bigint NOT NULL,
+  `friendrequest_id` bigint NOT NULL,
+  PRIMARY KEY (`user_id`,`friendrequest_id`),
+  KEY `FK8kxxo93lt6ki8eunmhbebuvio_idx` (`friendrequest_id`),
+  CONSTRAINT `FK8kxxo93lt6ki8eunmhbebuvio` FOREIGN KEY (`friendrequest_id`) REFERENCES `friendrequest` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  CONSTRAINT `FKnhe3m2nysyrfqm9rv20bjoifv` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `user_friendrequest`
+--
+
+LOCK TABLES `user_friendrequest` WRITE;
+/*!40000 ALTER TABLE `user_friendrequest` DISABLE KEYS */;
+/*!40000 ALTER TABLE `user_friendrequest` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -335,4 +353,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-11-27 14:26:29
+-- Dump completed on 2023-11-28 13:13:21

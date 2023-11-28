@@ -117,9 +117,10 @@ DROP TABLE IF EXISTS `friends`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `friends` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
   `id_user1` bigint NOT NULL,
   `id_user2` bigint NOT NULL,
-  PRIMARY KEY (`id_user1`,`id_user2`),
+  PRIMARY KEY (`id`),
   KEY `fk_friends_user2_idx` (`id_user2`),
   CONSTRAINT `fk_friends_user1` FOREIGN KEY (`id_user1`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk_friends_user2` FOREIGN KEY (`id_user2`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
@@ -144,7 +145,7 @@ DROP TABLE IF EXISTS `groupmember`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `groupmember` (
   `id` bigint NOT NULL AUTO_INCREMENT,
-  `dateJoined` datetime NOT NULL,
+  `date_joined` datetime NOT NULL,
   `id_user` bigint NOT NULL,
   `id_social_group` bigint NOT NULL,
   PRIMARY KEY (`id`),
@@ -207,7 +208,7 @@ CREATE TABLE `post` (
   `type` tinyint NOT NULL,
   `deleted` tinyint NOT NULL,
   `id_user` bigint NOT NULL,
-  `id_social_group` bigint NOT NULL,
+  `id_social_group` bigint DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_post_user_idx` (`id_user`),
   KEY `fk_post_sg_idx` (`id_social_group`),
@@ -279,7 +280,6 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,'mika@levi9.com','mika','mika123',1,1,NULL),(2,'zika@levi9.com','zika','zika123',1,1,NULL),(3,'pera@levi9.com','pera','pera123',1,1,NULL);
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
