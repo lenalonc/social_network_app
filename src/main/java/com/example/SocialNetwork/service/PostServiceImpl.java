@@ -20,7 +20,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public List<Post> getAllPostsByUser(Long id) {
-        List<Post> userPosts = postRepository.findAllById_User(id);
+        List<Post> userPosts = postRepository.findAllByUserId(id);
 
         return getUnexpiredPosts(userPosts);
     }
@@ -37,7 +37,7 @@ public class PostServiceImpl implements PostService {
     public List<Post> getAllPostsBySocialGroup(Long id) {
         //TODO Uraditi proveru da je ulogovani korisnik u grupi u kojoj se traze objave
 
-        List<Post> postsInGroup = postRepository.findAllById_Social_Group(id);
+        List<Post> postsInGroup = postRepository.findAllBySocialGroupId(id);
 
         return getUnexpiredPosts(postsInGroup);
     }
