@@ -46,7 +46,7 @@ public class SpringSecurityConfiguration {
                         .requestMatchers("/api/login").permitAll()
                         .requestMatchers("/api/register").permitAll()
                         .requestMatchers("/api/forgot-password").permitAll()
-                        .requestMatchers("/api/reset-password/**").permitAll()
+                        .requestMatchers("/api/activate-password/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(sessionManagement -> sessionManagement
