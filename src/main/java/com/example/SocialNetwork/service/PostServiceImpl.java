@@ -1,10 +1,12 @@
 package com.example.SocialNetwork.service;
 
+import com.example.SocialNetwork.dto.PostDTO;
 import com.example.SocialNetwork.entities.Post;
 import com.example.SocialNetwork.entities.SocialGroup;
 import com.example.SocialNetwork.repository.PostRepository;
 import com.example.SocialNetwork.repository.SocialGroupRepository;
 import lombok.AllArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -12,11 +14,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-@AllArgsConstructor
 public class PostServiceImpl implements PostService {
 
+    private ModelMapper mapper;
     private PostRepository postRepository;
     private SocialGroupRepository socialGroupRepository;
+
+    public PostServiceImpl(ModelMapper mapper, PostRepository postRepository, SocialGroupRepository socialGroupRepository) {
+        this.mapper = mapper;
+        this.postRepository = postRepository;
+        this.socialGroupRepository = socialGroupRepository;
+    }
 
     @Override
     public List<Post> getAllPostsByUser(Long id) {
@@ -34,12 +42,12 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<Post> getAllPostsBySocialGroup(Long id) {
+    public List<PostDTO> getAllPostsBySocialGroup(Long id) {
         //TODO Uraditi proveru da je ulogovani korisnik u grupi u kojoj se traze objave
-
         List<Post> postsInGroup = postRepository.findAllBySocialGroupId(id);
+        postsInGroup = getUnexpiredPosts(postsInGroup);
 
-        return getUnexpiredPosts(postsInGroup);
+        return postsInGroup.stream().map(post -> mapper.map(post, PostDTO.class)).toList();
     }
 
     @Override

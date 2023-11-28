@@ -26,7 +26,7 @@ public class SocialGroup {
     @Column(name="type", nullable = false)
     private boolean type;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "id_admin", nullable = false)
     private User user;
 
@@ -38,4 +38,9 @@ public class SocialGroup {
 
     @OneToMany(mappedBy = "socialGroup")
     private List<Post> posts;
+
+    @Override
+    public String toString() {
+        return "";
+    }
 }

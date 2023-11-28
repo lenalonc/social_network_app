@@ -62,25 +62,25 @@ public class DBSeeder implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        clearDatabase();
-
-        seedUser("John", "john@example.com", "password1", true, true);
-        seedUser("Alice", "alice@example.com", "password2", true, false);
-        seedUser("Bob", "bob@example.com", "password3", true, false);
-        seedUser("Eva", "eva@example.com", "password4", false, false);
-        seedUser("Michael", "michael@example.com", "password5", false, false);
-
-        seedSocialGroup("Group 1", true);
-        seedSocialGroup("Group 2", false);
-        seedSocialGroup("Group 3", true);
-        seedSocialGroup("Group 4", false);
-        seedSocialGroup("Group 5", true);
-
-        seedMembershipRequest(RequestStatus.PENDING, 1L, 3L);
-        seedMembershipRequest(RequestStatus.ACCEPTED, 1L, 2L);
-        seedMembershipRequest(RequestStatus.PENDING, 2L, 3L);
-        seedMembershipRequest(RequestStatus.REJECTED, 2L, 2L);
-        seedMembershipRequest(RequestStatus.ACCEPTED, 2L, 4L);
+//        clearDatabase();
+//
+//        seedUser("John", "john@example.com", "password1", true, true);
+//        seedUser("Alice", "alice@example.com", "password2", true, false);
+//        seedUser("Bob", "bob@example.com", "password3", true, false);
+//        seedUser("Eva", "eva@example.com", "password4", false, false);
+//        seedUser("Michael", "michael@example.com", "password5", false, false);
+//
+//        seedSocialGroup("Group 1", true);
+//        seedSocialGroup("Group 2", false);
+//        seedSocialGroup("Group 3", true);
+//        seedSocialGroup("Group 4", false);
+//        seedSocialGroup("Group 5", true);
+//
+//        seedMembershipRequest(RequestStatus.PENDING, 1L, 3L);
+//        seedMembershipRequest(RequestStatus.ACCEPTED, 1L, 2L);
+//        seedMembershipRequest(RequestStatus.PENDING, 2L, 3L);
+//        seedMembershipRequest(RequestStatus.REJECTED, 2L, 2L);
+//        seedMembershipRequest(RequestStatus.ACCEPTED, 2L, 4L);
     }
 
     private void clearDatabase() {

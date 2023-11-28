@@ -1,6 +1,7 @@
 package com.example.SocialNetwork.controller;
 
 import com.example.SocialNetwork.configuration.MyRequest;
+import com.example.SocialNetwork.dto.SocialGroupDTO;
 import com.example.SocialNetwork.entities.*;
 import com.example.SocialNetwork.service.GroupMemberServiceImpl;
 import com.example.SocialNetwork.service.MembershipRequestService;
@@ -38,18 +39,20 @@ public class SocialGroupController extends MyRequest {
     }
 
     @GetMapping("/all")
-    public List<SocialGroup> showAllSocialGroups(){
+    public List<SocialGroupDTO> showAllSocialGroups(){
         return groupService.getAllSocialGroups();
     }
 
-    @GetMapping("all/{name}")
-    public List<SocialGroup> getSocialGroupByName(@PathVariable String name) {
+    @GetMapping("/name/{name}")
+    public List<SocialGroupDTO> getSocialGroupByName(@PathVariable String name) {
         return groupService.getSocialGroupByName(name);
     }
-    @GetMapping("all/{id}")
-    public SocialGroup getSocialGroupById(@PathVariable Long id) {
-        return groupService.getSocialGroupById(id);
+    @GetMapping("/id/{id}")
+    public SocialGroupDTO getSocialGroupDTOById(@PathVariable Long id) {
+        return groupService.getSocialGroupDTOById(id);
     }
+
+    public SocialGroup getSocialGroupById(Long id){return groupService.getSocialGroupById(id);}
 
     @DeleteMapping("/{id}")
     public String deleteSocialGroupById(@PathVariable Long id) {

@@ -1,5 +1,6 @@
 package com.example.SocialNetwork.service;
 
+import com.example.SocialNetwork.dto.PostDTO;
 import com.example.SocialNetwork.entities.Post;
 import com.example.SocialNetwork.entities.SocialGroup;
 import org.springframework.stereotype.Service;
@@ -14,7 +15,7 @@ public interface PostService {
 
     List<Post> getAllPostsByLoggedInUser();
 
-    List<Post> getAllPostsBySocialGroup(Long id);
+    List<PostDTO> getAllPostsBySocialGroup(Long id);
 
     Post createPost(Post post);
 

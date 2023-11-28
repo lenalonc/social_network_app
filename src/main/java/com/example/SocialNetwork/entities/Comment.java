@@ -3,14 +3,20 @@ package com.example.SocialNetwork.entities;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "comment")
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
 public class Comment {
 
     @Id
@@ -26,10 +32,10 @@ public class Comment {
 
     @OneToMany
     @JoinColumn(name = "id")
-    private ArrayList<Comment> replies;
+    private List<Comment> replies;
 
     @ManyToOne
-    @JoinColumn(name = "id_parent_id")
+    @JoinColumn(name = "id_parent_com")
     private Comment parentComment;
 
     @ManyToOne
@@ -40,5 +46,8 @@ public class Comment {
     @JoinColumn(name = "id_user", nullable = false)
     private User user;
 
-
+    @Override
+    public String toString() {
+        return "";
+    }
 }

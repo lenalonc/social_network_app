@@ -1,5 +1,6 @@
 package com.example.SocialNetwork.controller;
 
+import com.example.SocialNetwork.dto.UserDTO;
 import com.example.SocialNetwork.entities.User;
 import com.example.SocialNetwork.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +38,7 @@ public class UserController {
     }
 
     @GetMapping("/")
-    public List<User> showAllUsers() {
+    public List<UserDTO> showAllUsers() {
         return userService.getAllUsers();
     }
 
