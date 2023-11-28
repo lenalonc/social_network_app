@@ -44,8 +44,9 @@ public class SpringSecurityConfiguration {
                 .cors(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((authz) -> authz
                         .requestMatchers("/api/login").permitAll()
-                        .requestMatchers("api/register").permitAll()
+                        .requestMatchers("/api/register").permitAll()
                         .requestMatchers("/api/forgot-password").permitAll()
+                        .requestMatchers("/api/reset-password/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(sessionManagement -> sessionManagement
