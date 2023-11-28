@@ -3,11 +3,15 @@ package com.example.SocialNetwork.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
+import java.util.Date;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -43,6 +47,10 @@ public class User {
 
     @Column(name = "admin", nullable = false)
     private boolean admin;
+
+    @Column(name = "donotdisturb")
+    private Date donotdistrub;
+
 
     @ManyToMany()
     @JoinTable(name="friends",
@@ -80,7 +88,7 @@ public class User {
     private List<FriendRequest> friendRequests;
 
     @ManyToMany()
-    @JoinTable(name = "userfriendrequest", joinColumns = @JoinColumn(name = "user.id"), inverseJoinColumns = @JoinColumn(name = "friendrequest.id"))
+    @JoinTable(name = "user_friendrequest", joinColumns = @JoinColumn(name = "user.id"), inverseJoinColumns = @JoinColumn(name = "friendrequest.id"))
     private Set<FriendRequest> friendRequestSet;
 
 
