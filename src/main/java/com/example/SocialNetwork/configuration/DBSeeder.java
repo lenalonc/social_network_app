@@ -64,12 +64,14 @@ public class DBSeeder implements CommandLineRunner {
         List<User> users = userRepository.findAll();
         List<SocialGroup> socialGroups = socialGroupRepository.findAll();
         GroupMember groupMember = new GroupMember();
+
         groupMember.setUser(users.get(id_user));
         groupMember.setDateJoined(new Date());
         groupMember.setSocialGroup(socialGroups.get(id_socialgroup));
 
         groupMemberRepository.save(groupMember);
     }
+
 
     @Override
     public void run(String... args) throws Exception {
@@ -101,9 +103,9 @@ public class DBSeeder implements CommandLineRunner {
     }
 
     private void clearDatabase() {
-        this.socialGroupRepository.deleteAll();
         this.groupMemberRepository.deleteAll();
         this.membershipRequestRepository.deleteAll();
+        this.socialGroupRepository.deleteAll();
         this.userRepository.deleteAll();
     }
 }
