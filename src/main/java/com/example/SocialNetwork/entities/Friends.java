@@ -9,19 +9,17 @@ import java.util.List;
 @Table(name = "friends")
 @Data
 public class Friends {
-/*
-    @EmbeddedId
-    private FriendsId id;*/
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "user1Id", nullable = false)
+    @JoinColumn(name = "id_user1", nullable = false)
     private User user1Id;
 
     @ManyToOne
-    @JoinColumn (name = "user2Id", nullable = false)
+    @JoinColumn (name = "id_user2", nullable = false)
     private User user2Id;
 
 
