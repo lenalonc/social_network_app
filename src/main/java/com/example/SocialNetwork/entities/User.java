@@ -1,9 +1,11 @@
 package com.example.SocialNetwork.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -31,6 +33,10 @@ public class User {
 
     @Column(name = "admin", nullable = false)
     private boolean admin;
+
+    @Column(name = "donotdisturb")
+    private Date donotdistrub;
+
 
     @ManyToMany()
     @JoinTable(name="friends",
@@ -68,7 +74,7 @@ public class User {
     private List<FriendRequest> friendRequests;
 
     @ManyToMany()
-    @JoinTable(name = "userfriendrequest", joinColumns = @JoinColumn(name = "user.id"), inverseJoinColumns = @JoinColumn(name = "friendrequest.id"))
+    @JoinTable(name = "user_friendrequest", joinColumns = @JoinColumn(name = "user.id"), inverseJoinColumns = @JoinColumn(name = "friendrequest.id"))
     private Set<FriendRequest> friendRequestSet;
 
 
