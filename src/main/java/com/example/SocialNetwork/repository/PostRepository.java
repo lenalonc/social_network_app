@@ -10,8 +10,8 @@ import java.util.List;
 @Repository
 public interface PostRepository extends JpaRepository<Post, Long> {
 
-    List<Post> findAllById_User(Long id);
+    List<Post> findAllByUserId(Long id);
 
-    List<Post> findAllById_Social_Group(Long id);
+    List<Post> findAllBySocialGroupId(Long id);
 
 }

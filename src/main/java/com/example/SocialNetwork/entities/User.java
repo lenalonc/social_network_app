@@ -32,7 +32,7 @@ public class User {
     @Column(name = "admin", nullable = false)
     private boolean admin;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name="friends",
             joinColumns = {
                     @JoinColumn(name = "id_user1")
@@ -43,7 +43,7 @@ public class User {
     )
     private List<Friends> friends;
 
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(name = "groupmember",
             joinColumns = {
                     @JoinColumn(name = "id_user")
@@ -55,7 +55,7 @@ public class User {
 
     private List<SocialGroup> socialGroups;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "friendrequest",
             joinColumns = {
                     @JoinColumn(name = "id_user1")
@@ -67,12 +67,12 @@ public class User {
 
     private List<FriendRequest> friendRequests;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "userfriendrequest", joinColumns = @JoinColumn(name = "user.id"), inverseJoinColumns = @JoinColumn(name = "friendrequest.id"))
     private Set<FriendRequest> friendRequestSet;
 
 
-    @OneToMany(mappedBy = "user")
-    private List<Post> posts;
+    /*@OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private List<Post> posts;*/
 
 }
