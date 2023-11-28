@@ -1,8 +1,16 @@
 package com.example.SocialNetwork.controller;
 
+import com.example.SocialNetwork.dtos.LoginRequest;
+import com.example.SocialNetwork.dtos.LoginResponse;
 import com.example.SocialNetwork.entities.User;
 import com.example.SocialNetwork.service.UserService;
+import com.example.SocialNetwork.service.UserServiceImpl;
+import com.example.SocialNetwork.utils.JwtUtil;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -11,12 +19,23 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api")
+@AllArgsConstructor
 public class UserController {
 
-    private UserService userService;
+    private final AuthenticationManager authenticationManager;
+    private final UserServiceImpl userService;
+    private final JwtUtil jwtUtil;
 
-    public UserController(UserService userService) {
-        this.userService = userService;
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest){
+        try {
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
+        } catch (Exception e){
+            e.printStackTrace();
+            return ResponseEntity.status(401).build();
+        }
+
+        return ResponseEntity.ok(new LoginResponse(jwtUtil.generateToken(userService.findUserByEmail(loginRequest.getEmail()))));
     }
 
     @GetMapping("/hello")
