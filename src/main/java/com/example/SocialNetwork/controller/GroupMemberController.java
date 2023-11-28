@@ -1,6 +1,6 @@
 package com.example.SocialNetwork.controller;
 
-import com.example.SocialNetwork.configuration.MyRequest;
+import com.example.SocialNetwork.helpercalsses.MyRequest;
 import com.example.SocialNetwork.entities.GroupMember;
 import com.example.SocialNetwork.entities.MembershipRequest;
 import com.example.SocialNetwork.entities.SocialGroup;
@@ -48,14 +48,13 @@ public class GroupMemberController extends MyRequest {
     }
 
 
-    @GetMapping("/group/{id}")
-    public List<String> showAllUsers(@PathVariable Long id){
+    @GetMapping("/allusersforgroup/{id}")
+    public List<String> showAllUsersForGroup(@PathVariable Long id){
         List<String> users = new ArrayList<>();
         List<Long> groupMember = memberService.getAllGroupMembers(id);
 
-        for(int i = 0; i < groupMember.size(); i++){
-             users.add(userService.findByID(groupMember.get(i)).getUsername());
-            //System.out.println(userService.findByID(groupMember.get(i)).getUsername());
+        for (Long aLong : groupMember) {
+            users.add(userService.findByID(aLong).getUsername());
         }
         return users;
     }

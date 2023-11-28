@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/requests")
+@RequestMapping("/membershiprequest")
 public class MembershipRequestController {
     private final MembershipRequestService requestService;
     private Long id;
@@ -16,12 +16,12 @@ public class MembershipRequestController {
         this.requestService = requestService;
     }
 
-    @GetMapping("/all")
+    @GetMapping("/")
     public List<MembershipRequest> showAllRequests(){
         return requestService.getAllRequests();
     }
 
-    @GetMapping("all/{id}")
+    @GetMapping("/{id}")
     public MembershipRequest getRequestsById(@PathVariable Long id) {
         return requestService.getAllRequestsById(id);
     }
@@ -31,5 +31,10 @@ public class MembershipRequestController {
         requestService.deleteRequestById(id);
 
         return "Usesno ste obrisali zahtev";
+    }
+
+    @GetMapping("/allrequestsforgroup/{id}")
+    public List<MembershipRequest> showAllRequestsForSocialGroup(@PathVariable Long id){
+        return requestService.getAllRequestsForSocialGroup(id);
     }
 }
