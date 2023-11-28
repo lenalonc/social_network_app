@@ -12,4 +12,6 @@ public interface MembershipRequestService {
     void deleteRequestById(Long id);
 
     void saveRequest(MembershipRequest membershipRequest);
+
+    List<MembershipRequest> getAllRequestsForSocialGroup(Long id);
 }

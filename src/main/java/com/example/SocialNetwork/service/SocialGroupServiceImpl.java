@@ -13,7 +13,7 @@ import java.util.Optional;
 @Service
 public class SocialGroupServiceImpl implements SocialGroupService{
 
-    private SocialGroupRepository groupRepository;
+    private final SocialGroupRepository groupRepository;
 
     public SocialGroupServiceImpl(SocialGroupRepository groupRepository){
         this.groupRepository = groupRepository;
@@ -43,17 +43,12 @@ public class SocialGroupServiceImpl implements SocialGroupService{
     @Override
     public void deleteSocialGroupById(Long id) {
         SocialGroup temGroup = groupRepository.findById(id).get();
-        if(temGroup!=null){
-            groupRepository.deleteById(id);
-        }
+        groupRepository.deleteById(id);
     }
 
     @Override
     public SocialGroup getSocialGroupById(Long id) {
         Optional<SocialGroup> socialGroup = groupRepository.findById(id);
-        if(socialGroup.isPresent()){
-            return socialGroup.get();
-        }
-        return null;
+        return socialGroup.orElse(null);
     }
 }

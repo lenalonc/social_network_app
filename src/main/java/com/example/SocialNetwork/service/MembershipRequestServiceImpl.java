@@ -10,35 +10,35 @@ import java.util.Optional;
 @Service
 public class MembershipRequestServiceImpl implements MembershipRequestService {
 
-    private MembershipRequestRepository reqestsRepository;
+    private final MembershipRequestRepository requestsRepository;
 
-    public MembershipRequestServiceImpl(MembershipRequestRepository reqestsRepository){
-        this.reqestsRepository = reqestsRepository;
+    public MembershipRequestServiceImpl(MembershipRequestRepository requestsRepository){
+        this.requestsRepository = requestsRepository;
     }
     @Override
     public List<MembershipRequest> getAllRequests() {
-        return reqestsRepository.findAll();
+        return requestsRepository.findAll();
     }
 
     @Override
     public MembershipRequest getAllRequestsById(Long id) {
-        Optional<MembershipRequest> request = reqestsRepository.findById(id);
-        if(request.isPresent()){
-            return request.get();
-        }
-        return null;
+        Optional<MembershipRequest> request = requestsRepository.findById(id);
+        return request.orElse(null);
     }
 
     @Override
     public void deleteRequestById(Long id) {
-        MembershipRequest temGroup = reqestsRepository.findById(id).get();
-        if(temGroup!=null){
-            reqestsRepository.deleteById(id);
-        }
+        MembershipRequest temGroup = requestsRepository.findById(id).get();
+        requestsRepository.deleteById(id);
     }
 
     @Override
     public void saveRequest(MembershipRequest membershipRequest) {
-        reqestsRepository.save(membershipRequest);
+        requestsRepository.save(membershipRequest);
+    }
+
+    @Override
+    public List<MembershipRequest> getAllRequestsForSocialGroup(Long id) {
+        return requestsRepository.findAllMembershipRequestsForSocialGroup(id);
     }
 }
