@@ -1,12 +1,12 @@
 package com.example.SocialNetwork.entities;
 
 import jakarta.persistence.*;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.sql.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "friendrequest")
@@ -25,6 +25,16 @@ public class FriendRequest {
     private Long id_user1;
 
     private Long id_user2;
+
+    @ManyToMany()
+    @JoinTable(name = "user_friendrequest",
+            joinColumns = {
+                    @JoinColumn(name = "id_friendrequest")
+            },
+            inverseJoinColumns = {
+                    @JoinColumn(name = "id_user")
+            })
+    private List<User> users;
 
     @Column(name = "date", nullable = false)
     private Date date;
