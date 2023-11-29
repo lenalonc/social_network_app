@@ -62,21 +62,19 @@ public class User {
     private List<SocialGroup> socialGroups;
 
     @ManyToMany()
-    @JoinTable(name = "friendrequest",
+    @JoinTable(name = "user_friendrequest",
             joinColumns = {
-                    @JoinColumn(name = "id_user1")
+                    @JoinColumn(name = "user_id")
             },
             inverseJoinColumns = {
-                    @JoinColumn(name = "id_user2")
+                    @JoinColumn(name = "friendrequest_id")
             }
     )
-
     private List<FriendRequest> friendRequests;
 
     @ManyToMany()
     @JoinTable(name = "user_friendrequest", joinColumns = @JoinColumn(name = "user.id"), inverseJoinColumns = @JoinColumn(name = "friendrequest.id"))
     private Set<FriendRequest> friendRequestSet;
-
 
     @OneToMany(mappedBy = "user")
     private List<Post> posts;

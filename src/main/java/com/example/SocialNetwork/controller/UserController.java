@@ -2,12 +2,11 @@ package com.example.SocialNetwork.controller;
 
 import com.example.SocialNetwork.entities.User;
 import com.example.SocialNetwork.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api")
@@ -20,20 +19,19 @@ public class UserController {
     }
 
     @GetMapping("/hello")
-    public String hello() {
-        return "Hello Levi9 konferencijska sala uvek radi";
+    public ResponseEntity<String> hello() {
+        return new ResponseEntity<>("Hello Levi9 konferencijska sala uvek radi", HttpStatus.OK);
     }
 
     @PostMapping("/")
-    public String saveUser(@RequestBody User user) {
+    public ResponseEntity<String> saveUser(@RequestBody User user) {
         userService.saveUser(user);
-        return "Bravo";
+        return new ResponseEntity<>("User saved", HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
-    public String updateUser(@PathVariable Long id, @RequestBody User user) {
-        userService.updateUser(id, user);
-        return "Bravo";
+    public ResponseEntity<String> updateUser(@PathVariable Long id, @RequestBody User user) {
+        return userService.updateUser(id, user);
     }
 
     @GetMapping("/")
@@ -42,16 +40,19 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    public String deleteUserById(@PathVariable Long id) {
-        userService.deleteUserById(id);
-
-        return "Bravo";
+    public ResponseEntity<String> deleteUserById(@PathVariable Long id) {
+        return userService.deleteUserById(id);
     }
 
     @GetMapping("/{id}")
-    public User getUserById(@PathVariable Long id) {
+    public ResponseEntity<User> getUserById(@PathVariable Long id) {
         User user = userService.findByID(id);
-        return user;
+
+        if (user == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
 }

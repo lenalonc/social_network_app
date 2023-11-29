@@ -3,9 +3,10 @@ package com.example.SocialNetwork.service;
 import com.example.SocialNetwork.entities.User;
 import com.example.SocialNetwork.repository.UserRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,10 +25,11 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public void updateUser(Long id, User user) {
-        User tempUser = userRepository.findById(id).get();
+    public ResponseEntity<String> updateUser(Long id, User user) {
+        Optional<User> optionalUser = userRepository.findById(id);
 
-        if(tempUser != null){
+        if(optionalUser.isPresent()){
+            User tempUser = optionalUser.get();
             if(user.getEmail() != null && !user.getEmail().equals("") && user.getEmail() != tempUser.getEmail()) {
                 tempUser.setEmail(user.getEmail());
             }
@@ -37,10 +39,11 @@ public class UserServiceImpl implements UserService{
             if(user.isActive() != tempUser.isActive()){
                 tempUser.setActive(user.isActive());
             }
-
+            userRepository.save(tempUser);
+            return new ResponseEntity<>("User updated", HttpStatus.OK);
         }
 
-        userRepository.save(tempUser);
+        return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
     }
 
     @Override
@@ -51,11 +54,12 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public void deleteUserById(Long id) {
-        User tempUser = userRepository.findById(id).get();
-        if(tempUser!= null) {
+    public ResponseEntity<String> deleteUserById(Long id) {
+        Optional<User> tempUser = userRepository.findById(id);
+        if (tempUser.isPresent()){
             userRepository.deleteById(id);
-        }
+            return new ResponseEntity<>("User deleted", HttpStatus.OK);
+        } return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
     }
 
     @Override
@@ -63,7 +67,7 @@ public class UserServiceImpl implements UserService{
         Optional<User> user = userRepository.findById(id);
         if(user.isPresent()){
             return user.get();
-        }
+        } else
         return null;
     }
 
