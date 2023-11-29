@@ -83,31 +83,31 @@ public class DBSeeder implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        //clearDatabase();
+        clearDatabase();
 
-//        seedUser("John", "john@example.com", "password1", true);
-//        seedUser("Alice", "alice@example.com", "password2", true);
-//        seedUser("Bob", "bob@example.com", "password3", true);
-//        seedUser("Eva", "eva@example.com", "password4", false);
-//        seedUser("Michael", "michael@example.com", "password5", false);
-//
-//        seedSocialGroup("Group1", true,1);
-//        seedSocialGroup("Group2", false,1);
-//        seedSocialGroup("Group3", true,2);
-//        seedSocialGroup("Group4", false,2);
-//        seedSocialGroup("Group5", true,3);
-//
-//        seedMembershipRequest(RequestStatus.PENDING,1,2);
-//        seedMembershipRequest(RequestStatus.ACCEPTED,1,1);
-//        seedMembershipRequest(RequestStatus.PENDING,1, 3);
-//        seedMembershipRequest(RequestStatus.REJECTED,2,4);
-//        seedMembershipRequest(RequestStatus.ACCEPTED,1,4);
-//
-//        seedGroupMember(0,1);
-//        seedGroupMember(1,1);
-//        seedGroupMember(2,3);
-//        seedGroupMember(1,2);
-//        seedGroupMember(1,3);
+        seedUser("John", "john@example.com", "password1", true);
+        seedUser("Alice", "alice@example.com", "password2", true);
+        seedUser("Bob", "bob@example.com", "password3", true);
+        seedUser("Eva", "eva@example.com", "password4", false);
+        seedUser("Michael", "michael@example.com", "password5", false);
+
+        seedSocialGroup("Group1", true,1);
+        seedSocialGroup("Group2", false,1);
+        seedSocialGroup("Group3", true,2);
+        seedSocialGroup("Group4", false,2);
+        seedSocialGroup("Group5", true,3);
+
+        seedMembershipRequest(RequestStatus.PENDING,1,2);
+        seedMembershipRequest(RequestStatus.ACCEPTED,1,1);
+        seedMembershipRequest(RequestStatus.PENDING,1, 3);
+        seedMembershipRequest(RequestStatus.REJECTED,2,4);
+        seedMembershipRequest(RequestStatus.ACCEPTED,1,4);
+
+        seedGroupMember(0,1);
+        seedGroupMember(1,1);
+        seedGroupMember(2,3);
+        seedGroupMember(1,2);
+        seedGroupMember(1,3);
     }
 
     private void clearDatabase() {
