@@ -1,13 +1,16 @@
 package com.example.SocialNetwork.entities;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
-import lombok.Data;
-
+import lombok.*;
 import java.util.Date;
 
 @Entity
 @Table(name = "event")
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Event {
 
     @Id

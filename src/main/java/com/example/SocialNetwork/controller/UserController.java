@@ -94,4 +94,10 @@ public class UserController {
         return user;
     }
 
+    @GetMapping("/dto/{id}")
+    public UserDTO getUserDTOById(@PathVariable Long id) {
+        UserDTO user = userService.findByIDDTO(id);
+        return user;
+    }
+
 }

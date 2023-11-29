@@ -1,36 +1,28 @@
 package com.example.SocialNetwork.dto;
 
-import com.example.SocialNetwork.entities.Comment;
+
 import com.example.SocialNetwork.entities.SocialGroup;
 import com.example.SocialNetwork.entities.User;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
+import jakarta.persistence.*;
+import lombok.*;
 import java.util.Date;
-import java.util.List;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PostDTO {
+public class EventDTO {
 
     private Long id;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ")
     private Date date;
-
-    private String text;
-
-    private boolean type;
-
-    private boolean deleted;
+    private String place;
 
     private UserDTO user;
+
+    private SocialGroupDTO socialGroup;
+
 
 }
