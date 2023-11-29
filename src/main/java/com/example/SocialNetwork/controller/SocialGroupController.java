@@ -1,6 +1,6 @@
 package com.example.SocialNetwork.controller;
 
-import com.example.SocialNetwork.configuration.MyRequest;
+import com.example.SocialNetwork.helpercalsses.MyRequest;
 import com.example.SocialNetwork.dto.SocialGroupDTO;
 import com.example.SocialNetwork.entities.*;
 import com.example.SocialNetwork.service.GroupMemberServiceImpl;
@@ -52,8 +52,6 @@ public class SocialGroupController extends MyRequest {
         return groupService.getSocialGroupDTOById(id);
     }
 
-    public SocialGroup getSocialGroupById(Long id){return groupService.getSocialGroupById(id);}
-
     @DeleteMapping("/{id}")
     public String deleteSocialGroupById(@PathVariable Long id) {
         groupService.deleteSocialGroupById(id);
@@ -61,12 +59,12 @@ public class SocialGroupController extends MyRequest {
         return "Usesno ste obrisali grupu";
     }
 
-    @PostMapping("/request")
+    @PostMapping("/createmembershiprequest")
     public String createMembershipReques(@RequestBody MyRequest id) {
         SocialGroup socialGroup = groupService.getSocialGroupById(id.getId());
 
         User u = new User();
-        u.setId(1L);
+        u.setId(48L);
 
         MembershipRequest membershipRequest = new MembershipRequest();
         membershipRequest.setSocialGroup(socialGroup);

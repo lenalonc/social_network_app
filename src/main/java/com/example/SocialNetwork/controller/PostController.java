@@ -17,14 +17,14 @@ public class PostController {
 
     private PostService postService;
 
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getAllPostsByUser(@PathVariable Long id) {
-        return ResponseEntity.ok(postService.getAllPostsByUser(id));
-    }
-
     @GetMapping("/")
     public ResponseEntity<?> getAllPostsByLoggedInUser() {
         return ResponseEntity.ok(postService.getAllPostsByLoggedInUser());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getAllPostsByUser(@PathVariable Long id) {
+        return ResponseEntity.ok(postService.getAllPostsByUser(id));
     }
 
     @GetMapping("/group/{id}")
@@ -37,16 +37,15 @@ public class PostController {
         return ResponseEntity.ok(postService.createPost(post));
     }
 
-    @PostMapping("/group_post/{groupId}")
-    public ResponseEntity<?> createPostInGroup(@RequestBody Post post, @PathVariable Long groupId) {
-        return ResponseEntity.ok(postService.createPostInGroup(post, groupId));
+    @PostMapping("/group_post/{id}")
+    public ResponseEntity<?> createPostInGroup(@RequestBody Post post, @PathVariable Long id) {
+        return ResponseEntity.ok(postService.createPostInGroup(post, id));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updatePost(@PathVariable Long id, @RequestBody Post post) {
+    public ResponseEntity<?> updatePost(@RequestBody Post post, @PathVariable Long id) {
         return ResponseEntity.ok(postService.updatePost(id, post));
     }
-
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deletePostById(@PathVariable Long id) {

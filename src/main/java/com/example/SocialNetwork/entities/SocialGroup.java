@@ -1,6 +1,7 @@
 package com.example.SocialNetwork.entities;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Getter;
@@ -30,8 +31,9 @@ public class SocialGroup {
     @JoinColumn(name = "id_admin", nullable = false)
     private User user;
 
-//    @OneToMany(mappedBy = "socialGroup")
-//    private ArrayList<MembershipRequest> membershipRequest;
+    @OneToMany(mappedBy = "socialGroup")
+    @JsonIgnore
+    private List<MembershipRequest> membershipRequest;
 
     @ManyToMany(cascade = CascadeType.ALL, mappedBy = "socialGroups", fetch = FetchType.LAZY)
     private List<User> users;

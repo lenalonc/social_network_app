@@ -8,7 +8,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 
 @Service
@@ -16,7 +15,6 @@ import java.util.List;
 public class CommentServiceImpl implements CommentService {
 
     private CommentRepository commentRepository;
-
     private PostRepository postRepository;
 
     @Override
