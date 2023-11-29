@@ -1,5 +1,6 @@
 package com.example.SocialNetwork.service;
 
+import com.example.SocialNetwork.dto.UserDTO;
 import com.example.SocialNetwork.entities.User;
 import org.springframework.http.ResponseEntity;
 
@@ -10,7 +11,7 @@ public interface UserService {
 
     ResponseEntity<String> updateUser(Long id, User user);
 
-    List<User> getAllUsers();
+    List<UserDTO> getAllUsers();
 
     ResponseEntity<String> deleteUserById(Long id);
 

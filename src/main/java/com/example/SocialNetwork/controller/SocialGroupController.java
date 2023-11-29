@@ -1,7 +1,9 @@
 package com.example.SocialNetwork.controller;
 
 import com.example.SocialNetwork.helpercalsses.MyRequest;
+import com.example.SocialNetwork.dto.SocialGroupDTO;
 import com.example.SocialNetwork.entities.*;
+import com.example.SocialNetwork.service.GroupMemberServiceImpl;
 import com.example.SocialNetwork.service.MembershipRequestService;
 import com.example.SocialNetwork.service.SocialGroupService;
 import com.example.SocialNetwork.service.UserService;
@@ -23,6 +25,11 @@ public class SocialGroupController extends MyRequest {
         this.requestService = requestService;
     }
 
+    @GetMapping("/hello")
+    public String hello() {
+        return "Hello Levi9";
+    }
+
     @PostMapping("/")
     public String createGroup(@RequestBody SocialGroup group) {
         User user = userService.findByID(1L);
@@ -31,18 +38,18 @@ public class SocialGroupController extends MyRequest {
         return "Usmesno sacuvana grupa";
     }
 
-    @GetMapping("/")
-    public List<SocialGroup> showAllSocialGroups(){
+    @GetMapping("/all")
+    public List<SocialGroupDTO> showAllSocialGroups(){
         return groupService.getAllSocialGroups();
     }
 
     @GetMapping("/name/{name}")
-    public List<SocialGroup> getSocialGroupByName(@PathVariable String name) {
+    public List<SocialGroupDTO> getSocialGroupByName(@PathVariable String name) {
         return groupService.getSocialGroupByName(name);
     }
-    @GetMapping("/{id}")
-    public SocialGroup getSocialGroupById(@PathVariable Long id) {
-        return groupService.getSocialGroupById(id);
+    @GetMapping("/id/{id}")
+    public SocialGroupDTO getSocialGroupDTOById(@PathVariable Long id) {
+        return groupService.getSocialGroupDTOById(id);
     }
 
     @DeleteMapping("/{id}")
