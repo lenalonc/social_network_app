@@ -4,6 +4,8 @@ import com.example.SocialNetwork.entities.Friends;
 import com.example.SocialNetwork.entities.User;
 import com.example.SocialNetwork.repository.FriendsRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -30,15 +32,16 @@ public class FriendsServiceImpl implements FriendsService {
 
     @Override
     @Transactional
-    public String deleteFriend(Long friendId) {
+    public ResponseEntity<String> deleteFriend(Long friendId) {
         friendsRepository.deleteById(friendId);
-        return "Friend deleted";
+        return new ResponseEntity<>("Friend deleted", HttpStatus.OK);
     }
 
     @Override
     @Transactional
-    public String deleteFriendByUser(Long user1Id, Long user2Id) {
+    public ResponseEntity<String> deleteFriendByUser(Long user1Id, Long user2Id) {
         friendsRepository.deleteFriendByUser(user1Id, user2Id);
-        return "Friend deleted";
+        return new ResponseEntity<>("Friend deleted", HttpStatus.OK);
+
     }
 }

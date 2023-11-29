@@ -4,7 +4,10 @@ import com.example.SocialNetwork.entities.FriendRequest;
 import com.example.SocialNetwork.entities.Friends;
 import com.example.SocialNetwork.entities.User;
 import com.example.SocialNetwork.repository.FriendRequestRepository;
+import com.example.SocialNetwork.repository.FriendsRepository;
 import com.example.SocialNetwork.repository.UserRepository;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,24 +17,35 @@ import java.util.Optional;
 public class FriendRequestServiceImpl implements FriendRequestService{
     private UserRepository userRepository;
     private FriendRequestRepository friendRequestRepository;
+    private FriendsRepository friendsRepository;
     private FriendsService friendsService;
 
-    public FriendRequestServiceImpl(FriendRequestRepository friendRequestRepository, UserRepository userRepository, FriendsService friendsService) {
+    public FriendRequestServiceImpl(FriendRequestRepository friendRequestRepository, UserRepository userRepository, FriendsService friendsService, FriendsRepository friendsRepository) {
         this.friendRequestRepository = friendRequestRepository;
         this.userRepository = userRepository;
         this.friendsService = friendsService;
+        this.friendsRepository = friendsRepository;
     }
     @Override
-    public String sendFriendRequest(FriendRequest friendRequest) {
+    public ResponseEntity<?> sendFriendRequest(FriendRequest friendRequest) {
         Long user1Id = friendRequest.getId_user1();
         Long user2Id = friendRequest.getId_user2();
         if (user1Id.equals(user2Id)) {
-            return "You can't send a friend request to yourself";
+            return  new ResponseEntity<>("You can't send a friend request to yourself", HttpStatus.BAD_REQUEST);
         }
+
+        List<User> friends = friendsRepository.getFriendsByUser(user1Id);
+        for (User friend : friends) {
+            if (friend.getId().equals(user2Id)) {
+                return new ResponseEntity<>("You are already friends", HttpStatus.BAD_REQUEST);
+            }
+        }
+
         FriendRequest save = friendRequestRepository.save(friendRequest);
         User byId = userRepository.getById(user1Id);
         byId.getFriendRequestSet().add(save);
-        return "Friend request sent";
+
+        return new ResponseEntity<>("Friend request sent", HttpStatus.OK);
     }
 
     @Override
@@ -51,6 +65,13 @@ public class FriendRequestServiceImpl implements FriendRequestService{
         Long user2Id = friendRequest.getId_user2();
         Optional<User> user1 = userRepository.findById(user1Id);
         Optional<User> user2 = userRepository.findById(user2Id);
+
+        List<User> friends = friendsRepository.getFriendsByUser(user1Id);
+        for (User friend : friends) {
+            if (friend.getId().equals(user2Id)) {
+                return "You are already friends";
+            }
+        }
 
         if(user1.isPresent() && user2.isPresent()){
              User firstUser = user1.get();

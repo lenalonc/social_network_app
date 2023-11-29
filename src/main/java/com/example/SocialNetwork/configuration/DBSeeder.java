@@ -1,10 +1,7 @@
 package com.example.SocialNetwork.configuration;
 
 import com.example.SocialNetwork.entities.*;
-import com.example.SocialNetwork.repository.GroupMemberRepository;
-import com.example.SocialNetwork.repository.MembershipRequestRepository;
-import com.example.SocialNetwork.repository.SocialGroupRepository;
-import com.example.SocialNetwork.repository.UserRepository;
+import com.example.SocialNetwork.repository.*;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
@@ -19,13 +16,19 @@ public class DBSeeder implements CommandLineRunner {
     MembershipRequestRepository membershipRequestRepository;
     SocialGroupRepository socialGroupRepository;
     GroupMemberRepository groupMemberRepository;
+    FriendRequestRepository friendRequestRepository;
+    FriendsRepository friendsRepository;
 
 
-    DBSeeder(UserRepository userRepository, MembershipRequestRepository membershipRequestRepository, SocialGroupRepository socialGroupRepository,GroupMemberRepository groupMemberRepository) {
+
+
+    DBSeeder(UserRepository userRepository, MembershipRequestRepository membershipRequestRepository, SocialGroupRepository socialGroupRepository,GroupMemberRepository groupMemberRepository, FriendRequestRepository friendRequestRepository, FriendsRepository friendsRepository) {
         this.userRepository = userRepository;
         this.membershipRequestRepository = membershipRequestRepository;
         this.socialGroupRepository = socialGroupRepository;
         this.groupMemberRepository = groupMemberRepository;
+        this.friendRequestRepository = friendRequestRepository;
+        this.friendsRepository = friendsRepository;
     }
 
     private void seedUser(String username, String email, String password, boolean active) {
@@ -34,6 +37,7 @@ public class DBSeeder implements CommandLineRunner {
         user.setEmail(email);
         user.setPassword(password);
         user.setActive(active);
+        user.setPassword(password);
         userRepository.save(user);
     }
 
@@ -116,6 +120,7 @@ public class DBSeeder implements CommandLineRunner {
 //        seedGroupMember(2,3);
 //        seedGroupMember(1,2);
 //        seedGroupMember(1,3);
+        /*
         seedSocialGroup("Group1", true,1);
         seedSocialGroup("Group2", false,1);
         seedSocialGroup("Group3", true,2);
@@ -146,14 +151,15 @@ public class DBSeeder implements CommandLineRunner {
         seedFriends(2L, 1L);
         seedFriends(1L, 3L);
         seedFriends(2L, 3L);
+        */
     }
 
-    private void clearDatabase() {
+/*    private void clearDatabase() {
         this.groupMemberRepository.deleteAll();
         this.membershipRequestRepository.deleteAll();
         this.socialGroupRepository.deleteAll();
-        this.friendsRepository.deleteAll();
-        this.friendRequestRepository.deleteAll();
+       // this.friendsRepository.deleteAll();
+       //  this.friendRequestRepository.deleteAll();
         this.userRepository.deleteAll();
-    }
+    }*/
 }

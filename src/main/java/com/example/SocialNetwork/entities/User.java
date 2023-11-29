@@ -84,9 +84,11 @@ public class User {
     )
     private List<FriendRequest> friendRequests;
 
+
     @ManyToMany()
     @JoinTable(name = "user_friendrequest", joinColumns = @JoinColumn(name = "user.id"), inverseJoinColumns = @JoinColumn(name = "friendrequest.id"))
     private Set<FriendRequest> friendRequestSet;
+
 
     @OneToMany(mappedBy = "user")
     private List<Post> posts;

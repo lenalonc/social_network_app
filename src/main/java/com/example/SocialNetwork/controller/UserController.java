@@ -6,17 +6,27 @@ import com.example.SocialNetwork.dtos.LoginResponse;
 import com.example.SocialNetwork.dtos.PasswordDto;
 import com.example.SocialNetwork.dtos.UserCreateDto;
 import com.example.SocialNetwork.entities.User;
+import com.example.SocialNetwork.repository.UserRepository;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import com.example.SocialNetwork.service.UserServiceImpl;
 import com.example.SocialNetwork.utils.JwtUtil;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
+
+import static com.example.SocialNetwork.entities.UserRole.ROLE_ADMIN;
+import static org.springframework.security.authorization.AuthorityReactiveAuthorizationManager.hasRole;
 
 @RestController
 @RequestMapping("/users")
@@ -26,6 +36,7 @@ public class UserController {
     private final AuthenticationManager authenticationManager;
     private final UserServiceImpl userService;
     private final JwtUtil jwtUtil;
+    private UserRepository userRepository;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest){
@@ -73,10 +84,17 @@ public class UserController {
     }
 
     @GetMapping("/")
-    public List<UserDTO> showAllUsers() {
-        return userService.getAllUsers();
+    public ResponseEntity<?> showAllUsers() {
+        return new ResponseEntity<>(userService.getAllUsers(), HttpStatus.OK);
     }
 
+    @DeleteMapping("/")
+    public ResponseEntity<String> deleteUser() {
+        Optional<User> user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+        Long id = user.get().getId();
+        return userService.deleteUserById(id);
+    }
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteUserById(@PathVariable Long id) {
         return userService.deleteUserById(id);
@@ -91,6 +109,27 @@ public class UserController {
         }
 
         return new ResponseEntity<>(user, HttpStatus.OK);
+    }
+
+
+    @PostMapping("/logout")
+    public ResponseEntity<Object> logout(HttpServletRequest request) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        invalidateSession(request);
+
+        if(authentication != null) {
+            SecurityContextHolder.getContext().setAuthentication(null);
+        }
+
+        return new ResponseEntity<>("Logout success!" , HttpStatus.OK);
+    }
+
+    private void invalidateSession(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.invalidate();
+        }
     }
 
 }
