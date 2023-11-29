@@ -1,7 +1,7 @@
 package com.example.SocialNetwork.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -22,10 +22,12 @@ public class MembershipRequest {
     private RequestStatus requestStatus;
 
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "id_social_group", nullable = false)
     private SocialGroup socialGroup;
 
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "id_user", nullable = false)
     private User user;
 

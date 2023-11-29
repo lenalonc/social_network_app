@@ -1,12 +1,9 @@
 package com.example.SocialNetwork.controller;
 
 import com.example.SocialNetwork.dto.SocialGroupDTO;
-import com.example.SocialNetwork.entities.MembershipRequest;
-import com.example.SocialNetwork.entities.RequestStatus;
 import com.example.SocialNetwork.entities.SocialGroup;
 import com.example.SocialNetwork.entities.User;
 import com.example.SocialNetwork.helpercalsses.MyRequest;
-import com.example.SocialNetwork.service.MembershipRequestService;
 import com.example.SocialNetwork.service.SocialGroupService;
 import com.example.SocialNetwork.service.UserService;
 import org.springframework.web.bind.annotation.*;
@@ -18,13 +15,11 @@ import java.util.List;
 public class SocialGroupController extends MyRequest {
     private final SocialGroupService groupService;
     private final UserService userService;
-    private final MembershipRequestService requestService;
 
-    public SocialGroupController(SocialGroupService groupService, UserService userService,
-                                 MembershipRequestService requestService) {
+    public SocialGroupController(SocialGroupService groupService,
+                                 UserService userService) {
         this.groupService = groupService;
         this.userService = userService;
-        this.requestService = requestService;
     }
 
     @GetMapping("/hello")
@@ -32,26 +27,17 @@ public class SocialGroupController extends MyRequest {
         return "Hello Levi9";
     }
 
-    @PostMapping("/")
-    public String createGroup(@RequestBody SocialGroup group) {
-        User user = userService.findCurrentUser();
-        group.setUser(user);
-        groupService.saveGroup(group);
-        return "Usmesno sacuvana grupa";
-    }
-
     @GetMapping("/")
     public List<SocialGroupDTO> showAllSocialGroups(){
         return groupService.getAllSocialGroups();
     }
 
-    @GetMapping("/name/{name}")
-    public List<SocialGroupDTO> getSocialGroupByName(@PathVariable String name) {
-        return groupService.getSocialGroupByName(name);
-    }
-    @GetMapping("/id/{id}")
-    public SocialGroupDTO getSocialGroupDTOById(@PathVariable Long id) {
-        return groupService.getSocialGroupDTOById(id);
+    @PostMapping("/")
+    public String createGroup(@RequestBody SocialGroup group) {
+        User user = userService.findCurrentUser();
+        group.setUser(user);
+        groupService.saveGroup(group);
+        return "Uspesno sacuvana grupa";
     }
 
     @DeleteMapping("/{id}")
@@ -67,25 +53,16 @@ public class SocialGroupController extends MyRequest {
         else {
             return "Niste ovlasceni da obrisete grupu";
         }
-
     }
 
-    @PostMapping("/createmembershiprequest")
-    public String createMembershipRequest(@RequestBody MyRequest id) {
-        SocialGroup socialGroup = groupService.getSocialGroupById(id.getId());
-
-        User u = userService.findCurrentUser();
-
-        if(u!=null){
-            MembershipRequest membershipRequest = new MembershipRequest();
-            membershipRequest.setSocialGroup(socialGroup);
-            membershipRequest.setUser(u);
-            membershipRequest.setRequestStatus(RequestStatus.PENDING);
-            requestService.saveRequest(membershipRequest);
-            return "Uspesno ste poslali request za uclanjnje u grupi";
-        }
-        else
-            return "Zahteve mogu poslati samo ulogovani koristnici";
-
+    @GetMapping("/name/{name}")
+    public List<SocialGroupDTO> getSocialGroupByName(@PathVariable String name) {
+        return groupService.getSocialGroupByName(name);
     }
+    @GetMapping("/id/{id}")
+    public SocialGroupDTO getSocialGroupDTOById(@PathVariable Long id) {
+        return groupService.getSocialGroupDTOById(id);
+    }
+
+
 }

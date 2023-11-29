@@ -70,7 +70,8 @@ public class UserController {
     }
     @GetMapping("/currentuser")
     public User getCurrentUser() {
-        return userService.findCurrentUser();
+        return userService.findCurrentUser()
+                ;
     }
     @PostMapping("/")
     public ResponseEntity<String> saveUser(@RequestBody User user) {

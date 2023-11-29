@@ -35,20 +35,25 @@ public class GroupMemberController extends MyRequest {
         MembershipRequest membershipRequest = requestService.getAllRequestsById(id.getId());
         if (membershipRequest == null)
             return null;
-
-        User user = membershipRequest.getUser();
+        User currentUser = userService.findCurrentUser();
         SocialGroup socialGroup = membershipRequest.getSocialGroup();
-        Date ldt = new Date();
 
-        GroupMember groupMember = new GroupMember();
-        groupMember.setDateJoined(ldt);
-        groupMember.setSocialGroup(socialGroup);
-        groupMember.setUser(user);
+        if(currentUser.getId() == socialGroup.getUser().getId()){
 
-        memberService.saveGroupMember(groupMember);
+            Date ldt = new Date();
+            GroupMember groupMember = new GroupMember();
+            groupMember.setDateJoined(ldt);
+            groupMember.setSocialGroup(socialGroup);
+            User user = membershipRequest.getUser();
+            groupMember.setUser(user);
 
-        requestService.deleteRequestById(id.getId());
-        return "Vas zahtev za uclanjenje grupe je prihvacen!";
+            memberService.saveGroupMember(groupMember);
+            requestService.deleteRequestById(id.getId());
+
+            return "Prihvatili ste zahtev za uclanjenje u grupu";
+        }
+        else
+            return "Samo admin moze da prihvati zahtev, vi niste admin";
     }
 
     @DeleteMapping("/{id}")
@@ -65,7 +70,7 @@ public class GroupMemberController extends MyRequest {
 
     }
 
-    @GetMapping("/allusersforgroup/{id}")
+    @GetMapping("/{id}")
     public List<String> showAllUsersForGroup(@PathVariable Long id){
         List<String> users = new ArrayList<>();
         List<Long> groupMember = memberService.getAllGroupMembers(id);
