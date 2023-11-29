@@ -8,4 +8,6 @@ public interface GroupMemberService {
     public void saveGroupMember(GroupMember groupMember);
 
     List<Long> getAllGroupMembers(Long id);
+
+    void deleteGroupMemberById(Long id);
 }

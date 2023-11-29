@@ -23,5 +23,10 @@ public class GroupMemberServiceImpl implements GroupMemberService{
         return memberRepository.findAllM(id);
     }
 
+    @Override
+    public void deleteGroupMemberById(Long id) {
+        memberRepository.deleteById(id);
+    }
+
 
 }
