@@ -24,7 +24,7 @@ public class Post {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "date", nullable = false)
+    @Column(name = "date", nullable = false, columnDefinition = "TIMESTAMP")
     @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
     private LocalDateTime date;
 

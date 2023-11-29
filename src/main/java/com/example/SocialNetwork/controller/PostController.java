@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/posts")
+@RequestMapping("/posts")
 @AllArgsConstructor
 
 public class PostController {
@@ -33,7 +33,7 @@ public class PostController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<?> createPost(@RequestBody Post post) {
+    public ResponseEntity<Object> createPost(@RequestBody Post post) {
         return ResponseEntity.ok(postService.createPost(post));
     }
 

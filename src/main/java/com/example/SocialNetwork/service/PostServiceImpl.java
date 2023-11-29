@@ -1,17 +1,23 @@
 package com.example.SocialNetwork.service;
 
 import com.example.SocialNetwork.dto.PostDTO;
+import com.example.SocialNetwork.dto.UserDTO;
 import com.example.SocialNetwork.entities.Post;
 import com.example.SocialNetwork.entities.SocialGroup;
+import com.example.SocialNetwork.entities.User;
 import com.example.SocialNetwork.repository.PostRepository;
 import com.example.SocialNetwork.repository.SocialGroupRepository;
+import com.example.SocialNetwork.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PostServiceImpl implements PostService {
@@ -20,10 +26,14 @@ public class PostServiceImpl implements PostService {
     private PostRepository postRepository;
     private SocialGroupRepository socialGroupRepository;
 
-    public PostServiceImpl(ModelMapper mapper, PostRepository postRepository, SocialGroupRepository socialGroupRepository) {
+    private UserRepository userRepository;
+
+    public PostServiceImpl(ModelMapper mapper, PostRepository postRepository, SocialGroupRepository socialGroupRepository,
+                           UserRepository userRepository) {
         this.mapper = mapper;
         this.postRepository = postRepository;
         this.socialGroupRepository = socialGroupRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -34,11 +44,18 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<Post> getAllPostsByLoggedInUser() {
+    public List<PostDTO> getAllPostsByLoggedInUser() {
         //TODO Kada bude uradjen login, onda samo treba preko ulogovanog uzeti sve njegove objave
-//        List<Post> userPosts = postRepository.findAllById_User(id_user);
-        //return getUnexpiredPosts(id_logeedUser);
-        return null;
+        Optional<User> user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+
+        ModelMapper mapper = new ModelMapper();
+        //List<Post> userPosts = postRepository.findAllByUserId(user.get().getId());
+
+        //List<User> users = userRepository.findAll();
+        //return users.stream().map(user->mapper.map(user, UserDTO.class)).toList();
+
+        List<Post> userPosts = getUnexpiredPosts(postRepository.findAllByUserId(user.get().getId()));
+        return userPosts.stream().map(userPost->mapper.map(userPost, PostDTO.class)).toList();
     }
 
     @Override
@@ -52,9 +69,11 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public Post createPost(Post post) {
-        post.setDate(LocalDateTime.now());
+        //Optional<User> user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+        Optional<User> user = userRepository.findById(6l);
+        post.setUser(user.get());
+        post.setDate((LocalDateTime.now()));
         post.setDeleted(false);
-        //TODO Dodati ID ulogovanog korisnika kao korisnika koji je napravio objavu
 
         return postRepository.save(post);
     }
@@ -64,7 +83,7 @@ public class PostServiceImpl implements PostService {
         //TODO Kada bude sredjen email servis, onda treba poslati notifikacije svim clanovima grupe
         //TODO Uzeti ulogovanog usera i proveriti da li je on clan grupe u kojoj vrsi objavu
 
-        post.setDate(LocalDateTime.now());
+        //post.setDate(LocalDateTime.now());
         post.setDeleted(false);
         //TODO: ulogovani user se stavlja kao user id
 
@@ -117,7 +136,7 @@ public class PostServiceImpl implements PostService {
     private List<Post> getUnexpiredPosts(List<Post> unfilteredPosts) {
         List<Post> unexpiredPosts = new ArrayList<>();
         for (Post post : unfilteredPosts) {
-            if (!post.getDate().isAfter(post.getDate().plusHours(24))) unexpiredPosts.add(post);
+            //if (!post.getDate().isAfter(post.getDate().plusHours(24))) unexpiredPosts.add(post);
         }
         return unexpiredPosts;
     }

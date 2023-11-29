@@ -13,7 +13,7 @@ public interface PostService {
 
     List<Post> getAllPostsByUser(Long id);
 
-    List<Post> getAllPostsByLoggedInUser();
+    List<PostDTO> getAllPostsByLoggedInUser();
 
     List<PostDTO> getAllPostsBySocialGroup(Long id);
 

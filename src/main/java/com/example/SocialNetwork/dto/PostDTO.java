@@ -22,6 +22,8 @@ public class PostDTO {
 
     private LocalDateTime date;
 
+
+
     private String text;
 
     private boolean type;
