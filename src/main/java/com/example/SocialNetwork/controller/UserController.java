@@ -6,20 +6,16 @@ import com.example.SocialNetwork.dtos.LoginResponse;
 import com.example.SocialNetwork.dtos.PasswordDto;
 import com.example.SocialNetwork.dtos.UserCreateDto;
 import com.example.SocialNetwork.entities.User;
-import com.example.SocialNetwork.service.UserService;
 import com.example.SocialNetwork.service.UserServiceImpl;
 import com.example.SocialNetwork.utils.JwtUtil;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/users")
@@ -59,9 +55,9 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/hello")
-    public String hello() {
-        return "Hello Levi9 konferencijska sala uvek radi";
+    @GetMapping("/currentuser")
+    public User getCurrentUser() {
+        return userService.findCurrentUser();
     }
 
     @PostMapping("/")

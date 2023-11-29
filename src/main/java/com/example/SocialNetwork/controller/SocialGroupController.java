@@ -1,9 +1,11 @@
 package com.example.SocialNetwork.controller;
 
-import com.example.SocialNetwork.helpercalsses.MyRequest;
 import com.example.SocialNetwork.dto.SocialGroupDTO;
-import com.example.SocialNetwork.entities.*;
-import com.example.SocialNetwork.service.GroupMemberServiceImpl;
+import com.example.SocialNetwork.entities.MembershipRequest;
+import com.example.SocialNetwork.entities.RequestStatus;
+import com.example.SocialNetwork.entities.SocialGroup;
+import com.example.SocialNetwork.entities.User;
+import com.example.SocialNetwork.helpercalsses.MyRequest;
 import com.example.SocialNetwork.service.MembershipRequestService;
 import com.example.SocialNetwork.service.SocialGroupService;
 import com.example.SocialNetwork.service.UserService;
@@ -32,13 +34,13 @@ public class SocialGroupController extends MyRequest {
 
     @PostMapping("/")
     public String createGroup(@RequestBody SocialGroup group) {
-        User user = userService.findByID(1L);
+        User user = userService.findCurrentUser();
         group.setUser(user);
         groupService.saveGroup(group);
         return "Usmesno sacuvana grupa";
     }
 
-    @GetMapping("/all")
+    @GetMapping("/")
     public List<SocialGroupDTO> showAllSocialGroups(){
         return groupService.getAllSocialGroups();
     }
@@ -54,17 +56,25 @@ public class SocialGroupController extends MyRequest {
 
     @DeleteMapping("/{id}")
     public String deleteSocialGroupById(@PathVariable Long id) {
-        groupService.deleteSocialGroupById(id);
+        User currentU = userService.findCurrentUser();
+        SocialGroup socialGroup = groupService.getSocialGroupById(id);
 
-        return "Usesno ste obrisali grupu";
+        if(currentU.getId() == socialGroup.getUser().getId())
+        {
+            groupService.deleteSocialGroupById(id);
+            return "Usesno ste obrisali grupu";
+        }
+        else {
+            return "Niste ovlasceni da obrisete grupu";
+        }
+
     }
 
     @PostMapping("/createmembershiprequest")
     public String createMembershipReques(@RequestBody MyRequest id) {
         SocialGroup socialGroup = groupService.getSocialGroupById(id.getId());
 
-        User u = new User();
-        u.setId(48L);
+        User u = userService.findCurrentUser();
 
         MembershipRequest membershipRequest = new MembershipRequest();
         membershipRequest.setSocialGroup(socialGroup);
