@@ -33,6 +33,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private PasswordEncoder passwordEncoder;
     private EmailService emailService;
 
+    private ModelMapper mapper;
+
     @Value("${password.activate.endpoint}")
     private String passwordActivateEndpoint;
 
@@ -43,10 +45,11 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private final Pattern passwordPattern = Pattern.compile("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\\W)(?!.* ).{8,}$");
 
 
-    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, EmailService emailService) {
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, EmailService emailService, ModelMapper mapper) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.emailService = emailService;
+        this.mapper = mapper;
     }
 
     public User createUser(UserCreateDto userCreateDto) {
@@ -132,7 +135,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     public List<UserDTO> getAllUsers() {
-        ModelMapper mapper = new ModelMapper();
         List<User> users = userRepository.findAll();
         return users.stream().map(user->mapper.map(user, UserDTO.class)).toList();
     }
@@ -151,6 +153,15 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         Optional<User> user = userRepository.findById(id);
         if(user.isPresent()){
             return user.get();
+        }
+        return null;
+    }
+
+    @Override
+    public UserDTO findByIDDTO(Long id) {
+        Optional<User> user = userRepository.findById(id);
+        if(user.isPresent()){
+            return user.stream().map(u -> mapper.map(user, UserDTO.class)).toList().get(0);
         }
         return null;
     }
