@@ -1,10 +1,7 @@
 package com.example.SocialNetwork.configuration;
 
 import com.example.SocialNetwork.entities.*;
-import com.example.SocialNetwork.repository.GroupMemberRepository;
-import com.example.SocialNetwork.repository.MembershipRequestRepository;
-import com.example.SocialNetwork.repository.SocialGroupRepository;
-import com.example.SocialNetwork.repository.UserRepository;
+import com.example.SocialNetwork.repository.*;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -20,6 +17,9 @@ public class DBSeeder implements CommandLineRunner {
     MembershipRequestRepository membershipRequestRepository;
     SocialGroupRepository socialGroupRepository;
     GroupMemberRepository groupMemberRepository;
+    FriendRequestRepository friendRequestRepository;
+    FriendsRepository friendsRepository;
+
     BCryptPasswordEncoder passwordEncoder;
 
 
@@ -33,6 +33,8 @@ public class DBSeeder implements CommandLineRunner {
         this.membershipRequestRepository = membershipRequestRepository;
         this.socialGroupRepository = socialGroupRepository;
         this.groupMemberRepository = groupMemberRepository;
+        this.friendRequestRepository = friendRequestRepository;
+        this.friendsRepository = friendsRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -43,7 +45,6 @@ public class DBSeeder implements CommandLineRunner {
         String hashedPassword = passwordEncoder.encode(password);
         user.setPassword(hashedPassword);
         user.setActive(active);
-
         userRepository.save(user);
     }
 
@@ -66,6 +67,24 @@ public class DBSeeder implements CommandLineRunner {
         membershipRequest.setSocialGroup(socialGroups.get(id_socialgroup));
 
         membershipRequestRepository.save(membershipRequest);
+    }
+
+    private void seedFriendRequest(RequestStatus requestStatus, int user1Id, int user2Id, Date date) {
+        List<User> users = userRepository.findAll();
+        FriendRequest friendRequest = new FriendRequest();
+        friendRequest.setStatus(requestStatus);
+        friendRequest.setDate((java.sql.Date) date);
+        friendRequest.setId_user1(users.get(user1Id).getId());
+        friendRequest.setId_user2(users.get(user2Id).getId());
+        friendRequestRepository.save(friendRequest);
+    }
+
+    private void seedFriends(Long user1Id, Long user2Id) {
+        List<User> users = userRepository.findAll();
+        Friends friends = new Friends();
+        friends.setUser1Id(users.get(user1Id.intValue()));
+        friends.setUser2Id(users.get(user2Id.intValue()));
+        friendsRepository.save(friends);
     }
 
     private void seedGroupMember(int id_user, int id_socialgroup) {
@@ -109,6 +128,7 @@ public class DBSeeder implements CommandLineRunner {
         seedGroupMember(1,2);
         seedGroupMember(1,3);
     }
+
 
     private void clearDatabase() {
         this.groupMemberRepository.deleteAll();

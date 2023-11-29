@@ -1,11 +1,12 @@
 package com.example.SocialNetwork.service;
 
 import com.example.SocialNetwork.entities.FriendRequest;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
 public interface FriendRequestService {
-    String sendFriendRequest(FriendRequest friendRequest);
+    ResponseEntity<?> sendFriendRequest(FriendRequest friendRequest);
 
     List<FriendRequest> getAllRequests(Long id);
 
