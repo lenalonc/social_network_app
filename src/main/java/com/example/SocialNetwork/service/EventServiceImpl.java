@@ -6,7 +6,6 @@ import com.example.SocialNetwork.repository.EventRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service

@@ -17,5 +17,4 @@ public class FriendsDTO {
 
     private UserDTO user2Id;
 
-
 }
