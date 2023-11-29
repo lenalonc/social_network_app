@@ -91,23 +91,23 @@ public class DBSeeder implements CommandLineRunner {
         seedUser("Eva", "eva@example.com", "password4", false);
         seedUser("Michael", "michael@example.com", "password5", false);
 
-        seedSocialGroup("Group1", true,1);
+        seedSocialGroup("Group1", true,3);
         seedSocialGroup("Group2", false,1);
-        seedSocialGroup("Group3", true,2);
-        seedSocialGroup("Group4", false,2);
-        seedSocialGroup("Group5", true,3);
+        seedSocialGroup("Group3", true,1);
+        seedSocialGroup("Group4", false,1);
+        seedSocialGroup("Group5", true,1);
 
-        seedMembershipRequest(RequestStatus.PENDING,1,2);
+        seedMembershipRequest(RequestStatus.PENDING,3,0);
         seedMembershipRequest(RequestStatus.ACCEPTED,1,1);
-        seedMembershipRequest(RequestStatus.PENDING,2, 3);
-        seedMembershipRequest(RequestStatus.REJECTED,3,4);
-        seedMembershipRequest(RequestStatus.ACCEPTED,1,4);
+        seedMembershipRequest(RequestStatus.PENDING,2, 2);
+        seedMembershipRequest(RequestStatus.REJECTED,2,2);
+        seedMembershipRequest(RequestStatus.ACCEPTED,1,2);
 
-        seedGroupMember(0,1);
         seedGroupMember(1,1);
-        seedGroupMember(2,3);
-        seedGroupMember(1,2);
         seedGroupMember(1,3);
+        seedGroupMember(2,2);
+        seedGroupMember(1,2);
+        seedGroupMember(1,2);
     }
 
     private void clearDatabase() {

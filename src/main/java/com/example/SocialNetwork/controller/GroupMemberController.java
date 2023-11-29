@@ -70,7 +70,7 @@ public class GroupMemberController extends MyRequest {
 
     }
 
-    @GetMapping("/allusersforgroup/{id}")
+    @GetMapping("/{id}")
     public List<String> showAllUsersForGroup(@PathVariable Long id){
         List<String> users = new ArrayList<>();
         List<Long> groupMember = memberService.getAllGroupMembers(id);
