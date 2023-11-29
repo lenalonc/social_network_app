@@ -14,26 +14,27 @@ import java.util.List;
 @RequestMapping("/api/comments")
 @AllArgsConstructor
 public class CommentController {
+
     private CommentService commentService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getAllCommentsForPost(@PathVariable Long postId) {
-        return ResponseEntity.ok(commentService.getAllCommentsForPost(postId));
+    public ResponseEntity<?> getAllCommentsForPost(@PathVariable Long id) {
+        return ResponseEntity.ok(commentService.getAllCommentsForPost(id));
     }
 
-    @GetMapping("replies/{id}")
-    public ResponseEntity<?> getAllRepliesForComment(@PathVariable Long idComment) {
-        return ResponseEntity.ok(commentService.getAllRepliesForComment(idComment));
+    @GetMapping("/replies/{id}")
+    public ResponseEntity<?> getAllRepliesForComment(@PathVariable Long id) {
+        return ResponseEntity.ok(commentService.getAllRepliesForComment(id));
     }
 
     @PostMapping("/{id}")
-    public ResponseEntity<?> createComment(@RequestBody Comment comment, @PathVariable Long postId) {
-        return ResponseEntity.ok(commentService.createComment(comment, postId));
+    public ResponseEntity<?> createComment(@RequestBody Comment comment, @PathVariable Long id) {
+        return ResponseEntity.ok(commentService.createComment(comment, id));
     }
 
     @PostMapping("/reply/{id}")
-    public ResponseEntity<?> replyToComment(@RequestBody Comment reply, @PathVariable Long commentId) {
-        return ResponseEntity.ok(commentService.replyToComment(reply, commentId));
+    public ResponseEntity<?> replyToComment(@RequestBody Comment reply, @PathVariable Long id) {
+        return ResponseEntity.ok(commentService.replyToComment(reply, id));
     }
 
     @DeleteMapping("/{id}")
