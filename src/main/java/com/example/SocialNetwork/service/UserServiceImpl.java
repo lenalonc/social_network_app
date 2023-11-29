@@ -4,7 +4,9 @@ import com.example.SocialNetwork.dto.UserDTO;
 import com.example.SocialNetwork.dtos.PasswordDto;
 import com.example.SocialNetwork.dtos.UserCreateDto;
 import com.example.SocialNetwork.entities.User;
+import com.example.SocialNetwork.exceptions.ForbiddenException;
 import com.example.SocialNetwork.exceptions.NotFoundException;
+import com.example.SocialNetwork.exceptions.ValidationException;
 import com.example.SocialNetwork.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
@@ -50,9 +52,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     public User createUser(UserCreateDto userCreateDto) {
-//        if(!emailPattern.matcher(userCreateDto.getEmail()).matches()) {
-//            throw new ValidationException("invalid email");
-//        }
+        if(!emailPattern.matcher(userCreateDto.getEmail()).matches()) {
+            throw new ValidationException("invalid email");
+}
 
         String secretKey = RandomStringUtils.randomNumeric(6);
 
@@ -73,17 +75,16 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     public void resetUserPassword(PasswordDto passwordDto, Long id) {
-//        if(!passwordPattern.matcher(passwordDto.getPassword()).matches()) {
-//            throw new ValidationException("Invalid password format. Password has to contain" +
-//                    " at least one of each: uppercase letter, lowercase letter, number, and special character. " +
-//                    "It also has to be at least 8 characters long.");
-//        }
+/*        if(!passwordPattern.matcher(passwordDto.getPassword()).matches()) {
+            throw new ValidationException("Invalid password format. Password has to contain" +
+                    " at least one of each: uppercase letter, lowercase letter, number, and special character. " +
+                    "It also has to be at least 8 characters long.");
+        }*/
 
-        //TODO Ako ga ne nadje, onda se baca izuzetak da nije pronadjen u bazi
-        User user = userRepository.findById(id).get();
+        User user = userRepository.findById(id).orElseThrow(() -> new NotFoundException("User has not been found."));
 
         if(user.getSecretKey() == null || !user.getSecretKey().equals(passwordDto.getSecretKey())) {
-            //TODO Baca se izuzetak za neuspesnu validaciju
+            throw new ValidationException("Invalid secret key.");
         }
 
         user.setPassword(passwordEncoder.encode(passwordDto.getPassword()));
@@ -141,7 +142,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     public ResponseEntity<String> deleteUserById(Long id) {
         Optional<User> tempUser = userRepository.findById(id);
         if (tempUser.isPresent()){
-            userRepository.deleteById(id);
+            User user = tempUser.get();
+            user.setActive(false);
             return new ResponseEntity<>("User deleted", HttpStatus.OK);
         } return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
     }
@@ -160,7 +162,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         User user = userRepository.findByEmail(email).orElseThrow(() -> new NotFoundException("User has not been found."));
 
         if(!user.isActive()){
-            //TODO Izbaciti gresku jer korisnik nije aktivan, tj. logicki je obrisan
+            throw new ForbiddenException("User is not active.");
+
         }
 
         return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), user.getAuthorities());

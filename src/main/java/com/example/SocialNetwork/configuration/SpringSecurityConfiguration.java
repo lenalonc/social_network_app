@@ -45,6 +45,10 @@ public class SpringSecurityConfiguration {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((authz) -> authz
+                        .anyRequest().permitAll());
+
+        // zakomentarisan kod, kako ne bismo svaki put prosledjivali token, koristice se iskljucivo prilikom demoa za logout
+                        /*
                         .requestMatchers("/users/login").permitAll()
                         .requestMatchers("/users/register").permitAll()
                         .requestMatchers("/users/forgot-password").permitAll()
@@ -54,7 +58,7 @@ public class SpringSecurityConfiguration {
                 .sessionManagement(sessionManagement -> sessionManagement
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
-                .logout(logout -> logout.permitAll());
+                .logout(logout -> logout.permitAll());*/
 
         http.addFilterBefore(this.jwtFilter, UsernamePasswordAuthenticationFilter.class);
 

@@ -2,13 +2,18 @@ package com.example.SocialNetwork.service;
 
 import com.example.SocialNetwork.entities.Comment;
 import com.example.SocialNetwork.entities.Post;
+import com.example.SocialNetwork.entities.User;
+import com.example.SocialNetwork.exceptions.NotFoundException;
 import com.example.SocialNetwork.repository.CommentRepository;
 import com.example.SocialNetwork.repository.PostRepository;
+import com.example.SocialNetwork.repository.UserRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -16,6 +21,7 @@ public class CommentServiceImpl implements CommentService {
 
     private CommentRepository commentRepository;
     private PostRepository postRepository;
+    private UserRepository userRepository;
 
     @Override
     public List<Comment> getAllCommentsForPost(Long id) {
@@ -24,23 +30,30 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public List<Comment> getAllRepliesForComment(Long id) {
-        //TODO Baciti gresku ako ne postoji komentar sa tim ID-om
-        Comment comment = commentRepository.findById(id).get();
+        Optional<Comment> comment = commentRepository.findById(id);
 
-        return comment.getReplies();
+        if(comment.isPresent()) {
+            return comment.get().getReplies();
+        }
+        throw new NotFoundException("Comment with id " + id + " not found");
+
     }
 
     @Override
     public Comment createComment(Comment comment, Long postId) {
-        //TODO Baciti gresku ako objava ne postoji
-        Post post = postRepository.findById(postId).get();
+        Post post = postRepository.findById(postId).orElseThrow(() -> new NotFoundException("Post with id " + postId + " not found"));
         comment.setPost(post);
         comment.setDate(LocalDateTime.now());
-        //TODO Loggedin user da se stavi kao user
+
+        Optional<User> user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+        comment.setUser(user.get());
+
 
         if (post.getSocialGroup() != null) {
             //TODO Uraditi proveru da li je ulogovani korisnik u toj grupi, tj. sme da komentira na toj objavi
             // Baciti gresku ako nije
+
+
         }
 
         List<Comment> comments = post.getComments();
