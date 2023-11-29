@@ -70,7 +70,8 @@ public class UserController {
     }
     @GetMapping("/currentuser")
     public User getCurrentUser() {
-        return userService.findCurrentUser();
+        return userService.findCurrentUser()
+                ;
     }
     @PostMapping("/")
     public ResponseEntity<String> saveUser(@RequestBody User user) {
@@ -130,6 +131,12 @@ public class UserController {
         if (session != null) {
             session.invalidate();
         }
+    }
+
+    @GetMapping("/dto/{id}")
+    public UserDTO getUserDTOById(@PathVariable Long id) {
+        UserDTO user = userService.findByIDDTO(id);
+        return user;
     }
 
 }

@@ -52,7 +52,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public Post createPost(Post post) {
-        post.setDate(LocalDateTime.now());
+        //post.setDate(LocalDateTime.now());
         post.setDeleted(false);
         //TODO Dodati ID ulogovanog korisnika kao korisnika koji je napravio objavu
 
@@ -64,7 +64,7 @@ public class PostServiceImpl implements PostService {
         //TODO Kada bude sredjen email servis, onda treba poslati notifikacije svim clanovima grupe
         //TODO Uzeti ulogovanog usera i proveriti da li je on clan grupe u kojoj vrsi objavu
 
-        post.setDate(LocalDateTime.now());
+        //post.setDate(LocalDateTime.now());
         post.setDeleted(false);
         //TODO: ulogovani user se stavlja kao user id
 
@@ -117,7 +117,7 @@ public class PostServiceImpl implements PostService {
     private List<Post> getUnexpiredPosts(List<Post> unfilteredPosts) {
         List<Post> unexpiredPosts = new ArrayList<>();
         for (Post post : unfilteredPosts) {
-            if (!post.getDate().isAfter(post.getDate().plusHours(24))) unexpiredPosts.add(post);
+            //    if (!post.getDate().isAfter(post.getDate().plusHours(24))) unexpiredPosts.add(post);
         }
         return unexpiredPosts;
     }

@@ -1,5 +1,6 @@
 package com.example.SocialNetwork.controller;
 
+import com.example.SocialNetwork.dto.UserDTO;
 import com.example.SocialNetwork.entities.Friends;
 import com.example.SocialNetwork.entities.User;
 import com.example.SocialNetwork.repository.UserRepository;
@@ -26,16 +27,18 @@ public class FriendsController {
 
     @PostMapping("/")
     public ResponseEntity<String> sendFriendRequest(@RequestBody Friends friends) {
+        Friends friends1=new Friends();
+        friends1.setUser1Id(friends.getUser2Id());
+        friends1.setUser2Id(friends.getUser1Id());
         friendsService.saveFriends(friends);
+        friendsService.saveFriends(friends1);
 
         return new ResponseEntity<>("Friend request sent", HttpStatus.OK);
     }
 
     @GetMapping("/")
-    public ResponseEntity<?> getFriendsByUser() {
-        Optional<User> user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
-        Long userId = user.get().getId();
-        List<User> friends = friendsService.getFriendsByUser(userId);
+    public ResponseEntity<?> getFriendsByUser(@RequestParam("user1Id") Long userId) {
+        List<UserDTO> friends = friendsService.getFriendsByUser(userId);
         return new ResponseEntity<>(friends, HttpStatus.OK);
     }
 
