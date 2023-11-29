@@ -43,10 +43,10 @@ public class SpringSecurityConfiguration {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((authz) -> authz
-                        .requestMatchers("/api/login").permitAll()
-                        .requestMatchers("/api/register").permitAll()
-                        .requestMatchers("/api/forgot-password").permitAll()
-                        .requestMatchers("/api/activate-password/**").permitAll()
+                        .requestMatchers("/users/login").permitAll()
+                        .requestMatchers("/users/register").permitAll()
+                        .requestMatchers("/users/forgot-password").permitAll()
+                        .requestMatchers("/users/activate-password/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(sessionManagement -> sessionManagement
