@@ -3,6 +3,7 @@ package com.example.SocialNetwork.service;
 import com.example.SocialNetwork.dtos.PasswordDto;
 import com.example.SocialNetwork.dtos.UserCreateDto;
 import com.example.SocialNetwork.entities.User;
+import com.example.SocialNetwork.exceptions.NotFoundException;
 import com.example.SocialNetwork.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -88,8 +89,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     public void forgotPassword(String email) {
-        //TODO Ako ga ne nadje, onda se baca izuzetak da nije pronadjen u bazi
-        User user = userRepository.findByEmail(email);
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new NotFoundException("User has not been found."));
 
         String secretKey = RandomStringUtils.randomAlphabetic(6);
         user.setSecretKey(secretKey);
@@ -150,8 +150,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        //TODO Izbaciti gresku kada nije pronadjen korisnik sa tim email-om
-        User user = userRepository.findByEmail(email);
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new NotFoundException("User has not been found."));
 
         if(!user.isActive()){
             //TODO Izbaciti gresku jer korisnik nije aktivan, tj. logicki je obrisan
@@ -161,8 +160,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     public User findUserByEmail(String email) {
-        //TODO Izbaciti gresku ako nema korisnika sa ovim email-om
-        return userRepository.findByEmail(email);
+        return userRepository.findByEmail(email).orElseThrow(() -> new NotFoundException("User has not been found."));
     }
 
 }
