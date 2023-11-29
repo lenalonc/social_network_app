@@ -62,7 +62,7 @@ public class SocialGroupController extends MyRequest {
         if(currentU.getId() == socialGroup.getUser().getId())
         {
             groupService.deleteSocialGroupById(id);
-            return "Usesno ste obrisali grupu";
+            return "Uspesno ste obrisali grupu";
         }
         else {
             return "Niste ovlasceni da obrisete grupu";
@@ -71,18 +71,21 @@ public class SocialGroupController extends MyRequest {
     }
 
     @PostMapping("/createmembershiprequest")
-    public String createMembershipReques(@RequestBody MyRequest id) {
+    public String createMembershipRequest(@RequestBody MyRequest id) {
         SocialGroup socialGroup = groupService.getSocialGroupById(id.getId());
 
         User u = userService.findCurrentUser();
 
-        MembershipRequest membershipRequest = new MembershipRequest();
-        membershipRequest.setSocialGroup(socialGroup);
-        membershipRequest.setUser(u);
-        membershipRequest.setRequestStatus(RequestStatus.PENDING);
+        if(u!=null){
+            MembershipRequest membershipRequest = new MembershipRequest();
+            membershipRequest.setSocialGroup(socialGroup);
+            membershipRequest.setUser(u);
+            membershipRequest.setRequestStatus(RequestStatus.PENDING);
+            requestService.saveRequest(membershipRequest);
+            return "Uspesno ste poslali request za uclanjnje u grupi";
+        }
+        else
+            return "Zahteve mogu poslati samo ulogovani koristnici";
 
-        requestService.saveRequest(membershipRequest);
-
-        return "Uspesno ste poslali request za uclanjnje u grupi";
     }
 }
