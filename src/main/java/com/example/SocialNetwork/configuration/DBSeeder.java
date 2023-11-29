@@ -65,12 +65,13 @@ public class DBSeeder implements CommandLineRunner {
         membershipRequestRepository.save(membershipRequest);
     }
 
-    private void seedFriendRequest(RequestStatus requestStatus, Long user1Id, Long user2Id, Date date) {
+    private void seedFriendRequest(RequestStatus requestStatus, int user1Id, int user2Id, Date date) {
+        List<User> users = userRepository.findAll();
         FriendRequest friendRequest = new FriendRequest();
         friendRequest.setStatus(requestStatus);
         friendRequest.setDate((java.sql.Date) date);
-        friendRequest.setId_user1(user1Id);
-        friendRequest.setId_user2(user2Id);
+        friendRequest.setId_user1(users.get(user1Id).getId());
+        friendRequest.setId_user2(users.get(user2Id).getId());
         friendRequestRepository.save(friendRequest);
     }
 
@@ -128,10 +129,10 @@ public class DBSeeder implements CommandLineRunner {
         seedMembershipRequest(RequestStatus.REJECTED, 2, 2);
         seedMembershipRequest(RequestStatus.ACCEPTED, 2, 4);
 
-       //seedFriendRequest(RequestStatus.PENDING, 254L, 255L, new Date(System.currentTimeMillis()));
-/*     seedFriendRequest(RequestStatus.ACCEPTED, 94L, 97L, new Date(System.currentTimeMillis()));
-       seedFriendRequest(RequestStatus.PENDING, 94L, 98L, new Date(System.currentTimeMillis()));
-*/
+        seedFriendRequest(RequestStatus.PENDING, 1, 2, new Date(System.currentTimeMillis()));
+        seedFriendRequest(RequestStatus.ACCEPTED, 3, 1, new Date(System.currentTimeMillis()));
+        seedFriendRequest(RequestStatus.PENDING, 1, 4, new Date(System.currentTimeMillis()));
+
         seedFriends(2L, 1L);
         seedFriends(1L, 3L);
         seedFriends(2L, 3L);
@@ -141,8 +142,8 @@ public class DBSeeder implements CommandLineRunner {
         this.groupMemberRepository.deleteAll();
         this.membershipRequestRepository.deleteAll();
         this.socialGroupRepository.deleteAll();
-        this.userRepository.deleteAll();
         this.friendsRepository.deleteAll();
         this.friendRequestRepository.deleteAll();
+        this.userRepository.deleteAll();
     }
 }
