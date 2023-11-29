@@ -1,7 +1,11 @@
 package com.example.SocialNetwork.controller;
 
 import com.example.SocialNetwork.entities.MembershipRequest;
+import com.example.SocialNetwork.entities.SocialGroup;
+import com.example.SocialNetwork.entities.User;
 import com.example.SocialNetwork.service.MembershipRequestService;
+import com.example.SocialNetwork.service.SocialGroupService;
+import com.example.SocialNetwork.service.UserService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -10,15 +14,24 @@ import java.util.List;
 @RequestMapping("/membershiprequest")
 public class MembershipRequestController {
     private final MembershipRequestService requestService;
+    private final UserService userService;
+    private final SocialGroupService groupService;
     private Long id;
 
-    public MembershipRequestController(MembershipRequestService requestService){
+    public MembershipRequestController(MembershipRequestService requestService, UserService userService, SocialGroupService groupService){
         this.requestService = requestService;
+        this.userService = userService;
+        this.groupService = groupService;
     }
 
-    @GetMapping("/")
-    public List<MembershipRequest> showAllRequests(){
-        return requestService.getAllRequests();
+    @GetMapping("/group/{id}")
+    public List<MembershipRequest> showAllRequests(@PathVariable Long id){
+        User user = userService.findCurrentUser();
+        SocialGroup socialGroup = groupService.getSocialGroupById(id);
+        if(socialGroup.getUser().getId()==user.getId()){
+            return requestService.getAllRequests();
+        }
+        return  null;
     }
 
     @GetMapping("/{id}")

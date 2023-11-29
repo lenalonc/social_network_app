@@ -99,8 +99,8 @@ public class DBSeeder implements CommandLineRunner {
 
         seedMembershipRequest(RequestStatus.PENDING,1,2);
         seedMembershipRequest(RequestStatus.ACCEPTED,1,1);
-        seedMembershipRequest(RequestStatus.PENDING,1, 3);
-        seedMembershipRequest(RequestStatus.REJECTED,2,4);
+        seedMembershipRequest(RequestStatus.PENDING,2, 3);
+        seedMembershipRequest(RequestStatus.REJECTED,3,4);
         seedMembershipRequest(RequestStatus.ACCEPTED,1,4);
 
         seedGroupMember(0,1);
