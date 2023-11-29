@@ -1,5 +1,6 @@
 package com.example.SocialNetwork.service;
 
+import com.example.SocialNetwork.dto.UserDTO;
 import com.example.SocialNetwork.entities.User;
 
 import java.util.List;
@@ -9,7 +10,7 @@ public interface UserService {
 
     void updateUser(Long id, User user);
 
-    List<User> getAllUsers();
+    List<UserDTO> getAllUsers();
 
     void deleteUserById(Long id);
 

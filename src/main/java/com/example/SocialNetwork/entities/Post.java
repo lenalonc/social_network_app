@@ -1,16 +1,23 @@
 package com.example.SocialNetwork.entities;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 @Entity
 @Table(name = "post")
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
 public class Post {
 
     @Id
@@ -34,11 +41,17 @@ public class Post {
     @JoinColumn(name = "id_user", nullable = false)
     private User user;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+
+    @ManyToOne
     @JoinColumn(name = "id_social_group", nullable = false)
     private SocialGroup socialGroup;
+
+
     @OneToMany(mappedBy = "post")
-    private List<Comment> comments;
+    private List<Comment> comments = new ArrayList<>();
 
-
+    @Override
+    public String toString() {
+        return "";
+    }
 }

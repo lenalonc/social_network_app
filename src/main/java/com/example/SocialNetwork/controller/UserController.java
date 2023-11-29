@@ -1,5 +1,6 @@
 package com.example.SocialNetwork.controller;
 
+import com.example.SocialNetwork.dto.UserDTO;
 import com.example.SocialNetwork.dtos.LoginRequest;
 import com.example.SocialNetwork.dtos.LoginResponse;
 import com.example.SocialNetwork.dtos.PasswordDto;
@@ -76,7 +77,7 @@ public class UserController {
     }
 
     @GetMapping("/")
-    public List<User> showAllUsers() {
+    public List<UserDTO> showAllUsers() {
         return userService.getAllUsers();
     }
 
