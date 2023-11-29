@@ -7,6 +7,7 @@ import lombok.Data;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "comment")
@@ -26,7 +27,7 @@ public class Comment {
 
     @OneToMany
     @JoinColumn(name = "id")
-    private ArrayList<Comment> replies;
+    private List<Comment> replies;
 
     @ManyToOne
     @JoinColumn(name = "id_parent_id")

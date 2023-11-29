@@ -1,8 +1,7 @@
 package com.example.SocialNetwork.controller;
 
-import com.example.SocialNetwork.configuration.MyRequest;
+import com.example.SocialNetwork.helpercalsses.MyRequest;
 import com.example.SocialNetwork.entities.*;
-import com.example.SocialNetwork.service.GroupMemberServiceImpl;
 import com.example.SocialNetwork.service.MembershipRequestService;
 import com.example.SocialNetwork.service.SocialGroupService;
 import com.example.SocialNetwork.service.UserService;
@@ -24,11 +23,6 @@ public class SocialGroupController extends MyRequest {
         this.requestService = requestService;
     }
 
-    @GetMapping("/hello")
-    public String hello() {
-        return "Hello Levi9";
-    }
-
     @PostMapping("/")
     public String createGroup(@RequestBody SocialGroup group) {
         User user = userService.findByID(1L);
@@ -37,16 +31,16 @@ public class SocialGroupController extends MyRequest {
         return "Usmesno sacuvana grupa";
     }
 
-    @GetMapping("/all")
+    @GetMapping("/")
     public List<SocialGroup> showAllSocialGroups(){
         return groupService.getAllSocialGroups();
     }
 
-    @GetMapping("all/{name}")
+    @GetMapping("/name/{name}")
     public List<SocialGroup> getSocialGroupByName(@PathVariable String name) {
         return groupService.getSocialGroupByName(name);
     }
-    @GetMapping("all/{id}")
+    @GetMapping("/{id}")
     public SocialGroup getSocialGroupById(@PathVariable Long id) {
         return groupService.getSocialGroupById(id);
     }
@@ -58,12 +52,12 @@ public class SocialGroupController extends MyRequest {
         return "Usesno ste obrisali grupu";
     }
 
-    @PostMapping("/request")
+    @PostMapping("/createmembershiprequest")
     public String createMembershipReques(@RequestBody MyRequest id) {
         SocialGroup socialGroup = groupService.getSocialGroupById(id.getId());
 
         User u = new User();
-        u.setId(1L);
+        u.setId(48L);
 
         MembershipRequest membershipRequest = new MembershipRequest();
         membershipRequest.setSocialGroup(socialGroup);
