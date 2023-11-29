@@ -45,8 +45,6 @@ public class User {
     @Column(name = "active", nullable = false)
     private boolean active;
 
-    @Column(name = "admin", nullable = false)
-    private boolean admin;
 
     @Column(name = "donotdisturb")
     private Date donotdistrub;

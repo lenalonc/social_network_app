@@ -1,7 +1,6 @@
 package com.example.SocialNetwork.configuration;
 
 import com.example.SocialNetwork.entities.*;
-import com.example.SocialNetwork.repository.*;
 import com.example.SocialNetwork.repository.GroupMemberRepository;
 import com.example.SocialNetwork.repository.MembershipRequestRepository;
 import com.example.SocialNetwork.repository.SocialGroupRepository;
@@ -18,29 +17,23 @@ public class DBSeeder implements CommandLineRunner {
 
     UserRepository userRepository;
     MembershipRequestRepository membershipRequestRepository;
-    FriendsRepository friendsRepository;
-    FriendRequestRepository friendRequestRepository;
     SocialGroupRepository socialGroupRepository;
     GroupMemberRepository groupMemberRepository;
 
 
-    DBSeeder(UserRepository userRepository, MembershipRequestRepository membershipRequestRepository, SocialGroupRepository socialGroupRepository, FriendsRepository friendsRepository, FriendRequestRepository friendRequestRepository, GroupMemberRepository groupMemberRepository) {
+    DBSeeder(UserRepository userRepository, MembershipRequestRepository membershipRequestRepository, SocialGroupRepository socialGroupRepository,GroupMemberRepository groupMemberRepository) {
         this.userRepository = userRepository;
         this.membershipRequestRepository = membershipRequestRepository;
         this.socialGroupRepository = socialGroupRepository;
-        this.friendsRepository = friendsRepository;
-        this.friendRequestRepository = friendRequestRepository;
         this.groupMemberRepository = groupMemberRepository;
     }
 
-    private void seedUser(String username, String email, String password, boolean active, boolean admin) {
+    private void seedUser(String username, String email, String password, boolean active) {
         User user = new User();
         user.setUsername(username);
         user.setEmail(email);
         user.setPassword(password);
         user.setActive(active);
-        user.setAdmin(admin);
-
         userRepository.save(user);
     }
 
@@ -98,14 +91,31 @@ public class DBSeeder implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        clearDatabase();
+        //clearDatabase();
 
-        seedUser("John", "john@example.com", "password1", true, true);
-        seedUser("Alice", "alice@example.com", "password2", true, false);
-        seedUser("Bob", "bob@example.com", "password3", true, false);
-        seedUser("Eva", "eva@example.com", "password4", false, false);
-        seedUser("Michael", "michael@example.com", "password5", false, false);
-
+//        seedUser("John", "john@example.com", "password1", true, true);
+//        seedUser("Alice", "alice@example.com", "password2", true, false);
+//        seedUser("Bob", "bob@example.com", "password3", true, false);
+//        seedUser("Eva", "eva@example.com", "password4", false, false);
+//        seedUser("Michael", "michael@example.com", "password5", false, false);
+//
+//        seedSocialGroup("Group1", true,1);
+//        seedSocialGroup("Group2", false,1);
+//        seedSocialGroup("Group3", true,2);
+//        seedSocialGroup("Group4", false,2);
+//        seedSocialGroup("Group5", true,3);
+//
+//        seedMembershipRequest(RequestStatus.PENDING,1,2);
+//        seedMembershipRequest(RequestStatus.ACCEPTED,1,1);
+//        seedMembershipRequest(RequestStatus.PENDING,1, 3);
+//        seedMembershipRequest(RequestStatus.REJECTED,2,4);
+//        seedMembershipRequest(RequestStatus.ACCEPTED,1,4);
+//
+//        seedGroupMember(0,1);
+//        seedGroupMember(1,1);
+//        seedGroupMember(2,3);
+//        seedGroupMember(1,2);
+//        seedGroupMember(1,3);
         seedSocialGroup("Group1", true,1);
         seedSocialGroup("Group2", false,1);
         seedSocialGroup("Group3", true,2);

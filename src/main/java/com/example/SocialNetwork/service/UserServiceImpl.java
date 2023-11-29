@@ -60,7 +60,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                 .username(userCreateDto.getUsername())
                 .roles(userCreateDto.getRoles())
                 .active(true)
-                .admin(false)
                 .secretKey(RandomStringUtils.randomNumeric(6))
                 .build();
 
