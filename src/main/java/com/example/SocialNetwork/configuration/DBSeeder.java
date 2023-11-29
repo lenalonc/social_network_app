@@ -6,6 +6,7 @@ import com.example.SocialNetwork.repository.MembershipRequestRepository;
 import com.example.SocialNetwork.repository.SocialGroupRepository;
 import com.example.SocialNetwork.repository.UserRepository;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -19,20 +20,28 @@ public class DBSeeder implements CommandLineRunner {
     MembershipRequestRepository membershipRequestRepository;
     SocialGroupRepository socialGroupRepository;
     GroupMemberRepository groupMemberRepository;
+    BCryptPasswordEncoder passwordEncoder;
 
 
-    DBSeeder(UserRepository userRepository, MembershipRequestRepository membershipRequestRepository, SocialGroupRepository socialGroupRepository,GroupMemberRepository groupMemberRepository) {
+
+    DBSeeder(UserRepository userRepository,
+             MembershipRequestRepository membershipRequestRepository,
+             SocialGroupRepository socialGroupRepository,
+             GroupMemberRepository groupMemberRepository,
+             BCryptPasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.membershipRequestRepository = membershipRequestRepository;
         this.socialGroupRepository = socialGroupRepository;
         this.groupMemberRepository = groupMemberRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     private void seedUser(String username, String email, String password, boolean active) {
         User user = new User();
         user.setUsername(username);
         user.setEmail(email);
-        user.setPassword(password);
+        String hashedPassword = passwordEncoder.encode(password);
+        user.setPassword(hashedPassword);
         user.setActive(active);
 
         userRepository.save(user);
@@ -76,11 +85,11 @@ public class DBSeeder implements CommandLineRunner {
     public void run(String... args) throws Exception {
         //clearDatabase();
 
-//        seedUser("John", "john@example.com", "password1", true, true);
-//        seedUser("Alice", "alice@example.com", "password2", true, false);
-//        seedUser("Bob", "bob@example.com", "password3", true, false);
-//        seedUser("Eva", "eva@example.com", "password4", false, false);
-//        seedUser("Michael", "michael@example.com", "password5", false, false);
+//        seedUser("John", "john@example.com", "password1", true);
+//        seedUser("Alice", "alice@example.com", "password2", true);
+//        seedUser("Bob", "bob@example.com", "password3", true);
+//        seedUser("Eva", "eva@example.com", "password4", false);
+//        seedUser("Michael", "michael@example.com", "password5", false);
 //
 //        seedSocialGroup("Group1", true,1);
 //        seedSocialGroup("Group2", false,1);
