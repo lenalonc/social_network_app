@@ -12,14 +12,15 @@ import org.springframework.http.ResponseEntity;
 import org.modelmapper.ModelMapper;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
@@ -169,4 +170,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return userRepository.findByEmail(email).orElseThrow(() -> new NotFoundException("User has not been found."));
     }
 
+    public User findCurrentUser() {
+        Optional<User> user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+        return user.get();
+
+    }
 }

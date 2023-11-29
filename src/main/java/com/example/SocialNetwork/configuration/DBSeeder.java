@@ -3,6 +3,7 @@ package com.example.SocialNetwork.configuration;
 import com.example.SocialNetwork.entities.*;
 import com.example.SocialNetwork.repository.*;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -19,25 +20,31 @@ public class DBSeeder implements CommandLineRunner {
     FriendRequestRepository friendRequestRepository;
     FriendsRepository friendsRepository;
 
+    BCryptPasswordEncoder passwordEncoder;
 
 
 
-    DBSeeder(UserRepository userRepository, MembershipRequestRepository membershipRequestRepository, SocialGroupRepository socialGroupRepository,GroupMemberRepository groupMemberRepository, FriendRequestRepository friendRequestRepository, FriendsRepository friendsRepository) {
+    DBSeeder(UserRepository userRepository,
+             MembershipRequestRepository membershipRequestRepository,
+             SocialGroupRepository socialGroupRepository,
+             GroupMemberRepository groupMemberRepository,
+             BCryptPasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.membershipRequestRepository = membershipRequestRepository;
         this.socialGroupRepository = socialGroupRepository;
         this.groupMemberRepository = groupMemberRepository;
         this.friendRequestRepository = friendRequestRepository;
         this.friendsRepository = friendsRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     private void seedUser(String username, String email, String password, boolean active) {
         User user = new User();
         user.setUsername(username);
         user.setEmail(email);
-        user.setPassword(password);
+        String hashedPassword = passwordEncoder.encode(password);
+        user.setPassword(hashedPassword);
         user.setActive(active);
-        user.setPassword(password);
         userRepository.save(user);
     }
 
@@ -95,32 +102,14 @@ public class DBSeeder implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        //clearDatabase();
+        clearDatabase();
 
-//        seedUser("John", "john@example.com", "password1", true, true);
-//        seedUser("Alice", "alice@example.com", "password2", true, false);
-//        seedUser("Bob", "bob@example.com", "password3", true, false);
-//        seedUser("Eva", "eva@example.com", "password4", false, false);
-//        seedUser("Michael", "michael@example.com", "password5", false, false);
-//
-//        seedSocialGroup("Group1", true,1);
-//        seedSocialGroup("Group2", false,1);
-//        seedSocialGroup("Group3", true,2);
-//        seedSocialGroup("Group4", false,2);
-//        seedSocialGroup("Group5", true,3);
-//
-//        seedMembershipRequest(RequestStatus.PENDING,1,2);
-//        seedMembershipRequest(RequestStatus.ACCEPTED,1,1);
-//        seedMembershipRequest(RequestStatus.PENDING,1, 3);
-//        seedMembershipRequest(RequestStatus.REJECTED,2,4);
-//        seedMembershipRequest(RequestStatus.ACCEPTED,1,4);
-//
-//        seedGroupMember(0,1);
-//        seedGroupMember(1,1);
-//        seedGroupMember(2,3);
-//        seedGroupMember(1,2);
-//        seedGroupMember(1,3);
-        /*
+        seedUser("John", "john@example.com", "password1", true);
+        seedUser("Alice", "alice@example.com", "password2", true);
+        seedUser("Bob", "bob@example.com", "password3", true);
+        seedUser("Eva", "eva@example.com", "password4", false);
+        seedUser("Michael", "michael@example.com", "password5", false);
+
         seedSocialGroup("Group1", true,1);
         seedSocialGroup("Group2", false,1);
         seedSocialGroup("Group3", true,2);
@@ -138,28 +127,13 @@ public class DBSeeder implements CommandLineRunner {
         seedGroupMember(2,3);
         seedGroupMember(1,2);
         seedGroupMember(1,3);
-        seedMembershipRequest(RequestStatus.PENDING, 1, 3);
-        seedMembershipRequest(RequestStatus.ACCEPTED, 1, 2);
-        seedMembershipRequest(RequestStatus.PENDING, 2, 3);
-        seedMembershipRequest(RequestStatus.REJECTED, 2, 2);
-        seedMembershipRequest(RequestStatus.ACCEPTED, 2, 4);
-
-        seedFriendRequest(RequestStatus.PENDING, 1, 2, new Date(System.currentTimeMillis()));
-        seedFriendRequest(RequestStatus.ACCEPTED, 3, 1, new Date(System.currentTimeMillis()));
-        seedFriendRequest(RequestStatus.PENDING, 1, 4, new Date(System.currentTimeMillis()));
-
-        seedFriends(2L, 1L);
-        seedFriends(1L, 3L);
-        seedFriends(2L, 3L);
-        */
     }
 
-/*    private void clearDatabase() {
+
+    private void clearDatabase() {
         this.groupMemberRepository.deleteAll();
         this.membershipRequestRepository.deleteAll();
         this.socialGroupRepository.deleteAll();
-       // this.friendsRepository.deleteAll();
-       //  this.friendRequestRepository.deleteAll();
         this.userRepository.deleteAll();
-    }*/
+    }
 }

@@ -16,4 +16,6 @@ public interface UserService {
     ResponseEntity<String> deleteUserById(Long id);
 
     User findByID(Long id);
+
+    public User findCurrentUser();
 }

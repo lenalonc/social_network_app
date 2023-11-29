@@ -1,6 +1,5 @@
 package com.example.SocialNetwork.controller;
 
-import com.example.SocialNetwork.dto.UserDTO;
 import com.example.SocialNetwork.dtos.LoginRequest;
 import com.example.SocialNetwork.dtos.LoginResponse;
 import com.example.SocialNetwork.dtos.PasswordDto;
@@ -22,11 +21,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Optional;
 
-import static com.example.SocialNetwork.entities.UserRole.ROLE_ADMIN;
-import static org.springframework.security.authorization.AuthorityReactiveAuthorizationManager.hasRole;
 
 @RestController
 @RequestMapping("/users")
@@ -70,8 +66,12 @@ public class UserController {
     @GetMapping("/hello")
     public ResponseEntity<String> hello() {
         return new ResponseEntity<>("Hello Levi9 konferencijska sala uvek radi", HttpStatus.OK);
-    }
 
+    }
+    @GetMapping("/currentuser")
+    public User getCurrentUser() {
+        return userService.findCurrentUser();
+    }
     @PostMapping("/")
     public ResponseEntity<String> saveUser(@RequestBody User user) {
         userService.saveUser(user);

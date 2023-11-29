@@ -7,6 +7,7 @@ import com.example.SocialNetwork.entities.SocialGroup;
 import com.example.SocialNetwork.entities.User;
 import com.example.SocialNetwork.service.GroupMemberService;
 import com.example.SocialNetwork.service.MembershipRequestService;
+import com.example.SocialNetwork.service.SocialGroupService;
 import com.example.SocialNetwork.service.UserService;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,13 +19,16 @@ public class GroupMemberController extends MyRequest {
     private final GroupMemberService memberService;
     private final MembershipRequestService requestService;
     private final UserService userService;
+    private final SocialGroupService groupService;
 
     public GroupMemberController(GroupMemberService memberService,
                                  MembershipRequestService requestService,
-                                 UserService userService) {
+                                 UserService userService,
+                                 SocialGroupService groupService) {
         this.memberService =  memberService;
         this.requestService = requestService;
         this.userService = userService;
+        this.groupService = groupService;
     }
     @PostMapping("/")
     public String approveRequest(@RequestBody MyRequest id) {
@@ -47,6 +51,19 @@ public class GroupMemberController extends MyRequest {
         return "Vas zahtev za uclanjenje grupe je prihvacen!";
     }
 
+    @DeleteMapping("/{id}")
+    public String deleteMember(@PathVariable Long id){
+        User user = userService.findCurrentUser();
+        SocialGroup socialGroup = groupService.getSocialGroupById(id);
+        if(user.getId() == socialGroup.getUser().getId()){
+            return "Vi ste admin grupe, ne mozete je napustiti.";
+        }
+        else {
+            memberService.deleteGroupMemberById(user.getId());
+            return "Uspesno ste napustili grupu";
+        }
+
+    }
 
     @GetMapping("/allusersforgroup/{id}")
     public List<String> showAllUsersForGroup(@PathVariable Long id){
