@@ -25,8 +25,7 @@ public class Post {
     private Long id;
 
     @Column(name = "date", nullable = false)
-    @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
-    private LocalDateTime date;
+    private Date date;
 
     @Column(name = "text", nullable = false)
     private String text;

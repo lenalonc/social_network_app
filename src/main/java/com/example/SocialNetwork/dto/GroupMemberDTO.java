@@ -11,19 +11,15 @@ import java.util.Date;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PostDTO {
+public class GroupMemberDTO {
 
     private Long id;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ")
-    private Date date;
-
-    private String text;
-
-    private boolean type;
-
-    private boolean deleted;
+    private Date dateJoined;
 
     private UserDTO user;
+
+    private SocialGroupDTO socialGroup;
 
 }

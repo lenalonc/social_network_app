@@ -17,5 +17,7 @@ public interface UserService {
 
     User findByID(Long id);
 
+    UserDTO findByIDDTO(Long id);
+
     public User findCurrentUser();
 }
