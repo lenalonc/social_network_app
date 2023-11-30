@@ -10,4 +10,8 @@ public interface GroupMemberService {
     List<Long> getAllGroupMembers(Long id);
 
     void deleteGroupMemberById(Long id);
+
+    void deleteGroupMemberByUserId(Long id);
+
+    void deleteAllGroupMembers(Long id);
 }

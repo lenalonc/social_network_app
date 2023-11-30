@@ -1,6 +1,6 @@
 package com.example.SocialNetwork.controller;
 
-import com.example.SocialNetwork.helpercalsses.MyRequest;
+import com.example.SocialNetwork.helper.MyRequest;
 import com.example.SocialNetwork.entities.GroupMember;
 import com.example.SocialNetwork.entities.MembershipRequest;
 import com.example.SocialNetwork.entities.SocialGroup;
@@ -30,9 +30,19 @@ public class GroupMemberController extends MyRequest {
         this.userService = userService;
         this.groupService = groupService;
     }
-    @PostMapping("/")
-    public String approveRequest(@RequestBody MyRequest id) {
-        MembershipRequest membershipRequest = requestService.getAllRequestsById(id.getId());
+    @GetMapping("/{id}")
+    public List<String> showAllUsersForGroup(@PathVariable Long id){
+        List<String> users = new ArrayList<>();
+        List<Long> groupMember = memberService.getAllGroupMembers(id);
+
+        for (Long aLong : groupMember) {
+            users.add(userService.findByID(aLong).getUsername());
+        }
+        return users;
+    }
+    @PostMapping("/{id}")
+    public String approveRequest(@PathVariable Long id) {
+        MembershipRequest membershipRequest = requestService.getAllRequestsById(id);
         if (membershipRequest == null)
             return null;
         User currentUser = userService.findCurrentUser();
@@ -48,14 +58,13 @@ public class GroupMemberController extends MyRequest {
             groupMember.setUser(user);
 
             memberService.saveGroupMember(groupMember);
-            requestService.deleteRequestById(id.getId());
+            requestService.deleteRequestById(id);
 
             return "Prihvatili ste zahtev za uclanjenje u grupu";
         }
         else
             return "Samo admin moze da prihvati zahtev, vi niste admin";
     }
-
     @DeleteMapping("/{id}")
     public String deleteMember(@PathVariable Long id){
         User user = userService.findCurrentUser();
@@ -67,18 +76,6 @@ public class GroupMemberController extends MyRequest {
             memberService.deleteGroupMemberById(user.getId());
             return "Uspesno ste napustili grupu";
         }
-
-    }
-
-    @GetMapping("/{id}")
-    public List<String> showAllUsersForGroup(@PathVariable Long id){
-        List<String> users = new ArrayList<>();
-        List<Long> groupMember = memberService.getAllGroupMembers(id);
-
-        for (Long aLong : groupMember) {
-            users.add(userService.findByID(aLong).getUsername());
-        }
-        return users;
     }
 }
 

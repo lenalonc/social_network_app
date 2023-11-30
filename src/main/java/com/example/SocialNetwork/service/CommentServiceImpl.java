@@ -13,6 +13,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -83,7 +84,7 @@ public class CommentServiceImpl implements CommentService {
         } if (!privateChecksFlag) throw new ForbiddenException("You are not allowed to comment on this post, because you are not friends");
 
         comment.setPost(post);
-        comment.setDate(LocalDateTime.now());
+        comment.setDate(new Date());
         comment.setUser(user);
         boolean groupChecksFlag = false;
 
@@ -136,7 +137,7 @@ public class CommentServiceImpl implements CommentService {
         }
 
         reply.setUser(user);
-        reply.setDate(LocalDateTime.now());
+        reply.setDate(new Date());
         reply.setParentComment(comment);
 
         comment.getReplies().add(reply);
