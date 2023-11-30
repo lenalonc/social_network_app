@@ -2,7 +2,6 @@ package com.example.SocialNetwork.service;
 
 import com.example.SocialNetwork.dto.SocialGroupDTO;
 import com.example.SocialNetwork.entities.GroupMember;
-import com.example.SocialNetwork.entities.MembershipRequest;
 import com.example.SocialNetwork.entities.SocialGroup;
 import com.example.SocialNetwork.entities.User;
 import com.example.SocialNetwork.repository.GroupMemberRepository;
@@ -95,14 +94,8 @@ public class SocialGroupServiceImpl implements SocialGroupService{
         if (socialGroup != null && currentUser.getId().equals(socialGroup.getUser().getId())) {
             List<Long> userIds = groupMemberService.getAllGroupMembers(id);
 
-            for (Long userId : userIds) {
-                groupMemberRepository.deleteById(userId);
-                System.out.println(userId);
-            }
-
-            List<MembershipRequest> membershipRequests = membershipRequestService.getAllRequestsForSocialGroup(id);
-            for (MembershipRequest member : membershipRequests)
-                membershipRequestRepository.deleteById(member.getId());
+            membershipRequestService.deleteAllRequestsForSocialGroup(id);
+            groupMemberService.deleteAllGroupMembers(id);
             groupRepository.deleteById(id);
 
             return ResponseEntity.ok("Uspesno ste obrisali grupu");
@@ -110,6 +103,7 @@ public class SocialGroupServiceImpl implements SocialGroupService{
             return ResponseEntity.status(403).body("Niste ovlasceni da obrisete grupu");
         }
     }
+
 
     @Override
     public ResponseEntity<SocialGroupDTO> getSocialGroupDTOById(Long id) {

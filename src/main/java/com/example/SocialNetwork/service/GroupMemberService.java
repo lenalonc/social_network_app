@@ -12,4 +12,6 @@ public interface GroupMemberService {
     void deleteGroupMemberById(Long id);
 
     void deleteGroupMemberByUserId(Long id);
+
+    void deleteAllGroupMembers(Long id);
 }

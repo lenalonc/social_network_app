@@ -33,5 +33,13 @@ public class GroupMemberServiceImpl implements GroupMemberService{
         memberRepository.deleteByUserId(id);
     }
 
+    @Override
+    public void deleteAllGroupMembers(Long groupId) {
+        List<Long> groupMemberIds = getAllGroupMembers(groupId);
+        for (Long memberId : groupMemberIds) {
+            deleteGroupMemberByUserId(memberId);
+        }
+    }
+
 
 }
