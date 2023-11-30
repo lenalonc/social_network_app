@@ -2,6 +2,7 @@ package com.example.SocialNetwork.controller;
 
 import com.example.SocialNetwork.dto.SocialGroupDTO;
 import com.example.SocialNetwork.entities.SocialGroup;
+import com.example.SocialNetwork.entities.User;
 import com.example.SocialNetwork.helpercalsses.MyRequest;
 import com.example.SocialNetwork.service.GroupMemberService;
 import com.example.SocialNetwork.service.MembershipRequestService;
@@ -59,6 +60,12 @@ public class SocialGroupController extends MyRequest {
     @GetMapping("/id/{id}")
     public ResponseEntity<SocialGroupDTO> getSocialGroupDTOById(@PathVariable Long id) {
         return groupService.getSocialGroupDTOById(id);
+    }
+
+    @PostMapping("/createmembershiprequest")
+    public ResponseEntity<String> createMembershipRequest(@RequestBody MyRequest myRequest) {
+        User currentUser = userService.findCurrentUser();
+        return membershipRequestService.createMembershipRequest(myRequest.getId(), currentUser);
     }
 
 

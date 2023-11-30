@@ -21,4 +21,6 @@ public interface GroupMemberRepository extends JpaRepository<GroupMember, Long> 
     @Transactional
     void deleteByUserId(@Param("id") Long id);
 
+    List<Long> findAllUserIdsBySocialGroupId(Long socialGroupId);
+    void deleteAllBySocialGroupId(Long socialGroupId);
 }
