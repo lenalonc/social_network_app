@@ -4,8 +4,10 @@ import com.example.SocialNetwork.dto.SocialGroupDTO;
 import com.example.SocialNetwork.entities.SocialGroup;
 import com.example.SocialNetwork.entities.User;
 import com.example.SocialNetwork.helpercalsses.MyRequest;
+import com.example.SocialNetwork.service.GroupMemberService;
 import com.example.SocialNetwork.service.SocialGroupService;
 import com.example.SocialNetwork.service.UserService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,11 +17,14 @@ import java.util.List;
 public class SocialGroupController extends MyRequest {
     private final SocialGroupService groupService;
     private final UserService userService;
+    private final GroupMemberService groupMemberService;
 
     public SocialGroupController(SocialGroupService groupService,
-                                 UserService userService) {
+                                 UserService userService,
+                                 GroupMemberService groupMemberService) {
         this.groupService = groupService;
         this.userService = userService;
+        this.groupMemberService = groupMemberService;
     }
 
     @GetMapping("/hello")
@@ -59,10 +64,26 @@ public class SocialGroupController extends MyRequest {
     public List<SocialGroupDTO> getSocialGroupByName(@PathVariable String name) {
         return groupService.getSocialGroupByName(name);
     }
+
     @GetMapping("/id/{id}")
     public SocialGroupDTO getSocialGroupDTOById(@PathVariable Long id) {
         return groupService.getSocialGroupDTOById(id);
     }
 
+    @PostMapping("/approve/{id}")
+    public ResponseEntity<?> approveRequest(@PathVariable Long id) {
+        return ResponseEntity.ok(groupMemberService.saveGroupMember(id));
+    }
+
+    @DeleteMapping("/deletemember/{id}")
+    public ResponseEntity<?> deleteMember(@PathVariable Long id){
+        groupMemberService.deleteGroupMemberById(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/allusers/{id}")
+    public ResponseEntity<?> showAllUsersForGroup(@PathVariable Long id){
+        return ResponseEntity.ok(groupMemberService.getAllGroupMembers(id));
+    }
 
 }

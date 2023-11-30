@@ -29,20 +29,21 @@ public class EventController {
 
     @PostMapping("/save")
     public ResponseEntity<?> saveEvent(@RequestBody Event event){
-        List<Long> members=groupMemberService.getAllGroupMembers(event.getSocialGroup().getId());
-        for (Long id: members ) {
-            if(id==event.getUser().getId()){
-                eventService.saveEvent(event);
-                LocalDateTime localDateTime = LocalDateTime.now();
-                Date currentDate = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
-                if(event.getDate().compareTo(currentDate) < 0){
-                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Trying to insert an event with bad Date");
-                }
-                return ResponseEntity.status(HttpStatus.OK).body("Event successfully created");
-            }
-
-        }
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User is not a member of this social group");
+//        List<Long> members=groupMemberService.getAllGroupMembers(event.getSocialGroup().getId());
+//        for (Long id: members ) {
+//            if(id==event.getUser().getId()){
+//                eventService.saveEvent(event);
+//                LocalDateTime localDateTime = LocalDateTime.now();
+//                Date currentDate = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
+//                if(event.getDate().compareTo(currentDate) < 0){
+//                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Trying to insert an event with bad Date");
+//                }
+//                return ResponseEntity.status(HttpStatus.OK).body("Event successfully created");
+//            }
+//
+//        }
+//        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User is not a member of this social group");
+        return null;
     }
     @GetMapping("/{id}")
     public List<EventDTO> getEventsBySocialGroup(@PathVariable Long id){

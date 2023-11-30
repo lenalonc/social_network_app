@@ -1,13 +1,16 @@
 package com.example.SocialNetwork.service;
 
+import com.example.SocialNetwork.dto.UserDTO;
 import com.example.SocialNetwork.entities.GroupMember;
+import com.example.SocialNetwork.entities.User;
+import com.example.SocialNetwork.helpercalsses.MyRequest;
 
 import java.util.List;
 
 public interface GroupMemberService {
-    public void saveGroupMember(GroupMember groupMember);
+    public GroupMember saveGroupMember(Long id);
 
-    List<Long> getAllGroupMembers(Long id);
+    List<UserDTO> getAllGroupMembers(Long id);
 
     void deleteGroupMemberById(Long id);
 }
