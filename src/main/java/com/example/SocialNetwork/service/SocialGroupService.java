@@ -1,8 +1,8 @@
 package com.example.SocialNetwork.service;
 
 import com.example.SocialNetwork.dto.SocialGroupDTO;
-import com.example.SocialNetwork.entities.MembershipRequest;
 import com.example.SocialNetwork.entities.SocialGroup;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
@@ -11,10 +11,13 @@ public interface SocialGroupService {
 
     List<SocialGroupDTO> getAllSocialGroups();
 
-    List<SocialGroupDTO> getSocialGroupByName(String name);
+    ResponseEntity<String> createGroup(SocialGroup group);
 
-    void deleteSocialGroupById(Long id);
+    ResponseEntity<List<SocialGroupDTO>> getSocialGroupByName(String name);
 
-    SocialGroupDTO getSocialGroupDTOById(Long id);
+    ResponseEntity<String> deleteSocialGroupById(Long id);
+
+    ResponseEntity<SocialGroupDTO> getSocialGroupDTOById(Long id);
     SocialGroup getSocialGroupById(Long id);
+
 }
