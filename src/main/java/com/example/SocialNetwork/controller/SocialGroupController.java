@@ -62,11 +62,16 @@ public class SocialGroupController extends MyRequest {
         return groupService.getSocialGroupDTOById(id);
     }
 
-    @PostMapping("/createmembershiprequest")
-    public ResponseEntity<String> createMembershipRequest(@RequestBody MyRequest myRequest) {
+    @PostMapping("/createmembershiprequest/{id}")
+    public ResponseEntity<String> createMembershipRequest(@PathVariable Long id) {
         User currentUser = userService.findCurrentUser();
-        return membershipRequestService.createMembershipRequest(myRequest.getId(), currentUser);
+        return membershipRequestService.createMembershipRequest(id, currentUser);
     }
 
+    @PostMapping("/join/{id}")
+    public ResponseEntity<String> joinGroup(@PathVariable Long id) {
+        User currentUser = userService.findCurrentUser();
+        return membershipRequestService.processJoinGroupRequest(id, currentUser);
+    }
 
 }

@@ -20,4 +20,6 @@ public interface MembershipRequestService {
     void deleteAllRequestsForSocialGroup(Long id);
 
     ResponseEntity<String> createMembershipRequest(Long id, User currentUser);
+
+    ResponseEntity<String> processJoinGroupRequest(Long groupId, User user);
 }

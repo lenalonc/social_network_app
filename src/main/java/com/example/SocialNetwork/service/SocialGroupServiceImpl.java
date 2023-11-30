@@ -89,27 +89,20 @@ public class SocialGroupServiceImpl implements SocialGroupService{
     @Override
     public ResponseEntity<String> deleteSocialGroupById(Long id) {
         User currentUser = userService.findCurrentUser();
-        Optional<SocialGroup> socialGroupOptional = groupRepository.findById(id);
+        SocialGroup socialGroup = groupRepository.findById(id).orElse(null);
 
-        if (socialGroupOptional.isPresent()) {
-            SocialGroup socialGroup = socialGroupOptional.get();
+        if (socialGroup != null && currentUser.getId().equals(socialGroup.getUser().getId())) {
+            List<Long> userIds = groupMemberService.getAllGroupMembers(id);
 
-            if (currentUser.getId().equals(socialGroup.getUser().getId())) {
-                List<Long> userIds = groupMemberRepository.findAllUserIdsBySocialGroupId(id);
+            membershipRequestService.deleteAllRequestsForSocialGroup(id);
+            groupMemberService.deleteAllGroupMembers(id);
+            groupRepository.deleteById(id);
 
-                membershipRequestRepository.deleteAllBySocialGroupId(id);
-                groupMemberRepository.deleteAllBySocialGroupId(id);
-                groupRepository.deleteById(id);
-
-                return ResponseEntity.ok("Uspesno ste obrisali grupu");
-            } else {
-                return ResponseEntity.status(403).body("Niste ovlasceni da obrisete grupu");
-            }
+            return ResponseEntity.ok("Uspesno ste obrisali grupu");
         } else {
-            return ResponseEntity.status(404).body("Grupa sa ID " + id + " nije pronađena");
+            return ResponseEntity.status(403).body("Niste ovlasceni da obrisete grupu");
         }
     }
-
 
 
     @Override

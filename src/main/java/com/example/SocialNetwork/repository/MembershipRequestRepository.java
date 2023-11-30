@@ -12,6 +12,4 @@ import java.util.List;
 public interface MembershipRequestRepository extends JpaRepository<MembershipRequest, Long> {
     @Query(value = "SELECT * FROM membershiprequest WHERE id_social_group =:id", nativeQuery = true)
     public List<MembershipRequest> findAllMembershipRequestsForSocialGroup(@Param("id") Long id);
-
-    void deleteAllBySocialGroupId(Long id);
 }
