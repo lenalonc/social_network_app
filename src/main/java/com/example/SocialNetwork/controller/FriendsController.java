@@ -18,11 +18,9 @@ import java.util.Optional;
 public class FriendsController {
 
     private FriendsService friendsService;
-    private UserRepository userRepository;
 
     public FriendsController(FriendsService friendsService, UserRepository userRepository) {
         this.friendsService = friendsService;
-        this.userRepository = userRepository;
     }
 
     @PostMapping("/")
@@ -37,8 +35,8 @@ public class FriendsController {
     }
 
     @GetMapping("/")
-    public ResponseEntity<?> getFriendsByUser(@RequestParam("user1Id") Long userId) {
-        List<UserDTO> friends = friendsService.getFriendsByUser(userId);
+    public ResponseEntity<?> getFriendsByUser() {
+        List<UserDTO> friends = friendsService.getFriendsByUser();
         return new ResponseEntity<>(friends, HttpStatus.OK);
     }
 

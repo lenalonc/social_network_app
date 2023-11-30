@@ -10,7 +10,7 @@ import java.util.List;
 public interface FriendsService {
     void saveFriends(Friends friends);
 
-    List<UserDTO> getFriendsByUser(Long userId);
+    List<UserDTO> getFriendsByUser();
 
     ResponseEntity<String> deleteFriend(Long friendId);
 
