@@ -18,12 +18,14 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.util.AntPathMatcher;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
 @EnableWebSecurity
 @AllArgsConstructor
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SpringSecurityConfiguration {
 
     private final UserServiceImpl userService;
@@ -43,14 +45,20 @@ public class SpringSecurityConfiguration {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((authz) -> authz
+                        .anyRequest().permitAll());
+
+        // zakomentarisan kod, kako ne bismo svaki put prosledjivali token, koristice se iskljucivo prilikom demoa za logout
+                        /*
                         .requestMatchers("/users/login").permitAll()
                         .requestMatchers("/users/register").permitAll()
                         .requestMatchers("/users/forgot-password").permitAll()
                         .requestMatchers("/users/activate-password/**").permitAll()
-                        .anyRequest().authenticated()
+                            .anyRequest().authenticated()
                 )
                 .sessionManagement(sessionManagement -> sessionManagement
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
+                .logout(logout -> logout.permitAll());*/
 
         http.addFilterBefore(this.jwtFilter, UsernamePasswordAuthenticationFilter.class);
 

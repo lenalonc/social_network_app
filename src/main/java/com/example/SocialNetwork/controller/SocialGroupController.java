@@ -1,11 +1,13 @@
 package com.example.SocialNetwork.controller;
 
-import com.example.SocialNetwork.helper.MyRequest;
 import com.example.SocialNetwork.dto.SocialGroupDTO;
-import com.example.SocialNetwork.entities.*;
+import com.example.SocialNetwork.entities.SocialGroup;
+import com.example.SocialNetwork.helpercalsses.MyRequest;
+import com.example.SocialNetwork.service.GroupMemberService;
 import com.example.SocialNetwork.service.MembershipRequestService;
 import com.example.SocialNetwork.service.SocialGroupService;
 import com.example.SocialNetwork.service.UserService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,13 +17,18 @@ import java.util.List;
 public class SocialGroupController extends MyRequest {
     private final SocialGroupService groupService;
     private final UserService userService;
-    private final MembershipRequestService requestService;
+    private final GroupMemberService groupMemberService;
 
-    public SocialGroupController(SocialGroupService groupService, UserService userService,
-                                 MembershipRequestService requestService) {
+    private final MembershipRequestService membershipRequestService;
+
+    public SocialGroupController(SocialGroupService groupService,
+                                 UserService userService,
+                                 GroupMemberService groupMemberService,
+                                 MembershipRequestService membershipRequestService) {
         this.groupService = groupService;
         this.userService = userService;
-        this.requestService = requestService;
+        this.groupMemberService = groupMemberService;
+        this.membershipRequestService = membershipRequestService;
     }
 
     @GetMapping("/hello")
@@ -29,49 +36,30 @@ public class SocialGroupController extends MyRequest {
         return "Hello Levi9";
     }
 
-    @PostMapping("/")
-    public String createGroup(@RequestBody SocialGroup group) {
-        User user = userService.findByID(1L);
-        group.setUser(user);
-        groupService.saveGroup(group);
-        return "Usmesno sacuvana grupa";
-    }
-
-    @GetMapping("/all")
+    @GetMapping("/")
     public List<SocialGroupDTO> showAllSocialGroups(){
         return groupService.getAllSocialGroups();
     }
 
-    @GetMapping("/name/{name}")
-    public List<SocialGroupDTO> getSocialGroupByName(@PathVariable String name) {
-        return groupService.getSocialGroupByName(name);
-    }
-    @GetMapping("/id/{id}")
-    public SocialGroupDTO getSocialGroupDTOById(@PathVariable Long id) {
-        return groupService.getSocialGroupDTOById(id);
+    @PostMapping("/")
+    public ResponseEntity<String> createGroup(@RequestBody SocialGroup group) {
+        return groupService.createGroup(group);
     }
 
     @DeleteMapping("/{id}")
-    public String deleteSocialGroupById(@PathVariable Long id) {
-        groupService.deleteSocialGroupById(id);
-
-        return "Usesno ste obrisali grupu";
+    public ResponseEntity<String> deleteSocialGroupById(@PathVariable Long id) {
+        return groupService.deleteSocialGroupById(id);
     }
 
-    @PostMapping("/createmembershiprequest")
-    public String createMembershipReques(@RequestBody MyRequest id) {
-        SocialGroup socialGroup = groupService.getSocialGroupById(id.getId());
-
-        User u = new User();
-        u.setId(48L);
-
-        MembershipRequest membershipRequest = new MembershipRequest();
-        membershipRequest.setSocialGroup(socialGroup);
-        membershipRequest.setUser(u);
-        membershipRequest.setRequestStatus(RequestStatus.PENDING);
-
-        requestService.saveRequest(membershipRequest);
-
-        return "Uspesno ste poslali request za uclanjnje u grupi";
+    @GetMapping("/name/{name}")
+    public ResponseEntity<List<SocialGroupDTO>> getSocialGroupByName(@PathVariable String name) {
+        return groupService.getSocialGroupByName(name);
     }
+
+    @GetMapping("/id/{id}")
+    public ResponseEntity<SocialGroupDTO> getSocialGroupDTOById(@PathVariable Long id) {
+        return groupService.getSocialGroupDTOById(id);
+    }
+
+
 }

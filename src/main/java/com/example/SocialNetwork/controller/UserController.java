@@ -6,20 +6,24 @@ import com.example.SocialNetwork.dtos.LoginResponse;
 import com.example.SocialNetwork.dtos.PasswordDto;
 import com.example.SocialNetwork.dtos.UserCreateDto;
 import com.example.SocialNetwork.entities.User;
-import com.example.SocialNetwork.service.UserService;
+import com.example.SocialNetwork.repository.UserRepository;
 import com.example.SocialNetwork.service.UserServiceImpl;
 import com.example.SocialNetwork.utils.JwtUtil;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
+
 
 @RestController
 @RequestMapping("/users")
@@ -29,6 +33,7 @@ public class UserController {
     private final AuthenticationManager authenticationManager;
     private final UserServiceImpl userService;
     private final JwtUtil jwtUtil;
+    private UserRepository userRepository;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest){
@@ -60,37 +65,78 @@ public class UserController {
     }
 
     @GetMapping("/hello")
-    public String hello() {
-        return "Hello Levi9 konferencijska sala uvek radi";
-    }
+    public ResponseEntity<String> hello() {
+        return new ResponseEntity<>("Hello Levi9 konferencijska sala uvek radi", HttpStatus.OK);
 
+    }
+    @GetMapping("/currentuser")
+    public User getCurrentUser() {
+        return userService.findCurrentUser()
+                ;
+    }
     @PostMapping("/")
-    public String saveUser(@RequestBody User user) {
+    public ResponseEntity<String> saveUser(@RequestBody User user) {
         userService.saveUser(user);
-        return "Bravo";
+        return new ResponseEntity<>("User saved", HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
-    public String updateUser(@PathVariable Long id, @RequestBody User user) {
-        userService.updateUser(id, user);
-        return "Bravo";
+    public ResponseEntity<String> updateUser(@PathVariable Long id, @RequestBody User user) {
+        return userService.updateUser(id, user);
     }
 
     @GetMapping("/")
-    public List<UserDTO> showAllUsers() {
-        return userService.getAllUsers();
+    public ResponseEntity<?> showAllUsers() {
+        return new ResponseEntity<>(userService.getAllUsers(), HttpStatus.OK);
     }
 
+    @DeleteMapping("/")
+    public ResponseEntity<String> deleteUser() {
+        Optional<User> user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+        Long id = user.get().getId();
+        return userService.deleteUserById(id);
+    }
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @DeleteMapping("/{id}")
-    public String deleteUserById(@PathVariable Long id) {
-        userService.deleteUserById(id);
-
-        return "Bravo";
+    public ResponseEntity<String> deleteUserById(@PathVariable Long id) {
+        return userService.deleteUserById(id);
     }
 
     @GetMapping("/{id}")
-    public User getUserById(@PathVariable Long id) {
+    public ResponseEntity<User> getUserById(@PathVariable Long id) {
         User user = userService.findByID(id);
+
+        if (user == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity<>(user, HttpStatus.OK);
+    }
+
+
+    @PostMapping("/logout")
+    public ResponseEntity<Object> logout(HttpServletRequest request) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        invalidateSession(request);
+
+        if(authentication != null) {
+            SecurityContextHolder.getContext().setAuthentication(null);
+        }
+
+        return new ResponseEntity<>("Logout success!" , HttpStatus.OK);
+    }
+
+    private void invalidateSession(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.invalidate();
+        }
+    }
+
+    @GetMapping("/dto/{id}")
+    public UserDTO getUserDTOById(@PathVariable Long id) {
+        UserDTO user = userService.findByIDDTO(id);
         return user;
     }
 

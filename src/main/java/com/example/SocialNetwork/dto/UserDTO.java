@@ -1,18 +1,10 @@
 package com.example.SocialNetwork.dto;
 
-import com.example.SocialNetwork.entities.FriendRequest;
-import com.example.SocialNetwork.entities.Friends;
-import com.example.SocialNetwork.entities.Post;
-import com.example.SocialNetwork.entities.SocialGroup;
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import java.util.Date;
-import java.util.List;
-import java.util.Set;
 
 @Getter
 @Setter

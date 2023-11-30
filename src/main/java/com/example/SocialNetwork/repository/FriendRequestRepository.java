@@ -6,9 +6,11 @@ import jakarta.persistence.TypedQuery;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+@Repository
 public interface FriendRequestRepository extends JpaRepository<FriendRequest, Long> {
 
    @Query(value = "SELECT * FROM friendrequest e WHERE e.id_user1 = :uid", nativeQuery = true)

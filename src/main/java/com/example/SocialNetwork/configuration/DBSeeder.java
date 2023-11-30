@@ -1,11 +1,9 @@
 package com.example.SocialNetwork.configuration;
 
 import com.example.SocialNetwork.entities.*;
-import com.example.SocialNetwork.repository.GroupMemberRepository;
-import com.example.SocialNetwork.repository.MembershipRequestRepository;
-import com.example.SocialNetwork.repository.SocialGroupRepository;
-import com.example.SocialNetwork.repository.UserRepository;
+import com.example.SocialNetwork.repository.*;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -19,22 +17,34 @@ public class DBSeeder implements CommandLineRunner {
     MembershipRequestRepository membershipRequestRepository;
     SocialGroupRepository socialGroupRepository;
     GroupMemberRepository groupMemberRepository;
+    FriendRequestRepository friendRequestRepository;
+    FriendsRepository friendsRepository;
+
+    BCryptPasswordEncoder passwordEncoder;
 
 
-    DBSeeder(UserRepository userRepository, MembershipRequestRepository membershipRequestRepository, SocialGroupRepository socialGroupRepository,GroupMemberRepository groupMemberRepository) {
+
+    DBSeeder(UserRepository userRepository,
+             MembershipRequestRepository membershipRequestRepository,
+             SocialGroupRepository socialGroupRepository,
+             GroupMemberRepository groupMemberRepository,
+             BCryptPasswordEncoder passwordEncoder, FriendRequestRepository friendRequestRepository, FriendsRepository friendsRepository) {
         this.userRepository = userRepository;
         this.membershipRequestRepository = membershipRequestRepository;
         this.socialGroupRepository = socialGroupRepository;
         this.groupMemberRepository = groupMemberRepository;
+        this.friendRequestRepository = friendRequestRepository;
+        this.friendsRepository = friendsRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     private void seedUser(String username, String email, String password, boolean active) {
         User user = new User();
         user.setUsername(username);
         user.setEmail(email);
-        user.setPassword(password);
+        String hashedPassword = passwordEncoder.encode(password);
+        user.setPassword(hashedPassword);
         user.setActive(active);
-
         userRepository.save(user);
     }
 
@@ -59,6 +69,24 @@ public class DBSeeder implements CommandLineRunner {
         membershipRequestRepository.save(membershipRequest);
     }
 
+    private void seedFriendRequest(RequestStatus requestStatus, int user1Id, int user2Id, Date date) {
+        List<User> users = userRepository.findAll();
+        FriendRequest friendRequest = new FriendRequest();
+        friendRequest.setStatus(requestStatus);
+        friendRequest.setDate(date);
+        friendRequest.setId_user1(users.get(user1Id).getId());
+        friendRequest.setId_user2(users.get(user2Id).getId());
+        friendRequestRepository.save(friendRequest);
+    }
+
+    private void seedFriends(int user1Id, int user2Id) {
+        List<User> users = userRepository.findAll();
+        Friends friends = new Friends();
+        friends.setUser1Id(users.get(user1Id));
+        friends.setUser2Id(users.get(user2Id));
+        friendsRepository.save(friends);
+    }
+
     private void seedGroupMember(int id_user, int id_socialgroup) {
         List<User> users = userRepository.findAll();
         List<SocialGroup> socialGroups = socialGroupRepository.findAll();
@@ -74,32 +102,41 @@ public class DBSeeder implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        //clearDatabase();
+        clearDatabase();
 
-//        seedUser("John", "john@example.com", "password1", true, true);
-//        seedUser("Alice", "alice@example.com", "password2", true, false);
-//        seedUser("Bob", "bob@example.com", "password3", true, false);
-//        seedUser("Eva", "eva@example.com", "password4", false, false);
-//        seedUser("Michael", "michael@example.com", "password5", false, false);
-//
-//        seedSocialGroup("Group1", true,1);
-//        seedSocialGroup("Group2", false,1);
-//        seedSocialGroup("Group3", true,2);
-//        seedSocialGroup("Group4", false,2);
-//        seedSocialGroup("Group5", true,3);
-//
-//        seedMembershipRequest(RequestStatus.PENDING,1,2);
-//        seedMembershipRequest(RequestStatus.ACCEPTED,1,1);
-//        seedMembershipRequest(RequestStatus.PENDING,1, 3);
-//        seedMembershipRequest(RequestStatus.REJECTED,2,4);
-//        seedMembershipRequest(RequestStatus.ACCEPTED,1,4);
-//
-//        seedGroupMember(0,1);
-//        seedGroupMember(1,1);
-//        seedGroupMember(2,3);
-//        seedGroupMember(1,2);
-//        seedGroupMember(1,3);
+        seedUser("John", "john@example.com", "password1", true);
+        seedUser("Alice", "alice@example.com", "password2", true);
+        seedUser("Bob", "bob@example.com", "password3", true);
+        seedUser("Eva", "eva@example.com", "password4", false);
+        seedUser("Michael", "michael@example.com", "password5", false);
+
+        seedSocialGroup("Group1", true,3);
+        seedSocialGroup("Group2", false,1);
+        seedSocialGroup("Group3", true,1);
+        seedSocialGroup("Group4", false,1);
+        seedSocialGroup("Group5", true,1);
+
+        seedMembershipRequest(RequestStatus.PENDING,3,0);
+        seedMembershipRequest(RequestStatus.ACCEPTED,1,1);
+        seedMembershipRequest(RequestStatus.PENDING,2, 2);
+        seedMembershipRequest(RequestStatus.REJECTED,2,2);
+        seedMembershipRequest(RequestStatus.ACCEPTED,1,2);
+
+        seedGroupMember(1,1);
+        seedGroupMember(1,3);
+        seedGroupMember(2,2);
+        seedGroupMember(1,2);
+        seedGroupMember(1,3);
+
+        seedFriendRequest(RequestStatus.PENDING, 0, 1, new Date());
+        seedFriendRequest(RequestStatus.ACCEPTED, 0, 2, new Date());
+        seedFriendRequest(RequestStatus.PENDING, 1, 2, new Date());
+
+        seedFriends(0, 1);
+        seedFriends(0, 2);
+        seedFriends(1, 2);
     }
+
 
     private void clearDatabase() {
         this.groupMemberRepository.deleteAll();

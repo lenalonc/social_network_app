@@ -47,7 +47,6 @@ public class Post {
     @JoinColumn(name = "id_user", nullable = false)
     private User user;
 
-
     @ManyToOne
     @JoinColumn(name = "id_social_group", nullable = false)
     private SocialGroup socialGroup;

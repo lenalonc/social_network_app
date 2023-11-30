@@ -4,20 +4,25 @@ import com.example.SocialNetwork.dto.UserDTO;
 import com.example.SocialNetwork.dtos.PasswordDto;
 import com.example.SocialNetwork.dtos.UserCreateDto;
 import com.example.SocialNetwork.entities.User;
+import com.example.SocialNetwork.exceptions.ForbiddenException;
 import com.example.SocialNetwork.exceptions.NotFoundException;
+import com.example.SocialNetwork.exceptions.ValidationException;
 import com.example.SocialNetwork.repository.UserRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.modelmapper.ModelMapper;
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
@@ -30,6 +35,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private PasswordEncoder passwordEncoder;
     private EmailService emailService;
 
+    private ModelMapper mapper;
+
     @Value("${password.activate.endpoint}")
     private String passwordActivateEndpoint;
 
@@ -40,16 +47,17 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private final Pattern passwordPattern = Pattern.compile("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\\W)(?!.* ).{8,}$");
 
 
-    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, EmailService emailService) {
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, EmailService emailService, ModelMapper mapper) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.emailService = emailService;
+        this.mapper = mapper;
     }
 
     public User createUser(UserCreateDto userCreateDto) {
-//        if(!emailPattern.matcher(userCreateDto.getEmail()).matches()) {
-//            throw new ValidationException("invalid email");
-//        }
+        if(!emailPattern.matcher(userCreateDto.getEmail()).matches()) {
+            throw new ValidationException("invalid email");
+}
 
         String secretKey = RandomStringUtils.randomNumeric(6);
 
@@ -58,7 +66,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                 .username(userCreateDto.getUsername())
                 .roles(userCreateDto.getRoles())
                 .active(true)
-                .secretKey(RandomStringUtils.randomNumeric(6))
+                .secretKey(secretKey)
                 .build();
 
         userRepository.saveAndFlush(user);
@@ -70,17 +78,16 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     public void resetUserPassword(PasswordDto passwordDto, Long id) {
-//        if(!passwordPattern.matcher(passwordDto.getPassword()).matches()) {
-//            throw new ValidationException("Invalid password format. Password has to contain" +
-//                    " at least one of each: uppercase letter, lowercase letter, number, and special character. " +
-//                    "It also has to be at least 8 characters long.");
-//        }
+/*        if(!passwordPattern.matcher(passwordDto.getPassword()).matches()) {
+            throw new ValidationException("Invalid password format. Password has to contain" +
+                    " at least one of each: uppercase letter, lowercase letter, number, and special character. " +
+                    "It also has to be at least 8 characters long.");
+        }*/
 
-        //TODO Ako ga ne nadje, onda se baca izuzetak da nije pronadjen u bazi
-        User user = userRepository.findById(id).get();
+        User user = userRepository.findById(id).orElseThrow(() -> new NotFoundException("User has not been found."));
 
         if(user.getSecretKey() == null || !user.getSecretKey().equals(passwordDto.getSecretKey())) {
-            //TODO Baca se izuzetak za neuspesnu validaciju
+            throw new ValidationException("Invalid secret key.");
         }
 
         user.setPassword(passwordEncoder.encode(passwordDto.getPassword()));
@@ -106,10 +113,11 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public void updateUser(Long id, User user) {
-        User tempUser = userRepository.findById(id).get();
+    public ResponseEntity<String> updateUser(Long id, User user) {
+        Optional<User> optionalUser = userRepository.findById(id);
 
-        if(tempUser != null){
+        if(optionalUser.isPresent()){
+            User tempUser = optionalUser.get();
             if(user.getEmail() != null && !user.getEmail().equals("") && user.getEmail() != tempUser.getEmail()) {
                 tempUser.setEmail(user.getEmail());
             }
@@ -119,25 +127,27 @@ public class UserServiceImpl implements UserService, UserDetailsService {
             if(user.isActive() != tempUser.isActive()){
                 tempUser.setActive(user.isActive());
             }
-
+            userRepository.save(tempUser);
+            return new ResponseEntity<>("User updated", HttpStatus.OK);
         }
 
-        userRepository.save(tempUser);
+        return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
     }
 
     @Override
     public List<UserDTO> getAllUsers() {
-        ModelMapper mapper = new ModelMapper();
         List<User> users = userRepository.findAll();
         return users.stream().map(user->mapper.map(user, UserDTO.class)).toList();
     }
 
     @Override
-    public void deleteUserById(Long id) {
-        User tempUser = userRepository.findById(id).get();
-        if(tempUser!= null) {
-            userRepository.deleteById(id);
-        }
+    public ResponseEntity<String> deleteUserById(Long id) {
+        Optional<User> tempUser = userRepository.findById(id);
+        if (tempUser.isPresent()){
+            User user = tempUser.get();
+            user.setActive(false);
+            return new ResponseEntity<>("User deleted", HttpStatus.OK);
+        } return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
     }
 
     @Override
@@ -150,11 +160,21 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
+    public UserDTO findByIDDTO(Long id) {
+        Optional<User> user = userRepository.findById(id);
+        if(user.isPresent()){
+            return user.stream().map(u -> mapper.map(user, UserDTO.class)).toList().get(0);
+        }
+        return null;
+    }
+
+    @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         User user = userRepository.findByEmail(email).orElseThrow(() -> new NotFoundException("User has not been found."));
 
         if(!user.isActive()){
-            //TODO Izbaciti gresku jer korisnik nije aktivan, tj. logicki je obrisan
+            throw new ForbiddenException("User is not active.");
+
         }
 
         return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), user.getAuthorities());
@@ -164,4 +184,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return userRepository.findByEmail(email).orElseThrow(() -> new NotFoundException("User has not been found."));
     }
 
+    public User findCurrentUser() {
+        Optional<User> user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+        return user.get();
+
+    }
 }
