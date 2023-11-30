@@ -18,6 +18,8 @@ public interface SocialGroupService {
     ResponseEntity<String> deleteSocialGroupById(Long id);
 
     ResponseEntity<SocialGroupDTO> getSocialGroupDTOById(Long id);
+
+
     SocialGroup getSocialGroupById(Long id);
 
 }

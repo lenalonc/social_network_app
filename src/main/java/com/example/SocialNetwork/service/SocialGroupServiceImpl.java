@@ -120,6 +120,8 @@ public class SocialGroupServiceImpl implements SocialGroupService{
         }
     }
 
+
+
     @Override
     public SocialGroup getSocialGroupById(Long id) {
         Optional<SocialGroup> socialGroup = groupRepository.findById(id);
