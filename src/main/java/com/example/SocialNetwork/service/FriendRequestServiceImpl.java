@@ -48,14 +48,15 @@ public class FriendRequestServiceImpl implements FriendRequestService{
 
         FriendRequest save = friendRequestRepository.save(friendRequest);
         User byId = userRepository.getById(user1Id);
-        byId.getFriendRequestSet().add(save);
+        byId.getFriendRequests().add(save);
+        userRepository.save(byId);
 
         return new ResponseEntity<>("Friend request sent", HttpStatus.OK);
     }
 
     @Override
     public List<FriendRequestDTO> getAllRequests(Long id) {
-        return friendRequestRepository.findAllByUser1Id(id).stream().map(request->mapper.map(request, FriendRequestDTO.class)).toList();
+        return friendRequestRepository.findAllByUser2Id(id).stream().map(request->mapper.map(request, FriendRequestDTO.class)).toList();
     }
 
     @Override

@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface FriendRequestRepository extends JpaRepository<FriendRequest, Long> {
@@ -16,4 +17,6 @@ public interface FriendRequestRepository extends JpaRepository<FriendRequest, Lo
    @Query(value = "SELECT * FROM friendrequest e WHERE e.id_user1 = :uid", nativeQuery = true)
     List<FriendRequest> findAllByUser1Id(@Param("uid") Long uid);
 
+   @Query(value = "SELECT * FROM friendrequest e WHERE e.id_user2 = :uid", nativeQuery = true)
+    List<FriendRequest> findAllByUser2Id(@Param("uid") Long id);
 }

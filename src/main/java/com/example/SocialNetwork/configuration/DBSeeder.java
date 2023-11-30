@@ -2,6 +2,7 @@ package com.example.SocialNetwork.configuration;
 
 import com.example.SocialNetwork.entities.*;
 import com.example.SocialNetwork.repository.*;
+import com.example.SocialNetwork.service.FriendsService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -19,6 +20,7 @@ public class DBSeeder implements CommandLineRunner {
     GroupMemberRepository groupMemberRepository;
     FriendRequestRepository friendRequestRepository;
     FriendsRepository friendsRepository;
+    FriendsService friendsService;
 
     BCryptPasswordEncoder passwordEncoder;
 
@@ -28,7 +30,7 @@ public class DBSeeder implements CommandLineRunner {
              MembershipRequestRepository membershipRequestRepository,
              SocialGroupRepository socialGroupRepository,
              GroupMemberRepository groupMemberRepository,
-             BCryptPasswordEncoder passwordEncoder, FriendRequestRepository friendRequestRepository, FriendsRepository friendsRepository) {
+             BCryptPasswordEncoder passwordEncoder, FriendRequestRepository friendRequestRepository, FriendsRepository friendsRepository, FriendsService friendsService) {
         this.userRepository = userRepository;
         this.membershipRequestRepository = membershipRequestRepository;
         this.socialGroupRepository = socialGroupRepository;
@@ -36,6 +38,7 @@ public class DBSeeder implements CommandLineRunner {
         this.friendRequestRepository = friendRequestRepository;
         this.friendsRepository = friendsRepository;
         this.passwordEncoder = passwordEncoder;
+        this.friendsService = friendsService;
     }
 
     private void seedUser(String username, String email, String password, boolean active) {
@@ -84,6 +87,7 @@ public class DBSeeder implements CommandLineRunner {
         Friends friends = new Friends();
         friends.setUser1Id(users.get(user1Id));
         friends.setUser2Id(users.get(user2Id));
+
         friendsRepository.save(friends);
     }
 

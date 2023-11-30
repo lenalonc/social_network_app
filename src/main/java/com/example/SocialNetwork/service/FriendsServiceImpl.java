@@ -1,6 +1,5 @@
 package com.example.SocialNetwork.service;
 
-import com.example.SocialNetwork.dto.FriendsDTO;
 import com.example.SocialNetwork.dto.UserDTO;
 import com.example.SocialNetwork.entities.Friends;
 import com.example.SocialNetwork.entities.User;
@@ -13,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -47,8 +47,11 @@ public class FriendsServiceImpl implements FriendsService {
         List<Friends> friends = user.getFriends();
         for (Friends friend : friends) {
             if (friend.getId().equals(friendId)) {
+                User friendUser = userRepository.findById(friendId).get();
                 friends.remove(friend);
+                friendUser.getFriends().remove(friend);
                 userRepository.save(user);
+                userRepository.save(friendUser);
                 friendsRepository.deleteById(friendId);
                 return new ResponseEntity<>("Friend deleted", HttpStatus.OK);
             }
@@ -62,6 +65,24 @@ public class FriendsServiceImpl implements FriendsService {
         friendsRepository.deleteFriendByUser(user1Id, user2Id);
         return new ResponseEntity<>("Friend deleted", HttpStatus.OK);
 
+    }
+
+    @Override
+    public ResponseEntity<?> searchFriends(String search) {
+        User user = getCurrentUser();
+        List<Friends> friends = user.getFriends();
+        if(friends.isEmpty()){
+            return new ResponseEntity<>("No friends found", HttpStatus.NOT_FOUND);
+        }
+
+        List<Friends> searchResult = new ArrayList<>();
+
+        for(Friends f: friends) {
+            if(f.getUser2Id().getUsername().contains(search)){
+                searchResult.add(f);
+            }
+        }
+        return new ResponseEntity<>(searchResult, HttpStatus.OK);
     }
 
     public User getCurrentUser() {

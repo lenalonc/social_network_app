@@ -1,5 +1,6 @@
 package com.example.SocialNetwork.service;
 
+import com.example.SocialNetwork.dto.CommentDTO;
 import com.example.SocialNetwork.entities.*;
 import com.example.SocialNetwork.exceptions.ForbiddenException;
 import com.example.SocialNetwork.exceptions.NotFoundException;
@@ -7,10 +8,10 @@ import com.example.SocialNetwork.repository.CommentRepository;
 import com.example.SocialNetwork.repository.PostRepository;
 import com.example.SocialNetwork.repository.UserRepository;
 import lombok.AllArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import javax.swing.text.html.Option;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -22,6 +23,7 @@ public class CommentServiceImpl implements CommentService {
     private CommentRepository commentRepository;
     private PostRepository postRepository;
     private UserRepository userRepository;
+    private ModelMapper modelMapper;
 
     public User getCurrentUser() {
         Optional<User> user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
@@ -29,7 +31,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public List<Comment> getAllCommentsForPost(Long id) {
+    public List<CommentDTO> getAllCommentsForPost(Long id) {
         User user = getCurrentUser();
 
         Post post = postRepository.findById(id).orElseThrow(() -> new NotFoundException("Post with id " + id + " not found"));
@@ -37,7 +39,7 @@ public class CommentServiceImpl implements CommentService {
         if (post.getSocialGroup() != null) {
             for(SocialGroup s: user.getSocialGroups()){
                 if(s.getId().equals(post.getSocialGroup().getId())){
-                    return commentRepository.findAllByPostIdOrderByDate(id);
+                    return commentRepository.findAllByPostIdOrderByDate(id).stream().map(comment -> modelMapper.map(comment, CommentDTO.class)).toList();
                 }
             } throw new NotFoundException("You are not in this group");
         }
@@ -46,20 +48,20 @@ public class CommentServiceImpl implements CommentService {
             List<Friends> friends = user.getFriends();
             for (Friends friend : friends) {
                 if (friend.getUser2Id().equals(post.getUser().getId())) {
-                    return commentRepository.findAllByPostIdOrderByDate(id);
+                    return commentRepository.findAllByPostIdOrderByDate(id).stream().map(comment -> modelMapper.map(comment, CommentDTO.class)).toList();
                 }
             }
         } else throw new ForbiddenException("You are not allowed to see this comments");
 
-        return commentRepository.findAllByPostIdOrderByDate(id);
+        return commentRepository.findAllByPostIdOrderByDate(id).stream().map(comment -> modelMapper.map(comment, CommentDTO.class)).toList();
     }
 
     @Override
-    public List<Comment> getAllRepliesForComment(Long id) {
+    public List<CommentDTO> getAllRepliesForComment(Long id) {
         Optional<Comment> comment = commentRepository.findById(id);
 
         if(comment.isPresent()) {
-            return comment.get().getReplies();
+            return comment.get().getReplies().stream().map(reply -> modelMapper.map(reply, CommentDTO.class)).toList();
         }
         throw new NotFoundException("Comment with id " + id + " not found");
 
@@ -97,7 +99,9 @@ public class CommentServiceImpl implements CommentService {
 
         List<Comment> comments = post.getComments();
         comments.add(comment);
+        user.getComments().add(comment);
         postRepository.save(post);
+        userRepository.save(user);
         return commentRepository.save(comment);
 
     }
@@ -138,6 +142,9 @@ public class CommentServiceImpl implements CommentService {
         comment.getReplies().add(reply);
         commentRepository.save(comment);
 
+        user.getComments().add(reply);
+        userRepository.save(user);
+
         return commentRepository.save(reply);
     }
 
@@ -148,7 +155,9 @@ public class CommentServiceImpl implements CommentService {
         User user = getCurrentUser();
 
         if (comment.getUser().getId().equals(user.getId()) || comment.getPost().getSocialGroup().getUser().getId().equals(user.getId()) || comment.getParentComment().getUser().getId().equals(user.getId())) {
+            user.getComments().remove(comment);
             commentRepository.deleteById(id);
+            userRepository.save(user);
         } else {
             throw new NotFoundException("You are not allowed to delete this comment");
         }
