@@ -28,7 +28,7 @@ public class DBSeeder implements CommandLineRunner {
              MembershipRequestRepository membershipRequestRepository,
              SocialGroupRepository socialGroupRepository,
              GroupMemberRepository groupMemberRepository,
-             BCryptPasswordEncoder passwordEncoder) {
+             BCryptPasswordEncoder passwordEncoder, FriendRequestRepository friendRequestRepository, FriendsRepository friendsRepository) {
         this.userRepository = userRepository;
         this.membershipRequestRepository = membershipRequestRepository;
         this.socialGroupRepository = socialGroupRepository;
@@ -73,17 +73,17 @@ public class DBSeeder implements CommandLineRunner {
         List<User> users = userRepository.findAll();
         FriendRequest friendRequest = new FriendRequest();
         friendRequest.setStatus(requestStatus);
-        friendRequest.setDate((java.sql.Date) date);
+        friendRequest.setDate(date);
         friendRequest.setId_user1(users.get(user1Id).getId());
         friendRequest.setId_user2(users.get(user2Id).getId());
         friendRequestRepository.save(friendRequest);
     }
 
-    private void seedFriends(Long user1Id, Long user2Id) {
+    private void seedFriends(int user1Id, int user2Id) {
         List<User> users = userRepository.findAll();
         Friends friends = new Friends();
-        friends.setUser1Id(users.get(user1Id.intValue()));
-        friends.setUser2Id(users.get(user2Id.intValue()));
+        friends.setUser1Id(users.get(user1Id));
+        friends.setUser2Id(users.get(user2Id));
         friendsRepository.save(friends);
     }
 
@@ -126,7 +126,15 @@ public class DBSeeder implements CommandLineRunner {
         seedGroupMember(1,3);
         seedGroupMember(2,2);
         seedGroupMember(1,2);
-        seedGroupMember(1,2);
+        seedGroupMember(1,3);
+
+        seedFriendRequest(RequestStatus.PENDING, 0, 1, new Date());
+        seedFriendRequest(RequestStatus.ACCEPTED, 0, 2, new Date());
+        seedFriendRequest(RequestStatus.PENDING, 1, 2, new Date());
+
+        seedFriends(0, 1);
+        seedFriends(0, 2);
+        seedFriends(1, 2);
     }
 
 

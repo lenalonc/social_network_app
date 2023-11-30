@@ -1,13 +1,16 @@
 package com.example.SocialNetwork.service;
 
+import com.example.SocialNetwork.dto.FriendRequestDTO;
 import com.example.SocialNetwork.entities.FriendRequest;
 import com.example.SocialNetwork.entities.Friends;
 import com.example.SocialNetwork.entities.User;
 import com.example.SocialNetwork.repository.FriendRequestRepository;
 import com.example.SocialNetwork.repository.FriendsRepository;
 import com.example.SocialNetwork.repository.UserRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,15 +22,17 @@ public class FriendRequestServiceImpl implements FriendRequestService{
     private FriendRequestRepository friendRequestRepository;
     private FriendsRepository friendsRepository;
     private FriendsService friendsService;
+    private ModelMapper mapper;
 
-    public FriendRequestServiceImpl(FriendRequestRepository friendRequestRepository, UserRepository userRepository, FriendsService friendsService, FriendsRepository friendsRepository) {
+    public FriendRequestServiceImpl(FriendRequestRepository friendRequestRepository, UserRepository userRepository, FriendsService friendsService, FriendsRepository friendsRepository, ModelMapper mapper) {
         this.friendRequestRepository = friendRequestRepository;
         this.userRepository = userRepository;
         this.friendsService = friendsService;
         this.friendsRepository = friendsRepository;
+        this.mapper = mapper;
     }
     @Override
-    public ResponseEntity<?> sendFriendRequest(FriendRequest friendRequest) {
+    public ResponseEntity<Object> sendFriendRequest(FriendRequest friendRequest) {
         Long user1Id = friendRequest.getId_user1();
         Long user2Id = friendRequest.getId_user2();
         if (user1Id.equals(user2Id)) {
@@ -49,39 +54,40 @@ public class FriendRequestServiceImpl implements FriendRequestService{
     }
 
     @Override
-    public List<FriendRequest> getAllRequests(Long id) {
-        return friendRequestRepository.findAllByUser1Id(id);
+    public List<FriendRequestDTO> getAllRequests(Long id) {
+        return friendRequestRepository.findAllByUser1Id(id).stream().map(request->mapper.map(request, FriendRequestDTO.class)).toList();
     }
 
     @Override
-    public String respondToRequest(Long id, Long status) {
+    public ResponseEntity<Object> respondToRequest(Long id, Long status) {
         Optional<FriendRequest> friendRequestOptional = friendRequestRepository.findById(id);
         if(friendRequestOptional.isEmpty()){
-            return "Friend request not found";
+            return new ResponseEntity<>("Friend request not found", HttpStatus.BAD_REQUEST);
         }
         FriendRequest friendRequest = friendRequestOptional.get();
 
-        Long user1Id = friendRequest.getId_user1();
+        Optional<User> user1 = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+
+        Long user1Id = user1.get().getId();
         Long user2Id = friendRequest.getId_user2();
-        Optional<User> user1 = userRepository.findById(user1Id);
         Optional<User> user2 = userRepository.findById(user2Id);
 
         List<User> friends = friendsRepository.getFriendsByUser(user1Id);
         for (User friend : friends) {
             if (friend.getId().equals(user2Id)) {
-                return "You are already friends";
+                return new ResponseEntity<>("You are already friends", HttpStatus.BAD_REQUEST);
             }
         }
 
-        if(user1.isPresent() && user2.isPresent()){
+        if(user2.isPresent()){
              User firstUser = user1.get();
              User secondUser = user2.get();
              return processRequest(firstUser, secondUser, status);
         }
-          return "User not found";
+        return new ResponseEntity<>("User not found", HttpStatus.BAD_REQUEST);
     }
 
-    private String processRequest(User firstUser, User secondUser, Long status) {
+    private ResponseEntity<Object> processRequest(User firstUser, User secondUser, Long status) {
         if (status == 0) {
 
             Friends newFriend = new Friends();
@@ -91,13 +97,17 @@ public class FriendRequestServiceImpl implements FriendRequestService{
 
             firstUser.getFriends().add(newFriend);
             secondUser.getFriends().add(newFriend);
-            return "Friend request accepted";
+            userRepository.save(firstUser);
+            userRepository.save(secondUser);
+
+            return new ResponseEntity<>("Friend request accepted", HttpStatus.OK);
         } else if (status == 1) {
-            return "Friend request already on pending list";
+            return new ResponseEntity<>("Friend request already on pending list", HttpStatus.OK);
         } else if (status == 2) {
-            return "Friend request declined";
+            return new ResponseEntity<>("Friend request declined", HttpStatus.OK);
         } else {
-            return "Invalid response";
+            return new ResponseEntity<>("Invalid status", HttpStatus.BAD_REQUEST);
         }
     }
+
 }
