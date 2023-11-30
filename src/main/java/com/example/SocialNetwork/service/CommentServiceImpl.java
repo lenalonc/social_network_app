@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -35,7 +36,7 @@ public class CommentServiceImpl implements CommentService {
         //TODO Baciti gresku ako objava ne postoji
         Post post = postRepository.findById(postId).get();
         comment.setPost(post);
-        comment.setDate(LocalDateTime.now());
+        comment.setDate(new Date());
         //TODO Loggedin user da se stavi kao user
 
         if (post.getSocialGroup() != null) {
@@ -60,7 +61,7 @@ public class CommentServiceImpl implements CommentService {
             //TODO Baciti gresku jer bi ovo bio u suprotnom reply na reply
         }
 
-        reply.setDate(LocalDateTime.now());
+        reply.setDate(new Date());
         reply.setParentComment(comment);
 
         comment.getReplies().add(reply);

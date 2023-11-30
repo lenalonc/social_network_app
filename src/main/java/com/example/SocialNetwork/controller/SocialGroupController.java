@@ -1,9 +1,8 @@
 package com.example.SocialNetwork.controller;
 
-import com.example.SocialNetwork.helpercalsses.MyRequest;
+import com.example.SocialNetwork.helper.MyRequest;
 import com.example.SocialNetwork.dto.SocialGroupDTO;
 import com.example.SocialNetwork.entities.*;
-import com.example.SocialNetwork.service.GroupMemberServiceImpl;
 import com.example.SocialNetwork.service.MembershipRequestService;
 import com.example.SocialNetwork.service.SocialGroupService;
 import com.example.SocialNetwork.service.UserService;

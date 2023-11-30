@@ -33,11 +33,11 @@ public class PostController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<Object> createPost(@RequestBody Post post) {
+    public ResponseEntity<?> createPost(@RequestBody Post post) {
         return ResponseEntity.ok(postService.createPost(post));
     }
 
-    @PostMapping("/group_post/{id}")
+    @PostMapping("/group/{id}")
     public ResponseEntity<?> createPostInGroup(@RequestBody Post post, @PathVariable Long id) {
         return ResponseEntity.ok(postService.createPostInGroup(post, id));
     }

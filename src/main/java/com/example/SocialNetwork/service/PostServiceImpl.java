@@ -1,21 +1,20 @@
 package com.example.SocialNetwork.service;
 
 import com.example.SocialNetwork.dto.PostDTO;
-import com.example.SocialNetwork.dto.UserDTO;
 import com.example.SocialNetwork.entities.Post;
 import com.example.SocialNetwork.entities.SocialGroup;
 import com.example.SocialNetwork.entities.User;
+import com.example.SocialNetwork.exceptions.ForbiddenException;
+import com.example.SocialNetwork.exceptions.NotFoundException;
 import com.example.SocialNetwork.repository.PostRepository;
 import com.example.SocialNetwork.repository.SocialGroupRepository;
 import com.example.SocialNetwork.repository.UserRepository;
-import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,107 +36,139 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<Post> getAllPostsByUser(Long id) {
-        List<Post> userPosts = postRepository.findAllByUserId(id);
-
-        return getUnexpiredPosts(userPosts);
+    public List<PostDTO> getAllPostsByUser(Long id) {
+        User user = userRepository.findById(id).orElseThrow(() -> new NotFoundException("User does not exist."));
+        List<Post> userPosts = postRepository.findAllByUserIdAndDeleted(user.getId(), false);
+        return userPosts.stream().map(userPost -> mapper.map(userPost, PostDTO.class)).toList();
     }
 
     @Override
     public List<PostDTO> getAllPostsByLoggedInUser() {
-        //TODO Kada bude uradjen login, onda samo treba preko ulogovanog uzeti sve njegove objave
         Optional<User> user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
-
-        ModelMapper mapper = new ModelMapper();
-        //List<Post> userPosts = postRepository.findAllByUserId(user.get().getId());
-
-        //List<User> users = userRepository.findAll();
-        //return users.stream().map(user->mapper.map(user, UserDTO.class)).toList();
-
-        List<Post> userPosts = getUnexpiredPosts(postRepository.findAllByUserId(user.get().getId()));
-        return userPosts.stream().map(userPost->mapper.map(userPost, PostDTO.class)).toList();
+        List<Post> userPosts = postRepository.findAllByUserIdAndDeleted(user.get().getId(), false);
+        return userPosts.stream().map(userPost -> mapper.map(userPost, PostDTO.class)).toList();
     }
+
 
     @Override
     public List<PostDTO> getAllPostsBySocialGroup(Long id) {
-        //TODO Uraditi proveru da je ulogovani korisnik u grupi u kojoj se traze objave
-        List<Post> postsInGroup = postRepository.findAllBySocialGroupId(id);
-        postsInGroup = getUnexpiredPosts(postsInGroup);
-
+        Optional<User> user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+        SocialGroup socialGroup = socialGroupRepository.findById(id).orElseThrow(() -> new NotFoundException("Social group not found."));
+//        if (!user.get().getSocialGroups().contains(socialGroup))
+//            throw new ForbiddenException("User is not a member of this social group." +
+//                    " Only members can see posts within a group."); //uvek ce se bacati greska jer ne nadje social group
+        List<Post> postsInGroup = postRepository.findAllBySocialGroupIdAndDeleted(id, false);
         return postsInGroup.stream().map(post -> mapper.map(post, PostDTO.class)).toList();
     }
+    //treba da se srede membership request i groupmember
+    //da bismo mogli da testiramo metodu
 
     @Override
-    public Post createPost(Post post) {
-        //Optional<User> user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
-        Optional<User> user = userRepository.findById(6l);
+    public PostDTO createPost(Post post) {
+        Optional<User> user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
         post.setUser(user.get());
-        post.setDate((LocalDateTime.now()));
+        post.setDate(new Date());
         post.setDeleted(false);
 
-        return postRepository.save(post);
+        PostDTO postDTO = this.mapper.map(postRepository.save(post), PostDTO.class);
+
+        return postDTO;
     }
 
     @Override
-    public Post createPostInGroup(Post post, Long groupId) {
+    public PostDTO createPostInGroup(Post post, Long groupId) {
         //TODO Kada bude sredjen email servis, onda treba poslati notifikacije svim clanovima grupe
-        //TODO Uzeti ulogovanog usera i proveriti da li je on clan grupe u kojoj vrsi objavu
 
-        //post.setDate(LocalDateTime.now());
+        Optional<User> user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+        SocialGroup socialGroup = socialGroupRepository.findById(groupId).orElseThrow(() -> new NotFoundException("Social group does not exist."));
+//        if (!user.get().getSocialGroups().contains(socialGroup))
+//            throw new ForbiddenException("User is not a member of this social group." +
+//                    " Only members can see posts within a group."); //uvek ce se bacati greska jer ne nadje social group
+        post.setDate(new Date());
         post.setDeleted(false);
-        //TODO: ulogovani user se stavlja kao user id
+        post.setUser(user.get());
+        post.setSocialGroup(socialGroup);
 
-        //TODO Baciti gresku ako nema grupe sa ovim ID-om
-        SocialGroup socialGroup = socialGroupRepository.findById(groupId).get();
+        PostDTO postDTO = this.mapper.map(postRepository.save(post), PostDTO.class);
 
         List<Post> socialGroupPosts = socialGroup.getPosts();
         socialGroupPosts.add(post);
         socialGroupRepository.save(socialGroup);
-        post.setSocialGroup(socialGroup);
 
-        return postRepository.save(post);
+        List<Post> userPosts = user.get().getPosts();
+        userPosts.add(post);
+        userRepository.save(user.get());
 
+        return this.mapper.map(postRepository.save(post), PostDTO.class);
     }
 
     @Override
-    public Post updatePost(Long id, Post post) {
-        Post tempPost = postRepository.getById(id); //TODO Provreriti da nije null i baciti gresku ako jeste
+    public PostDTO updatePost(Long id, Post post) {
+        System.out.println(id);
+        Post tempPost = postRepository.findById(id).orElseThrow(() -> new NotFoundException("Post does not exist."));
+        Optional<User> user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+        if (!tempPost.getUser().equals(user.get()))
+            throw new ForbiddenException("You can't alter a post you didn't make.");
+        if (post.getText() == null || post.getText().equals("")) throw new ForbiddenException("Posts cannot be empty.");
 
-        //TODO Da se proveri da li je ulogovani korisnik isti kao ovaj sto apdejtuje post
-
-        if (tempPost != null) {
-            if (post.getText() != null && !post.getText().equals("") && post.getText() != tempPost.getText()) {
-                tempPost.setText(post.getText());
-            }
-        }
-        return postRepository.save(tempPost);
+        tempPost.setText(post.getText());
+        return this.mapper.map(postRepository.save(tempPost), PostDTO.class);
     }
 
     @Override
     public void deletePostById(Long id) {
+        Optional<User> user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+        Post post = postRepository.findById(id).orElseThrow(() -> new NotFoundException("Post does not exist."));
+
+        if (!user.get().equals(post.getUser()) ||
+                (post.getSocialGroup() != null && !post.getSocialGroup().getUser().equals(user.get())))
+            throw new ForbiddenException("User does not have permission to delete this post.");
+
         postRepository.deleteById(id);
     }
 
     @Override
-    public Post makePostPrivate(Long id) {
-        Post tempPost = postRepository.findById(id).get();
-        tempPost.setType(true);
-        return postRepository.save(tempPost);
+    public PostDTO makePostPrivate(Long id) {
+        Optional<User> user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+        Post tempPost = postRepository.findById(id).orElseThrow(() -> new NotFoundException("Post does not exist."));
+
+        if (!tempPost.getUser().equals(user.get()))
+            throw new ForbiddenException("You can't alter a post you didn't make.");
+
+        tempPost.setType(false);
+        return this.mapper.map(postRepository.save(tempPost), PostDTO.class);
     }
 
     @Override
-    public Post makePostPublic(Long id) {
-        Post tempPost = postRepository.findById(id).get();
-        tempPost.setType(false);
-        return postRepository.save(tempPost);
+    public PostDTO makePostPublic(Long id) {
+        Optional<User> user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+        Post tempPost = postRepository.findById(id).orElseThrow(() -> new NotFoundException("Post does not exist."));
+
+        if (!tempPost.getUser().equals(user.get()))
+            throw new ForbiddenException("You can't alter a post you didn't make.");
+
+        tempPost.setType(true);
+        return this.mapper.map(postRepository.save(tempPost), PostDTO.class);
     }
 
 
-    private List<Post> getUnexpiredPosts(List<Post> unfilteredPosts) {
-        List<Post> unexpiredPosts = new ArrayList<>();
-        for (Post post : unfilteredPosts) {
-            //if (!post.getDate().isAfter(post.getDate().plusHours(24))) unexpiredPosts.add(post);
-        }
-        return unexpiredPosts;
+    //Zakomentarisano je jer se saveAll ne ponasa kako treba i umesto da samo azurira postojece podatke, dodaje i nove entitete
+//    @Scheduled(cron = "0 0/1 * * * *")
+//    private void getUnexpiredPosts() {
+//        List<Post> posts = postRepository.findAll();
+//        for (Post post : posts) {
+//            if (is24HoursOrMoreAfter(post.getDate())) {
+//                post.setDeleted(true);
+//            }
+//        }
+//        postRepository.saveAll(posts);
+//    }
+
+    private static boolean is24HoursOrMoreAfter(Date dateToCheck) {
+        long timeDifference = System.currentTimeMillis() - dateToCheck.getTime();
+        long hoursDifference = timeDifference / (60 * 60 * 1000);
+        return hoursDifference >= 24;
     }
+
+
 }

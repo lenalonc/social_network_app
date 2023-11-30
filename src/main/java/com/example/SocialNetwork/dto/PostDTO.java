@@ -10,6 +10,7 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Getter
@@ -20,9 +21,7 @@ public class PostDTO {
 
     private Long id;
 
-    private LocalDateTime date;
-
-
+    private Date date;
 
     private String text;
 
