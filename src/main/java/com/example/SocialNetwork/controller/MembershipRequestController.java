@@ -23,7 +23,6 @@ public class MembershipRequestController {
         this.userService = userService;
         this.groupService = groupService;
     }
-
     @GetMapping("/group/{id}")
     public List<MembershipRequest> showAllRequests(@PathVariable Long id){
         User user = userService.findCurrentUser();
@@ -33,7 +32,6 @@ public class MembershipRequestController {
         }
         return  null;
     }
-
     @GetMapping("/{id}")
     public MembershipRequest getRequestsById(@PathVariable Long id) {
         User currentUser = userService.findCurrentUser();
@@ -43,7 +41,6 @@ public class MembershipRequestController {
         else
             return null;
     }
-
     @PostMapping("/")
     public String createMembershipRequest(@RequestBody MyRequest id) {
         SocialGroup socialGroup = groupService.getSocialGroupById(id.getId());
@@ -72,6 +69,4 @@ public class MembershipRequestController {
         else
             return "Nemate pravo na brisanje zahteva";
     }
-
-
 }

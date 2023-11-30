@@ -41,4 +41,12 @@ public class MembershipRequestServiceImpl implements MembershipRequestService {
     public List<MembershipRequest> getAllRequestsForSocialGroup(Long id) {
         return requestsRepository.findAllMembershipRequestsForSocialGroup(id);
     }
+
+    @Override
+    public void deleteAllRequestsForSocialGroup(Long groupId) {
+        List<MembershipRequest> requests = getAllRequestsForSocialGroup(groupId);
+        for (MembershipRequest request : requests) {
+            deleteRequestById(request.getId());
+        }
+    }
 }
