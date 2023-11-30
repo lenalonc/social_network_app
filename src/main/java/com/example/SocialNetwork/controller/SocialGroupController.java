@@ -5,6 +5,7 @@ import com.example.SocialNetwork.entities.SocialGroup;
 import com.example.SocialNetwork.entities.User;
 import com.example.SocialNetwork.helpercalsses.MyRequest;
 import com.example.SocialNetwork.service.GroupMemberService;
+import com.example.SocialNetwork.service.MembershipRequestService;
 import com.example.SocialNetwork.service.SocialGroupService;
 import com.example.SocialNetwork.service.UserService;
 import org.springframework.http.ResponseEntity;
@@ -18,13 +19,16 @@ public class SocialGroupController extends MyRequest {
     private final SocialGroupService groupService;
     private final UserService userService;
     private final GroupMemberService groupMemberService;
+    private final MembershipRequestService membershipRequestService;
 
     public SocialGroupController(SocialGroupService groupService,
                                  UserService userService,
-                                 GroupMemberService groupMemberService) {
+                                 GroupMemberService groupMemberService,
+                                 MembershipRequestService membershipRequestService) {
         this.groupService = groupService;
         this.userService = userService;
         this.groupMemberService = groupMemberService;
+        this.membershipRequestService = membershipRequestService;
     }
 
     @GetMapping("/hello")
@@ -38,37 +42,25 @@ public class SocialGroupController extends MyRequest {
     }
 
     @PostMapping("/")
-    public String createGroup(@RequestBody SocialGroup group) {
-        User user = userService.findCurrentUser();
-        group.setUser(user);
-        groupService.saveGroup(group);
-        return "Uspesno sacuvana grupa";
+    public ResponseEntity<String> createGroup(@RequestBody SocialGroup group) {
+        return groupService.createGroup(group);
     }
 
     @DeleteMapping("/{id}")
-    public String deleteSocialGroupById(@PathVariable Long id) {
-        User currentU = userService.findCurrentUser();
-        SocialGroup socialGroup = groupService.getSocialGroupById(id);
-
-        if(currentU.getId() == socialGroup.getUser().getId())
-        {
-            groupService.deleteSocialGroupById(id);
-            return "Uspesno ste obrisali grupu";
-        }
-        else {
-            return "Niste ovlasceni da obrisete grupu";
-        }
+    public ResponseEntity<String> deleteSocialGroupById(@PathVariable Long id) {
+        return groupService.deleteSocialGroupById(id);
     }
 
     @GetMapping("/name/{name}")
-    public List<SocialGroupDTO> getSocialGroupByName(@PathVariable String name) {
+    public ResponseEntity<List<SocialGroupDTO>> getSocialGroupByName(@PathVariable String name) {
         return groupService.getSocialGroupByName(name);
     }
 
     @GetMapping("/id/{id}")
-    public SocialGroupDTO getSocialGroupDTOById(@PathVariable Long id) {
+    public ResponseEntity<SocialGroupDTO> getSocialGroupDTOById(@PathVariable Long id) {
         return groupService.getSocialGroupDTOById(id);
     }
+
 
     @PostMapping("/approve/{id}")
     public ResponseEntity<?> approveRequest(@PathVariable Long id) {
@@ -82,8 +74,20 @@ public class SocialGroupController extends MyRequest {
     }
 
     @GetMapping("/allusers/{id}")
-    public ResponseEntity<?> showAllUsersForGroup(@PathVariable Long id){
+    public ResponseEntity<?> showAllUsersForGroup(@PathVariable Long id) {
         return ResponseEntity.ok(groupMemberService.getAllGroupMembers(id));
+    }
+
+    @PostMapping("/createmembershiprequest/{id}")
+    public ResponseEntity<String> createMembershipRequest(@PathVariable Long id) {
+        User currentUser = userService.findCurrentUser();
+        return membershipRequestService.createMembershipRequest(id, currentUser);
+    }
+
+    @PostMapping("/join/{id}")
+    public ResponseEntity<String> joinGroup(@PathVariable Long id) {
+        User currentUser = userService.findCurrentUser();
+        return membershipRequestService.processJoinGroupRequest(id, currentUser);
     }
 
 }

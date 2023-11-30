@@ -1,17 +1,13 @@
 package com.example.SocialNetwork.controller;
 
 import com.example.SocialNetwork.entities.Comment;
-import com.example.SocialNetwork.entities.Post;
 import com.example.SocialNetwork.service.CommentService;
 import lombok.AllArgsConstructor;
-import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
-@RequestMapping("/api/comments")
+@RequestMapping("/comments")
 @AllArgsConstructor
 public class CommentController {
 
