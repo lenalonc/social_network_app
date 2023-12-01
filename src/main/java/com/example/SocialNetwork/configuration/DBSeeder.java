@@ -20,7 +20,8 @@ public class DBSeeder implements CommandLineRunner {
     GroupMemberRepository groupMemberRepository;
     FriendRequestRepository friendRequestRepository;
     FriendsRepository friendsRepository;
-    FriendsService friendsService;
+
+    PostRepository postRepository;
 
     BCryptPasswordEncoder passwordEncoder;
 
@@ -30,15 +31,16 @@ public class DBSeeder implements CommandLineRunner {
              MembershipRequestRepository membershipRequestRepository,
              SocialGroupRepository socialGroupRepository,
              GroupMemberRepository groupMemberRepository,
-             BCryptPasswordEncoder passwordEncoder, FriendRequestRepository friendRequestRepository, FriendsRepository friendsRepository, FriendsService friendsService) {
+             BCryptPasswordEncoder passwordEncoder, FriendRequestRepository friendRequestRepository, FriendsRepository friendsRepository,
+             PostRepository postRepository) {
         this.userRepository = userRepository;
         this.membershipRequestRepository = membershipRequestRepository;
         this.socialGroupRepository = socialGroupRepository;
         this.groupMemberRepository = groupMemberRepository;
         this.friendRequestRepository = friendRequestRepository;
         this.friendsRepository = friendsRepository;
+        this.postRepository = postRepository;
         this.passwordEncoder = passwordEncoder;
-        this.friendsService = friendsService;
     }
 
     private void seedUser(String username, String email, String password, boolean active) {
@@ -87,7 +89,6 @@ public class DBSeeder implements CommandLineRunner {
         Friends friends = new Friends();
         friends.setUser1Id(users.get(user1Id));
         friends.setUser2Id(users.get(user2Id));
-
         friendsRepository.save(friends);
     }
 
@@ -101,6 +102,22 @@ public class DBSeeder implements CommandLineRunner {
         groupMember.setSocialGroup(socialGroups.get(id_socialgroup));
 
         groupMemberRepository.save(groupMember);
+    }
+
+    private void seedPost(String text, boolean type, Date date, int id_user, int id_socialgroup) {
+        List<User> users = userRepository.findAll();
+        List<SocialGroup> socialGroups = socialGroupRepository.findAll();
+
+        Post post = Post.builder()
+                .text(text)
+                .type(type)
+                .deleted(false)
+                .user(users.get(id_user))
+                .socialGroup(socialGroups.get(id_socialgroup))
+                .date(date)
+                .build();
+
+        postRepository.save(post);
     }
 
 
@@ -139,10 +156,18 @@ public class DBSeeder implements CommandLineRunner {
         seedFriends(0, 1);
         seedFriends(0, 2);
         seedFriends(1, 2);
+
+        seedPost("text1", true, new Date(), 0, 1);
+        seedPost("text2", false, new Date(), 0, 3);
+        seedPost("text3", true, new Date(), 2, 2);
+        seedPost("text4", true, new Date(2023, 11, 11, 12, 12, 12), 1, 2);
+        seedPost("text4", true, new Date(2023, 11, 26, 12, 12, 12), 1, 1);
+
     }
 
 
     private void clearDatabase() {
+        this.postRepository.deleteAll();
         this.groupMemberRepository.deleteAll();
         this.membershipRequestRepository.deleteAll();
         this.socialGroupRepository.deleteAll();
