@@ -20,9 +20,6 @@ public interface FriendsRepository extends JpaRepository<Friends, Long> {
     )
     List<User> getFriendsByUser(@Param("user1id") Long userId);
 
-    /*@Query("select from Friends where user1Id.id = :user1id or user2Id.id = :user1id")
-    List<Friends> getFriendsByCurrentUser(@Param("user1id") Long userId);
-*/
     @Modifying
     @Query(
             "DELETE FROM Friends WHERE user1Id.id = :user1id AND user2Id.id= :user2id"

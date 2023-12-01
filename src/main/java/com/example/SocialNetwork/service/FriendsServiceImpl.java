@@ -55,19 +55,6 @@ public class FriendsServiceImpl implements FriendsService {
             }
         }
         return new ResponseEntity<>("Friend not found", HttpStatus.NOT_FOUND);
-/*
-        List<Friends> friends = friendsRepository.getFriendsByCurrentUser(user.getId());
-        for (Friends friend : friends) {
-            if (friend.getId().equals(friendId)) {
-                User friendUser = userRepository.findById(friendId).get();
-                friends.remove(friend);
-                friendUser.getFriends().remove(friend);
-                userRepository.save(user);
-                userRepository.save(friendUser);
-                friendsRepository.deleteById(friendId);
-                return new ResponseEntity<>("Friend deleted", HttpStatus.OK);
-            }
-        }*/
     }
 
     @Override
