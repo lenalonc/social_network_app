@@ -9,13 +9,11 @@ import com.example.SocialNetwork.exceptions.NotFoundException;
 import com.example.SocialNetwork.exceptions.ValidationException;
 import com.example.SocialNetwork.repository.UserRepository;
 import jakarta.transaction.Transactional;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.modelmapper.ModelMapper;
-import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -187,6 +185,5 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     public User findCurrentUser() {
         Optional<User> user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
         return user.get();
-
     }
 }

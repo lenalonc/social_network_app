@@ -2,6 +2,7 @@ package com.example.SocialNetwork.controller;
 
 import com.example.SocialNetwork.dto.SocialGroupDTO;
 import com.example.SocialNetwork.entities.SocialGroup;
+import com.example.SocialNetwork.entities.User;
 import com.example.SocialNetwork.helper.MyRequest;
 import com.example.SocialNetwork.service.GroupMemberService;
 import com.example.SocialNetwork.service.MembershipRequestService;
@@ -48,7 +49,8 @@ public class SocialGroupController extends MyRequest {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteSocialGroupById(@PathVariable Long id) {
-        return groupService.deleteSocialGroupById(id);
+        User currentUser = userService.findCurrentUser();
+        return groupService.deleteSocialGroupById(id, currentUser);
     }
 
     @GetMapping("/name/{name}")

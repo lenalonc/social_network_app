@@ -6,10 +6,8 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import javax.swing.text.html.Option;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 @Component
 public class DBSeeder implements CommandLineRunner {
@@ -27,11 +25,13 @@ public class DBSeeder implements CommandLineRunner {
     BCryptPasswordEncoder passwordEncoder;
 
 
+
     DBSeeder(UserRepository userRepository,
              MembershipRequestRepository membershipRequestRepository,
              SocialGroupRepository socialGroupRepository,
              GroupMemberRepository groupMemberRepository,
-             BCryptPasswordEncoder passwordEncoder, FriendRequestRepository friendRequestRepository, FriendsRepository friendsRepository, PostRepository postRepository) {
+             BCryptPasswordEncoder passwordEncoder, FriendRequestRepository friendRequestRepository, FriendsRepository friendsRepository,
+             PostRepository postRepository) {
         this.userRepository = userRepository;
         this.membershipRequestRepository = membershipRequestRepository;
         this.socialGroupRepository = socialGroupRepository;
@@ -130,23 +130,23 @@ public class DBSeeder implements CommandLineRunner {
         seedUser("Eva", "eva@example.com", "password4", false);
         seedUser("Michael", "michael@example.com", "password5", false);
 
-        seedSocialGroup("Group1", true, 3);
-        seedSocialGroup("Group2", false, 1);
-        seedSocialGroup("Group3", true, 1);
-        seedSocialGroup("Group4", false, 1);
-        seedSocialGroup("Group5", true, 1);
+        seedSocialGroup("Group1", true,3);
+        seedSocialGroup("Group2", false,0);
+        seedSocialGroup("Group3", true,0);
+        seedSocialGroup("Group4", false,0);
+        seedSocialGroup("Group5", true,1);
 
-        seedMembershipRequest(RequestStatus.PENDING, 3, 0);
-        seedMembershipRequest(RequestStatus.ACCEPTED, 1, 1);
-        seedMembershipRequest(RequestStatus.PENDING, 2, 2);
-        seedMembershipRequest(RequestStatus.REJECTED, 2, 2);
-        seedMembershipRequest(RequestStatus.ACCEPTED, 1, 2);
+        seedMembershipRequest(RequestStatus.PENDING,3,0);
+        seedMembershipRequest(RequestStatus.ACCEPTED,0,1);
+        seedMembershipRequest(RequestStatus.PENDING,0, 2);
+        seedMembershipRequest(RequestStatus.REJECTED,2,2);
+        seedMembershipRequest(RequestStatus.ACCEPTED,1,2);
 
-        seedGroupMember(1, 1);
-        seedGroupMember(1, 3);
-        seedGroupMember(2, 2);
-        seedGroupMember(1, 2);
-        seedGroupMember(1, 3);
+        seedGroupMember(0,1);
+        seedGroupMember(0,3);
+        seedGroupMember(2,2);
+        seedGroupMember(1,2);
+        seedGroupMember(1,3);
 
         seedFriendRequest(RequestStatus.PENDING, 0, 1, new Date());
         seedFriendRequest(RequestStatus.ACCEPTED, 0, 2, new Date());
@@ -156,8 +156,8 @@ public class DBSeeder implements CommandLineRunner {
         seedFriends(0, 2);
         seedFriends(1, 2);
 
-        seedPost("text1", true, new Date(), 1, 1);
-        seedPost("text2", false, new Date(), 1, 3);
+        seedPost("text1", true, new Date(), 0, 1);
+        seedPost("text2", false, new Date(), 0, 3);
         seedPost("text3", true, new Date(), 2, 2);
         seedPost("text4", true, new Date(2023, 11, 11, 12, 12, 12), 1, 2);
         seedPost("text4", true, new Date(2023, 11, 26, 12, 12, 12), 1, 1);
@@ -166,10 +166,10 @@ public class DBSeeder implements CommandLineRunner {
 
 
     private void clearDatabase() {
+        this.postRepository.deleteAll();
         this.groupMemberRepository.deleteAll();
         this.membershipRequestRepository.deleteAll();
         this.socialGroupRepository.deleteAll();
-        this.postRepository.deleteAll();
         this.userRepository.deleteAll();
     }
 }

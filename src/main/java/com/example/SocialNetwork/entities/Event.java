@@ -3,7 +3,10 @@ package com.example.SocialNetwork.entities;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "event")
@@ -30,6 +33,10 @@ public class Event {
     @ManyToOne
     @JoinColumn(name = "id_social_group", nullable = false)
     private SocialGroup socialGroup;
+    @OneToMany(mappedBy = "event")
+    private List<Attending> attendings=new ArrayList<>();
 
-
+    public void addAttending(Attending attending) {
+        attendings.add(attending);
+    }
 }

@@ -87,6 +87,7 @@ public class PostServiceImpl implements PostService {
         if (!user.get().getSocialGroups().contains(socialGroup))
             throw new ForbiddenException("User is not a member of this social group." +
                     " Only members can see posts within a group.");
+
         post.setDate(new Date());
         post.setDeleted(false);
         post.setUser(user.get());
@@ -190,6 +191,5 @@ public class PostServiceImpl implements PostService {
             emailService.sendEmail(user.getEmail(), "New post", text);
         }
     }
-
 
 }
