@@ -1,4 +1,4 @@
-package com.example.SocialNetwork.dto;
+package com.example.SocialNetwork.dtos;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,8 +1,6 @@
 package com.example.SocialNetwork.controller;
 
-import com.example.SocialNetwork.dto.UserDTO;
 import com.example.SocialNetwork.dtos.*;
-import com.example.SocialNetwork.dtos.UserDTO;
 import com.example.SocialNetwork.dtos.LoginRequest;
 import com.example.SocialNetwork.dtos.LoginResponse;
 import com.example.SocialNetwork.dtos.PasswordDto;
@@ -128,11 +126,6 @@ public class UserController {
         if (session != null) {
             session.invalidate();
         }
-    }
-
-    @GetMapping("/dto/{id}")
-    public UserDTO getUserDTOById(@PathVariable Long id) {
-        return userService.findByIDDTO(id);
     }
 
     @GetMapping("/name/{name}")
