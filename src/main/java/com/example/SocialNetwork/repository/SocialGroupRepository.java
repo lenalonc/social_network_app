@@ -1,7 +1,6 @@
 package com.example.SocialNetwork.repository;
 
 import com.example.SocialNetwork.entities.SocialGroup;
-import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -16,6 +15,5 @@ public interface SocialGroupRepository extends JpaRepository<SocialGroup, Long> 
 
     @Modifying
     @Query(value = "DELETE FROM socialgroup WHERE id=:id_group AND id_admin =:id_user",nativeQuery = true)
-    @Transactional
     void deleteByIdAndUserId(@Param("id_group") Long id_group, @Param("id_user") Long id_user);
 }
