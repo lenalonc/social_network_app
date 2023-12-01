@@ -11,7 +11,7 @@ public interface CommentService {
 
     List<CommentDTO> getAllRepliesForComment(Long id);
 
-    Comment createComment(Comment comment, Long postId);
+    CommentDTO createComment(Comment comment, Long postId);
 
     Comment replyToComment(Comment reply, Long commentId);
 
