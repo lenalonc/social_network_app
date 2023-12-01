@@ -1,10 +1,7 @@
 package com.example.SocialNetwork.controller;
 
 import com.example.SocialNetwork.dto.UserDTO;
-import com.example.SocialNetwork.dtos.LoginRequest;
-import com.example.SocialNetwork.dtos.LoginResponse;
-import com.example.SocialNetwork.dtos.PasswordDto;
-import com.example.SocialNetwork.dtos.UserCreateDto;
+import com.example.SocialNetwork.dtos.*;
 import com.example.SocialNetwork.entities.User;
 import com.example.SocialNetwork.repository.UserRepository;
 import com.example.SocialNetwork.service.UserServiceImpl;
@@ -81,8 +78,8 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateUser(@PathVariable Long id, @RequestBody User user) {
-        return userService.updateUser(id, user);
+    public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody UserUpdateDto userUpdateDto) {
+        return ResponseEntity.ok(userService.updateUser(id, userUpdateDto));
     }
 
     @GetMapping("/")
@@ -103,14 +100,8 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable Long id) {
-        User user = userService.findByID(id);
-
-        if (user == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-
-        return new ResponseEntity<>(user, HttpStatus.OK);
+    public ResponseEntity<?> getUserById(@PathVariable Long id) {
+        return ResponseEntity.ok(userService.findByID(id));
     }
 
 
@@ -136,7 +127,7 @@ public class UserController {
 
     @GetMapping("/dto/{id}")
     public UserDTO getUserDTOById(@PathVariable Long id) {
-        UserDTO user = userService.findByIDDTO(id);
+        UserDTO user = userService.findByID(id);
         return user;
     }
 
