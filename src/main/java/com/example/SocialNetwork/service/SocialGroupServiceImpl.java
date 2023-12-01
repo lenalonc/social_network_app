@@ -25,21 +25,18 @@ public class SocialGroupServiceImpl implements SocialGroupService{
 
     private final SocialGroupRepository groupRepository;
     private final GroupMemberRepository groupMemberRepository;
-    private final GroupMemberService groupMemberService;
     private final UserService userService;
-    private final MembershipRequestService membershipRequestService;
     private final MembershipRequestRepository membershipRequestRepository;
 
     public SocialGroupServiceImpl(SocialGroupRepository groupRepository,
                                   ModelMapper mapper,
                                   GroupMemberRepository groupMemberRepository,
-                                  GroupMemberService groupMemberService, UserService userService, MembershipRequestService membershipRequestService, MembershipRequestRepository membershipRequestRepository){
+                                  UserService userService,
+                                  MembershipRequestRepository membershipRequestRepository) {
         this.groupRepository = groupRepository;
         this.mapper=mapper;
         this.groupMemberRepository = groupMemberRepository;
-        this.groupMemberService = groupMemberService;
         this.userService = userService;
-        this.membershipRequestService = membershipRequestService;
         this.membershipRequestRepository = membershipRequestRepository;
     }
     @Override
