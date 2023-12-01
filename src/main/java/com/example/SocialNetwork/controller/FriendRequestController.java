@@ -1,6 +1,6 @@
 package com.example.SocialNetwork.controller;
 
-import com.example.SocialNetwork.dto.FriendRequestDTO;
+import com.example.SocialNetwork.dtos.FriendRequestDTO;
 import com.example.SocialNetwork.entities.FriendRequest;
 import com.example.SocialNetwork.entities.User;
 import com.example.SocialNetwork.repository.UserRepository;

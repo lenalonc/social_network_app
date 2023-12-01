@@ -1,6 +1,7 @@
 package com.example.SocialNetwork.configuration;
 
 import com.sun.mail.util.MailSSLSocketFactory;
+import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -38,6 +39,11 @@ public class GlobalConfiguration {
         props.put("mail.debug", "true");
 
         return mailSender;
+    }
+
+    @Bean
+    ModelMapper modelMapper() {
+        return new ModelMapper();
     }
 
 }
