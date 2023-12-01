@@ -54,7 +54,7 @@ public class User {
                     @JoinColumn(name = "id_user2")
             }
     )
-    private List<Friends> friends = new ArrayList<>();
+    private List<Friends> friends;
 
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "groupmember",
@@ -90,6 +90,8 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     private List<Comment> comments;
+    @OneToMany(mappedBy = "user")
+    private List<Attending> attendings = new ArrayList<>();
 
     @JsonIgnore
     private String secretKey;
@@ -106,8 +108,8 @@ public class User {
         return roles.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
     }
 
-    public void addFriend(Friends friends){
-        this.friends.add(friends);
-    }
+    public void addAttending(Attending a) {
+        attendings.add(a);
 
+    }
 }

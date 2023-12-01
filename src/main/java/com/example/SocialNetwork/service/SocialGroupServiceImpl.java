@@ -1,6 +1,7 @@
 package com.example.SocialNetwork.service;
 
 import com.example.SocialNetwork.dto.SocialGroupDTO;
+import com.example.SocialNetwork.dto.UserDTO;
 import com.example.SocialNetwork.entities.GroupMember;
 import com.example.SocialNetwork.entities.SocialGroup;
 import com.example.SocialNetwork.entities.User;
@@ -87,16 +88,13 @@ public class SocialGroupServiceImpl implements SocialGroupService{
     }
 
     @Override
-    public ResponseEntity<String> deleteSocialGroupById(Long id) {
-        User currentUser = userService.findCurrentUser();
+    public ResponseEntity<String> deleteSocialGroupById(Long id, User currentUser) {
         SocialGroup socialGroup = groupRepository.findById(id).orElse(null);
 
         if (socialGroup != null && currentUser.getId().equals(socialGroup.getUser().getId())) {
-            List<Long> userIds = groupMemberService.getAllGroupMembers(id);
-
-            membershipRequestService.deleteAllRequestsForSocialGroup(id);
-            groupMemberService.deleteAllGroupMembers(id);
-            groupRepository.deleteById(id);
+            membershipRequestRepository.deleteAllBySocialGroupId(id);
+            groupMemberRepository.deleteAllBySocialGroupId(id);
+            groupRepository.deleteByIdAndUserId(id, currentUser.getId());
 
             return ResponseEntity.ok("Uspesno ste obrisali grupu");
         } else {
@@ -119,6 +117,8 @@ public class SocialGroupServiceImpl implements SocialGroupService{
             return ResponseEntity.notFound().build();
         }
     }
+
+
 
     @Override
     public SocialGroup getSocialGroupById(Long id) {
