@@ -69,7 +69,7 @@ public class SocialGroupController extends MyRequest {
 
     @DeleteMapping("/deletemember/{id}")
     public ResponseEntity<?> deleteMember(@PathVariable Long id){
-        groupMemberService.deleteGroupMemberById(id);
+        groupMemberService.deleteGroupMemberByUserId(id);
         return ResponseEntity.ok().build();
     }
 
@@ -88,6 +88,21 @@ public class SocialGroupController extends MyRequest {
     public ResponseEntity<String> joinGroup(@PathVariable Long id) {
         User currentUser = userService.findCurrentUser();
         return membershipRequestService.processJoinGroupRequest(id, currentUser);
+    }
+
+    @GetMapping("/allrequestsforgroup/{id}")
+    public ResponseEntity<?> showAllRequests(@PathVariable Long id){
+        return ResponseEntity.ok(membershipRequestService.getAllRequestsForSocialGroup(id));
+    }
+    @GetMapping("/membershiprequest/{id}")
+    public ResponseEntity<?> getRequestsById(@PathVariable Long id) {
+        return ResponseEntity.ok(membershipRequestService.getRequestsById(id));
+    }
+
+    @DeleteMapping("/deleterequest/{id}")
+    public ResponseEntity<?> deleteRequestById(@PathVariable Long id) {
+        membershipRequestService.deleteRequestById(id);
+        return ResponseEntity.ok().build();
     }
 
 }

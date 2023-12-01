@@ -4,8 +4,10 @@ import com.example.SocialNetwork.entities.*;
 import com.example.SocialNetwork.repository.GroupMemberRepository;
 import com.example.SocialNetwork.repository.MembershipRequestRepository;
 import com.example.SocialNetwork.repository.SocialGroupRepository;
+import com.example.SocialNetwork.repository.UserRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -15,40 +17,63 @@ import java.util.Optional;
 @Service
 public class MembershipRequestServiceImpl implements MembershipRequestService {
 
-    private final MembershipRequestRepository requestsRepository;
+    private final MembershipRequestRepository membershipRequestsRepository;
     private final GroupMemberRepository groupMemberRepository;
     private final SocialGroupRepository socialGroupRepository;
+    private final UserRepository userRepository;
 
-    public MembershipRequestServiceImpl(MembershipRequestRepository requestsRepository, GroupMemberRepository groupMemberRepository, SocialGroupRepository socialGroupRepository){
-        this.requestsRepository = requestsRepository;
+    public MembershipRequestServiceImpl(MembershipRequestRepository requestsRepository,
+                                        GroupMemberRepository groupMemberRepository,
+                                        SocialGroupRepository socialGroupRepository,
+                                        UserRepository userRepository){
+        this.membershipRequestsRepository = requestsRepository;
         this.groupMemberRepository = groupMemberRepository;
         this.socialGroupRepository = socialGroupRepository;
+        this.userRepository = userRepository;
     }
     @Override
     public List<MembershipRequest> getAllRequests() {
-        return requestsRepository.findAll();
+        return membershipRequestsRepository.findAll();
     }
 
     @Override
-    public MembershipRequest getAllRequestsById(Long id) {
-        Optional<MembershipRequest> request = requestsRepository.findById(id);
-        return request.orElse(null);
+    public MembershipRequest getRequestsById(Long id) {
+        Optional<User> currentUser = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+        Optional<MembershipRequest> membershipRequest = membershipRequestsRepository.findById(id);
+
+        if(membershipRequest.orElse(null).getUser().getId() == currentUser.get().getId()
+            || membershipRequest.orElse(null).getSocialGroup().getUser().getId()
+                == currentUser.get().getId()){
+            return membershipRequest.get();
+        }
+        return null;
     }
 
     @Override
     public void deleteRequestById(Long id) {
-        MembershipRequest temGroup = requestsRepository.findById(id).get();
-        requestsRepository.deleteById(id);
+        Optional<User> currentUser = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+        MembershipRequest membershipRequest = getRequestsById(id);
+
+        if(membershipRequest.getUser().getId() == currentUser.get().getId() ||
+            membershipRequest.getSocialGroup().getUser().getId() == currentUser.get().getId()){
+            membershipRequestsRepository.deleteById(id);
+        }
     }
 
     @Override
     public void saveRequest(MembershipRequest membershipRequest) {
-        requestsRepository.save(membershipRequest);
+        membershipRequestsRepository.save(membershipRequest);
     }
 
     @Override
     public List<MembershipRequest> getAllRequestsForSocialGroup(Long id) {
-        return requestsRepository.findAllMembershipRequestsForSocialGroup(id);
+        Optional<User> currentUser = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+        Optional<SocialGroup> socialGroup = socialGroupRepository.findById(id);
+
+        if(socialGroup.get().getUser().getId() == currentUser.get().getId()){
+            return membershipRequestsRepository.findAllMembershipRequestsForSocialGroup(id);
+        }
+        return null;
     }
 
     @Override
@@ -72,7 +97,7 @@ public class MembershipRequestServiceImpl implements MembershipRequestService {
                     membershipRequest.setSocialGroup(socialGroup);
                     membershipRequest.setUser(user);
                     membershipRequest.setRequestStatus(RequestStatus.PENDING);
-                    requestsRepository.save(membershipRequest);
+                    membershipRequestsRepository.save(membershipRequest);
 
                     return ResponseEntity.ok("Uspešno ste poslali request za učlanjenje u grupu");
                 } else {

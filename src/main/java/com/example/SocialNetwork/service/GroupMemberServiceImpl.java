@@ -78,7 +78,7 @@ public class GroupMemberServiceImpl implements GroupMemberService{
     }
 
     @Override
-    public void deleteGroupMemberById(Long id) {
+    public void deleteGroupMemberByUserId(Long id) {
         Optional<User> currentUser = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
         Optional<SocialGroup> socialGroup = socialGroupRepository.findById(id);
 
@@ -88,15 +88,10 @@ public class GroupMemberServiceImpl implements GroupMemberService{
     }
 
     @Override
-    public void deleteGroupMemberByUserId(Long id) {
-        memberRepository.deleteByUserId(id);
-    }
-
-    @Override
     public void deleteAllGroupMembers(Long groupId) {
-        List<Long> groupMemberIds = getAllGroupMembers(groupId);
-        for (Long memberId : groupMemberIds) {
-            deleteGroupMemberByUserId(memberId);
+        List<UserDTO> groupMemberIds = getAllGroupMembers(groupId);
+        for (UserDTO memberId : groupMemberIds) {
+            deleteGroupMemberByUserId(memberId.getId());
         }
     }
 

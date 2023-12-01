@@ -12,8 +12,6 @@ public interface GroupMemberService {
 
     List<UserDTO> getAllGroupMembers(Long id);
 
-    void deleteGroupMemberById(Long id);
-
     void deleteGroupMemberByUserId(Long id);
 
     void deleteAllGroupMembers(Long id);
