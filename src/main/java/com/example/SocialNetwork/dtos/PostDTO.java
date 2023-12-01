@@ -1,30 +1,28 @@
-package com.example.SocialNetwork.dto;
+package com.example.SocialNetwork.dtos;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Date;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CommentDTO {
+public class PostDTO {
 
     private Long id;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ")
+    private Date date;
+
     private String text;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ")
-    private LocalDateTime date;
+    private boolean type;
 
-    private CommentDTO parentComment;
-
-    private PostDTO post;
+    private boolean deleted;
 
     private UserDTO user;
 

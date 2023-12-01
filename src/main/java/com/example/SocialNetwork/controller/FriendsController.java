@@ -1,17 +1,14 @@
 package com.example.SocialNetwork.controller;
 
-import com.example.SocialNetwork.dto.UserDTO;
+import com.example.SocialNetwork.dtos.UserDTO;
 import com.example.SocialNetwork.entities.Friends;
-import com.example.SocialNetwork.entities.User;
 import com.example.SocialNetwork.repository.UserRepository;
 import com.example.SocialNetwork.service.FriendsService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/friends")

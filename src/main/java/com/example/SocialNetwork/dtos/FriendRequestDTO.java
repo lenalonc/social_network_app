@@ -1,4 +1,4 @@
-package com.example.SocialNetwork.dto;
+package com.example.SocialNetwork.dtos;
 
 import com.example.SocialNetwork.entities.RequestStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;

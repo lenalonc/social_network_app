@@ -1,6 +1,6 @@
 package com.example.SocialNetwork.controller;
 
-import com.example.SocialNetwork.dto.SocialGroupDTO;
+import com.example.SocialNetwork.dtos.SocialGroupDTO;
 import com.example.SocialNetwork.entities.SocialGroup;
 import com.example.SocialNetwork.entities.User;
 import com.example.SocialNetwork.helper.MyRequest;

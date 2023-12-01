@@ -1,6 +1,5 @@
-package com.example.SocialNetwork.dto;
+package com.example.SocialNetwork.dtos;
 
-import com.example.SocialNetwork.entities.RequestStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,14 +9,13 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class MembershipRequestDTO {
+public class SocialGroupDTO {
 
     private Long id;
 
-    private RequestStatus requestStatus;
+    private String name;
 
-    private SocialGroupDTO socialGroup;
+    private boolean type;
 
     private UserDTO user;
-
 }

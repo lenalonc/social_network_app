@@ -1,10 +1,11 @@
 package com.example.SocialNetwork.service;
 
-import com.example.SocialNetwork.dto.UserDTO;
+import com.example.SocialNetwork.dtos.UserDTO;
 import com.example.SocialNetwork.entities.User;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface UserService {
     void saveUser(User user);
@@ -20,4 +21,6 @@ public interface UserService {
     UserDTO findByIDDTO(Long id);
 
     public User findCurrentUser();
+
+    UserDTO findByUsername(String name);
 }

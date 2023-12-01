@@ -1,4 +1,4 @@
-package com.example.SocialNetwork.dto;
+package com.example.SocialNetwork.dtos;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,13 +18,9 @@ public class UserDTO {
 
     private String username;
 
-    private String password;
-
     private boolean active;
 
     private boolean admin;
 
     private Date donotdistrub;
-
-    //private List<PostDTO> posts;
 }
