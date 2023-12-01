@@ -48,7 +48,6 @@ public class SocialGroupController extends MyRequest {
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteSocialGroupById(@PathVariable Long id, User user) {
         User currentUser = userService.findCurrentUser();
-        System.out.println(currentUser.getUsername());
         return groupService.deleteSocialGroupById(id,currentUser);
     }
 
