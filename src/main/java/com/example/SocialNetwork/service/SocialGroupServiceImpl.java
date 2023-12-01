@@ -24,22 +24,21 @@ public class SocialGroupServiceImpl implements SocialGroupService{
 
     private final SocialGroupRepository groupRepository;
     private final GroupMemberRepository groupMemberRepository;
-    private final GroupMemberService groupMemberService;
     private final UserService userService;
-    private final MembershipRequestService membershipRequestService;
     private final MembershipRequestRepository membershipRequestRepository;
+    private final SocialGroupRepository socialGroupRepository;
 
     public SocialGroupServiceImpl(SocialGroupRepository groupRepository,
                                   ModelMapper mapper,
                                   GroupMemberRepository groupMemberRepository,
-                                  GroupMemberService groupMemberService, UserService userService, MembershipRequestService membershipRequestService, MembershipRequestRepository membershipRequestRepository){
+                                  UserService userService,
+                                  MembershipRequestRepository membershipRequestRepository, SocialGroupRepository socialGroupRepository){
         this.groupRepository = groupRepository;
         this.mapper=mapper;
         this.groupMemberRepository = groupMemberRepository;
-        this.groupMemberService = groupMemberService;
         this.userService = userService;
-        this.membershipRequestService = membershipRequestService;
         this.membershipRequestRepository = membershipRequestRepository;
+        this.socialGroupRepository = socialGroupRepository;
     }
     @Override
     public void saveGroup(SocialGroup socialGroup) {
@@ -87,22 +86,23 @@ public class SocialGroupServiceImpl implements SocialGroupService{
     }
 
     @Override
-    public ResponseEntity<String> deleteSocialGroupById(Long id) {
-        User currentUser = userService.findCurrentUser();
+    public ResponseEntity<String> deleteSocialGroupById(Long id, User currentUser) {
         SocialGroup socialGroup = groupRepository.findById(id).orElse(null);
 
         if (socialGroup != null && currentUser.getId().equals(socialGroup.getUser().getId())) {
-            List<Long> userIds = groupMemberService.getAllGroupMembers(id);
-
-            membershipRequestService.deleteAllRequestsForSocialGroup(id);
-            groupMemberService.deleteAllGroupMembers(id);
-            groupRepository.deleteById(id);
+            //Obrisi zahteve za pridruzivanje grupi
+            membershipRequestRepository.deleteAllBySocialGroupId(id);
+            //Obrisi sve clanove grupe
+            groupMemberRepository.deleteAllBySocialGroupId(id);
+            //Obrisi i samu grupu na kraju
+            socialGroupRepository.deleteByIdAndUserId(id, currentUser.getId());
 
             return ResponseEntity.ok("Uspesno ste obrisali grupu");
         } else {
             return ResponseEntity.status(403).body("Niste ovlasceni da obrisete grupu");
         }
     }
+
 
 
     @Override
