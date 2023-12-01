@@ -14,12 +14,9 @@ import java.util.List;
 public interface GroupMemberRepository extends JpaRepository<GroupMember, Long> {
 
     @Query(value = "SELECT id_user FROM groupmember WHERE id_social_group =:id", nativeQuery = true)
-    public List<Long> findAllM(@Param("id") Long id);
-
+    List<Long> findAllM(@Param("id") Long id);
     @Modifying
-    @Query(value = "DELETE FROM groupmember WHERE id_user = :id", nativeQuery = true)
     @Transactional
-    void deleteByUserId(@Param("id") Long id);
-
-    List<Long> findAllBySocialGroupId(Long id);
+    @Query(value = "DELETE FROM groupmember WHERE id_user =:idUser AND id_social_group =:idGroup", nativeQuery = true)
+    void deleteByUserId(@Param("idUser") Long idUser, @Param("idGroup") Long idGroup);
 }

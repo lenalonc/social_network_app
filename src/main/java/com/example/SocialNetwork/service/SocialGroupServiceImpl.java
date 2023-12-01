@@ -1,6 +1,7 @@
 package com.example.SocialNetwork.service;
 
 import com.example.SocialNetwork.dto.SocialGroupDTO;
+import com.example.SocialNetwork.dto.UserDTO;
 import com.example.SocialNetwork.entities.GroupMember;
 import com.example.SocialNetwork.entities.SocialGroup;
 import com.example.SocialNetwork.entities.User;
@@ -92,7 +93,7 @@ public class SocialGroupServiceImpl implements SocialGroupService{
         SocialGroup socialGroup = groupRepository.findById(id).orElse(null);
 
         if (socialGroup != null && currentUser.getId().equals(socialGroup.getUser().getId())) {
-            List<Long> userIds = groupMemberService.getAllGroupMembers(id);
+            List<UserDTO> userIds = groupMemberService.getAllGroupMembers(id);
 
             membershipRequestService.deleteAllRequestsForSocialGroup(id);
             groupMemberService.deleteAllGroupMembers(id);

@@ -19,7 +19,6 @@ public class SocialGroupController extends MyRequest {
     private final SocialGroupService groupService;
     private final UserService userService;
     private final GroupMemberService groupMemberService;
-
     private final MembershipRequestService membershipRequestService;
 
     public SocialGroupController(SocialGroupService groupService,
@@ -62,6 +61,23 @@ public class SocialGroupController extends MyRequest {
         return groupService.getSocialGroupDTOById(id);
     }
 
+
+    @PostMapping("/approve/{id}")
+    public ResponseEntity<?> approveRequest(@PathVariable Long id) {
+        return ResponseEntity.ok(groupMemberService.saveGroupMember(id));
+    }
+
+    @DeleteMapping("/deletemember/{id}")
+    public ResponseEntity<?> deleteMember(@PathVariable Long id){
+        groupMemberService.deleteGroupMemberByUserId(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/allusers/{id}")
+    public ResponseEntity<?> showAllUsersForGroup(@PathVariable Long id) {
+        return ResponseEntity.ok(groupMemberService.getAllGroupMembers(id));
+    }
+
     @PostMapping("/createmembershiprequest/{id}")
     public ResponseEntity<String> createMembershipRequest(@PathVariable Long id) {
         User currentUser = userService.findCurrentUser();
@@ -72,6 +88,21 @@ public class SocialGroupController extends MyRequest {
     public ResponseEntity<String> joinGroup(@PathVariable Long id) {
         User currentUser = userService.findCurrentUser();
         return membershipRequestService.processJoinGroupRequest(id, currentUser);
+    }
+
+    @GetMapping("/allrequestsforgroup/{id}")
+    public ResponseEntity<?> showAllRequests(@PathVariable Long id){
+        return ResponseEntity.ok(membershipRequestService.getAllRequestsForSocialGroup(id));
+    }
+    @GetMapping("/membershiprequest/{id}")
+    public ResponseEntity<?> getRequestsById(@PathVariable Long id) {
+        return ResponseEntity.ok(membershipRequestService.getRequestsById(id));
+    }
+
+    @DeleteMapping("/deleterequest/{id}")
+    public ResponseEntity<?> deleteRequestById(@PathVariable Long id) {
+        membershipRequestService.deleteRequestById(id);
+        return ResponseEntity.ok().build();
     }
 
 }
