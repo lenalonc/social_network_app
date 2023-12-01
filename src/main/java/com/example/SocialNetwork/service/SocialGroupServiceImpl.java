@@ -1,7 +1,7 @@
 package com.example.SocialNetwork.service;
 
-import com.example.SocialNetwork.dto.SocialGroupDTO;
-import com.example.SocialNetwork.dto.UserDTO;
+import com.example.SocialNetwork.dtos.SocialGroupDTO;
+import com.example.SocialNetwork.dtos.UserDTO;
 import com.example.SocialNetwork.entities.GroupMember;
 import com.example.SocialNetwork.entities.SocialGroup;
 import com.example.SocialNetwork.entities.User;

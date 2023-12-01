@@ -1,16 +1,14 @@
 package com.example.SocialNetwork.service;
 
-import com.example.SocialNetwork.dto.UserDTO;
+import com.example.SocialNetwork.dtos.UserDTO;
 import com.example.SocialNetwork.entities.GroupMember;
 import com.example.SocialNetwork.entities.MembershipRequest;
 import com.example.SocialNetwork.entities.SocialGroup;
 import com.example.SocialNetwork.entities.User;
-import com.example.SocialNetwork.helpercalsses.MyRequest;
 import com.example.SocialNetwork.repository.GroupMemberRepository;
 import com.example.SocialNetwork.repository.MembershipRequestRepository;
 import com.example.SocialNetwork.repository.SocialGroupRepository;
 import com.example.SocialNetwork.repository.UserRepository;
-import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;

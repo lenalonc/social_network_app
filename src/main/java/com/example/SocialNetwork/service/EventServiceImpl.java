@@ -1,6 +1,6 @@
 package com.example.SocialNetwork.service;
 
-import com.example.SocialNetwork.dto.EventDTO;
+import com.example.SocialNetwork.dtos.EventDTO;
 import com.example.SocialNetwork.entities.Attending;
 import com.example.SocialNetwork.entities.Event;
 import com.example.SocialNetwork.entities.User;
@@ -9,11 +9,9 @@ import com.example.SocialNetwork.repository.EventRepository;
 import com.example.SocialNetwork.repository.GroupMemberRepository;
 import com.example.SocialNetwork.repository.UserRepository;
 import jakarta.transaction.Transactional;
-import jakarta.validation.constraints.Email;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -45,7 +43,7 @@ public class EventServiceImpl implements EventService{
 
     @Override
     public ResponseEntity<?> saveEvent(Event event) {
-        List<Long> members=groupMemberRepository.findAllBySocialGroupId(event.getSocialGroup().getId());
+        List<Long> members=groupMemberRepository.findAllM(event.getSocialGroup().getId());
         for (Long id: members ) {
             if(id == event.getUser().getId()){
                 LocalDateTime localDateTime = LocalDateTime.now();
@@ -82,7 +80,7 @@ public class EventServiceImpl implements EventService{
 
             }
         }
-        List<Long> members=groupMemberRepository.findAllBySocialGroupId(event.getSocialGroup().getId());
+        List<Long> members=groupMemberRepository.findAllM(event.getSocialGroup().getId());
         for (Long idMember: members ) {
             if (idMember == u.getId()) {
                 Attending attending = new Attending();

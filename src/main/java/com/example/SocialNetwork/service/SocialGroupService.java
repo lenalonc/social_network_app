@@ -1,6 +1,6 @@
 package com.example.SocialNetwork.service;
 
-import com.example.SocialNetwork.dto.SocialGroupDTO;
+import com.example.SocialNetwork.dtos.SocialGroupDTO;
 import com.example.SocialNetwork.entities.SocialGroup;
 import org.springframework.http.ResponseEntity;
 

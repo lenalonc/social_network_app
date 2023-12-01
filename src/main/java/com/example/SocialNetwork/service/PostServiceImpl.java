@@ -1,15 +1,13 @@
 package com.example.SocialNetwork.service;
 
-import com.example.SocialNetwork.dto.PostDTO;
+import com.example.SocialNetwork.dtos.PostDTO;
 import com.example.SocialNetwork.entities.Post;
 import com.example.SocialNetwork.entities.SocialGroup;
 import com.example.SocialNetwork.repository.PostRepository;
 import com.example.SocialNetwork.repository.SocialGroupRepository;
-import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 

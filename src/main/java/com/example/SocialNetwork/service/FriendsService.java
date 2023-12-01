@@ -1,8 +1,7 @@
 package com.example.SocialNetwork.service;
 
-import com.example.SocialNetwork.dto.UserDTO;
+import com.example.SocialNetwork.dtos.UserDTO;
 import com.example.SocialNetwork.entities.Friends;
-import com.example.SocialNetwork.entities.User;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;

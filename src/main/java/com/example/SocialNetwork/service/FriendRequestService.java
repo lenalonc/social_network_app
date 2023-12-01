@@ -1,6 +1,6 @@
 package com.example.SocialNetwork.service;
 
-import com.example.SocialNetwork.dto.FriendRequestDTO;
+import com.example.SocialNetwork.dtos.FriendRequestDTO;
 import com.example.SocialNetwork.entities.FriendRequest;
 import org.springframework.http.ResponseEntity;
 

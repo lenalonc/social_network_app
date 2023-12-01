@@ -1,9 +1,7 @@
 package com.example.SocialNetwork.service;
 
-import com.example.SocialNetwork.dto.PostDTO;
+import com.example.SocialNetwork.dtos.PostDTO;
 import com.example.SocialNetwork.entities.Post;
-import com.example.SocialNetwork.entities.SocialGroup;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
