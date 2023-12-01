@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/posts")
+@RequestMapping("/posts")
 @AllArgsConstructor
 
 public class PostController {
@@ -37,7 +37,7 @@ public class PostController {
         return ResponseEntity.ok(postService.createPost(post));
     }
 
-    @PostMapping("/group_post/{id}")
+    @PostMapping("/group/{id}")
     public ResponseEntity<?> createPostInGroup(@RequestBody Post post, @PathVariable Long id) {
         return ResponseEntity.ok(postService.createPostInGroup(post, id));
     }

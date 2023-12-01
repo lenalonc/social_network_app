@@ -1,4 +1,4 @@
-package com.example.SocialNetwork.helpercalsses;
+package com.example.SocialNetwork.helper;
 
 public class MyRequest {
     private Long id;

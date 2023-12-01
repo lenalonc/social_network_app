@@ -3,7 +3,6 @@ package com.example.SocialNetwork.service;
 import com.example.SocialNetwork.dto.UserDTO;
 import com.example.SocialNetwork.entities.GroupMember;
 import com.example.SocialNetwork.entities.User;
-import com.example.SocialNetwork.helpercalsses.MyRequest;
 
 import java.util.List;
 
