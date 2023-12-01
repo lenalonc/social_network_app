@@ -88,16 +88,13 @@ public class SocialGroupServiceImpl implements SocialGroupService{
     }
 
     @Override
-    public ResponseEntity<String> deleteSocialGroupById(Long id) {
-        User currentUser = userService.findCurrentUser();
+    public ResponseEntity<String> deleteSocialGroupById(Long id, User currentUser) {
         SocialGroup socialGroup = groupRepository.findById(id).orElse(null);
 
         if (socialGroup != null && currentUser.getId().equals(socialGroup.getUser().getId())) {
-            List<UserDTO> userIds = groupMemberService.getAllGroupMembers(id);
-
-            membershipRequestService.deleteAllRequestsForSocialGroup(id);
-            groupMemberService.deleteAllGroupMembers(id);
-            groupRepository.deleteById(id);
+            membershipRequestRepository.deleteAllBySocialGroupId(id);
+            groupMemberRepository.deleteAllBySocialGroupId(id);
+            groupRepository.deleteByIdAndUserId(id, currentUser.getId());
 
             return ResponseEntity.ok("Uspesno ste obrisali grupu");
         } else {
