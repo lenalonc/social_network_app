@@ -1,10 +1,13 @@
 package com.example.SocialNetwork.service;
 
 import com.example.SocialNetwork.entities.*;
+import com.example.SocialNetwork.exceptions.ForbiddenException;
+import com.example.SocialNetwork.exceptions.NotFoundException;
 import com.example.SocialNetwork.repository.GroupMemberRepository;
 import com.example.SocialNetwork.repository.MembershipRequestRepository;
 import com.example.SocialNetwork.repository.SocialGroupRepository;
 import com.example.SocialNetwork.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -46,10 +49,12 @@ public class MembershipRequestServiceImpl implements MembershipRequestService {
                 == currentUser.get().getId()){
             return membershipRequest.get();
         }
-        return null;
+        else
+            throw new NotFoundException("Membership request not found");
     }
 
     @Override
+    @Transactional
     public void deleteRequestById(Long id) {
         Optional<User> currentUser = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
         MembershipRequest membershipRequest = getRequestsById(id);
@@ -73,10 +78,12 @@ public class MembershipRequestServiceImpl implements MembershipRequestService {
         if(socialGroup.get().getUser().getId() == currentUser.get().getId()){
             return membershipRequestsRepository.findAllMembershipRequestsForSocialGroup(id);
         }
-        return null;
+        else
+            throw new NotFoundException("There is no membership requests found");
     }
 
     @Override
+    @Transactional
     public void deleteAllRequestsForSocialGroup(Long groupId) {
         List<MembershipRequest> requests = getAllRequestsForSocialGroup(groupId);
         for (MembershipRequest request : requests) {
@@ -119,7 +126,7 @@ public class MembershipRequestServiceImpl implements MembershipRequestService {
 
             if (socialGroupOptional.isPresent()) {
                 SocialGroup socialGroup = socialGroupOptional.get();
-                if (socialGroup.isType()==true) {
+                if (socialGroup.isType()) {
                     List<MembershipRequest> membershiprequests = socialGroup.getMembershipRequest();
                     for(MembershipRequest request:membershiprequests){
                         if(request.getUser()==user){

@@ -21,8 +21,7 @@ import java.util.Optional;
 @Service
 @Transactional
 public class SocialGroupServiceImpl implements SocialGroupService{
-    private ModelMapper mapper;
-
+    private final ModelMapper mapper;
     private final SocialGroupRepository groupRepository;
     private final GroupMemberRepository groupMemberRepository;
     private final UserService userService;
@@ -34,7 +33,7 @@ public class SocialGroupServiceImpl implements SocialGroupService{
                                   UserService userService,
                                   MembershipRequestRepository membershipRequestRepository) {
         this.groupRepository = groupRepository;
-        this.mapper=mapper;
+        this.mapper = mapper;
         this.groupMemberRepository = groupMemberRepository;
         this.userService = userService;
         this.membershipRequestRepository = membershipRequestRepository;
@@ -46,7 +45,7 @@ public class SocialGroupServiceImpl implements SocialGroupService{
 
     @Override
     public List<SocialGroupDTO> getAllSocialGroups() {
-        List<SocialGroup> groups=groupRepository.findAll();
+        List<SocialGroup> groups = groupRepository.findAll();
         return groups.stream().map(social_group->mapper.map(social_group, SocialGroupDTO.class)).toList();
     }
 
@@ -85,6 +84,7 @@ public class SocialGroupServiceImpl implements SocialGroupService{
     }
 
     @Override
+    @Transactional
     public ResponseEntity<String> deleteSocialGroupById(Long id, User currentUser) {
         SocialGroup socialGroup = groupRepository.findById(id).orElse(null);
 
