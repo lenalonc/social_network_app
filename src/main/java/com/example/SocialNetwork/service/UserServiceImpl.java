@@ -1,17 +1,15 @@
 package com.example.SocialNetwork.service;
 
-import com.example.SocialNetwork.dtos.UserDTO;
 import com.example.SocialNetwork.dtos.PasswordDto;
 import com.example.SocialNetwork.dtos.UserCreateDto;
+import com.example.SocialNetwork.dtos.UserDTO;
+import com.example.SocialNetwork.dtos.UserUpdateDto;
 import com.example.SocialNetwork.entities.User;
 import com.example.SocialNetwork.exceptions.ForbiddenException;
 import com.example.SocialNetwork.exceptions.NotFoundException;
 import com.example.SocialNetwork.exceptions.ValidationException;
 import com.example.SocialNetwork.repository.UserRepository;
 import jakarta.transaction.Transactional;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.modelmapper.ModelMapper;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
@@ -55,10 +53,10 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         this.mapper = mapper;
     }
 
-    public User createUser(UserCreateDto userCreateDto) {
+    public UserDTO createUser(UserCreateDto userCreateDto) {
         if(!emailPattern.matcher(userCreateDto.getEmail()).matches()) {
             throw new ValidationException("invalid email");
-}
+        }
 
         String secretKey = RandomStringUtils.randomNumeric(6);
 
@@ -75,7 +73,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         String text = "Secret key: " + secretKey + "\n" + "Link: " + passwordActivateEndpoint + "/" + user.getId();
         emailService.sendEmail(user.getEmail(), "Activate account", text);
 
-        return user;
+        return mapper.map(user, UserDTO.class);
     }
 
     public void resetUserPassword(PasswordDto passwordDto, Long id) {
@@ -114,25 +112,19 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public ResponseEntity<String> updateUser(Long id, User user) {
-        Optional<User> optionalUser = userRepository.findById(id);
+    public UserDTO updateUser(Long id, UserUpdateDto userUpdateDto) {
+        User user = userRepository.findById(id).orElseThrow(() -> new NotFoundException("User has not been found."));
 
-        if(optionalUser.isPresent()){
-            User tempUser = optionalUser.get();
-            if(user.getEmail() != null && !user.getEmail().equals("") && user.getEmail() != tempUser.getEmail()) {
-                tempUser.setEmail(user.getEmail());
-            }
-            if(user.getUsername() != null && !user.getUsername().equals("") && user.getUsername() != tempUser.getUsername()){
-                tempUser.setUsername(user.getUsername());
-            }
-            if(user.isActive() != tempUser.isActive()){
-                tempUser.setActive(user.isActive());
-            }
-            userRepository.save(tempUser);
-            return new ResponseEntity<>("User updated", HttpStatus.OK);
-        }
+        if(userUpdateDto.getEmail() != null && !userUpdateDto.getEmail().isBlank())
+            user.setEmail(userUpdateDto.getEmail());
 
-        return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+        if(userUpdateDto.getUsername() != null && !userUpdateDto.getUsername().isBlank())
+            user.setUsername(userUpdateDto.getUsername());
+
+        if(userUpdateDto.getDoNotDisturb() != null)
+            user.setDoNotDisturb(userUpdateDto.getDoNotDisturb());
+
+        return mapper.map(userRepository.save(user), UserDTO.class);
     }
 
     @Override
@@ -143,30 +135,15 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     public ResponseEntity<String> deleteUserById(Long id) {
-        Optional<User> tempUser = userRepository.findById(id);
-        if (tempUser.isPresent()){
-            User user = tempUser.get();
-            user.setActive(false);
-            return new ResponseEntity<>("User deleted", HttpStatus.OK);
-        } return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+        User user = userRepository.findById(id).orElseThrow(() -> new NotFoundException("User has not been found."));
+        user.setActive(false);
+
+        return new ResponseEntity<>("User successfully deleted.", HttpStatus.OK);
     }
 
     @Override
-    public User findByID(Long id) {
-        Optional<User> user = userRepository.findById(id);
-        if(user.isPresent()){
-            return user.get();
-        }
-        return null;
-    }
-
-    @Override
-    public UserDTO findByIDDTO(Long id) {
-        Optional<User> user = userRepository.findById(id);
-        if(user.isPresent()){
-            return user.stream().map(u -> mapper.map(user, UserDTO.class)).toList().get(0);
-        }
-        return null;
+    public UserDTO findByID(Long id) {
+        return mapper.map(userRepository.findById(id).orElseThrow(() -> new NotFoundException("User has not been found.")), UserDTO.class);
     }
 
     @Override
@@ -186,18 +163,14 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     public User findCurrentUser() {
-        Optional<User> user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
-        return user.get();
-
+        return userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName()).get();
     }
 
     @Override
     public UserDTO findByUsername(String name) {
-        Optional<User> user = (userRepository.findByUsername(name));
-        if(user.isPresent()) {
-            return user.stream().map(u -> mapper.map(user, UserDTO.class)).toList().get(0);
-        }
-        return null;
+        User user = userRepository.findByUsername(name).orElseThrow(() -> new NotFoundException("User has not been found."));
+        return mapper.map(user, UserDTO.class);
+
     }
 
 }

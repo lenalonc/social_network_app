@@ -1,6 +1,6 @@
 package com.example.SocialNetwork.controller;
 
-import com.example.SocialNetwork.dtos.UserDTO;
+import com.example.SocialNetwork.dtos.*;
 import com.example.SocialNetwork.dtos.LoginRequest;
 import com.example.SocialNetwork.dtos.LoginResponse;
 import com.example.SocialNetwork.dtos.PasswordDto;
@@ -73,6 +73,7 @@ public class UserController {
     public User getCurrentUser() {
         return userService.findCurrentUser();
     }
+
     @PostMapping("/")
     public ResponseEntity<String> saveUser(@RequestBody User user) {
         userService.saveUser(user);
@@ -80,8 +81,8 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateUser(@PathVariable Long id, @RequestBody User user) {
-        return userService.updateUser(id, user);
+    public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody UserUpdateDto userUpdateDto) {
+        return ResponseEntity.ok(userService.updateUser(id, userUpdateDto));
     }
 
     @GetMapping("/")
@@ -102,14 +103,8 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable Long id) {
-        User user = userService.findByID(id);
-
-        if (user == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-
-        return new ResponseEntity<>(user, HttpStatus.OK);
+    public ResponseEntity<?> getUserById(@PathVariable Long id) {
+        return ResponseEntity.ok(userService.findByID(id));
     }
 
 
@@ -131,11 +126,6 @@ public class UserController {
         if (session != null) {
             session.invalidate();
         }
-    }
-
-    @GetMapping("/dto/{id}")
-    public UserDTO getUserDTOById(@PathVariable Long id) {
-        return userService.findByIDDTO(id);
     }
 
     @GetMapping("/name/{name}")
