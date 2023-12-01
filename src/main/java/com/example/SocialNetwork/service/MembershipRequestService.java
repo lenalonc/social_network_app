@@ -9,7 +9,7 @@ import java.util.List;
 public interface MembershipRequestService {
     List<MembershipRequest> getAllRequests();
 
-    MembershipRequest getAllRequestsById(Long id);
+    MembershipRequest getRequestsById(Long id);
 
     void deleteRequestById(Long id);
 

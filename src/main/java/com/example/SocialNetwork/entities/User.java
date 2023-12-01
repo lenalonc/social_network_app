@@ -11,11 +11,7 @@ import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-import java.util.Date;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Entity
@@ -95,6 +91,8 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     private List<Comment> comments;
+    @OneToMany(mappedBy = "user")
+    private List<Attending> attendings = new ArrayList<>();
 
     @JsonIgnore
     private String secretKey;
@@ -111,4 +109,8 @@ public class User {
         return roles.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
     }
 
+    public void addAttending(Attending a) {
+        attendings.add(a);
+
+    }
 }

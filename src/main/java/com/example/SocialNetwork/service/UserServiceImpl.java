@@ -1,6 +1,6 @@
 package com.example.SocialNetwork.service;
 
-import com.example.SocialNetwork.dto.UserDTO;
+import com.example.SocialNetwork.dtos.UserDTO;
 import com.example.SocialNetwork.dtos.PasswordDto;
 import com.example.SocialNetwork.dtos.UserCreateDto;
 import com.example.SocialNetwork.dtos.UserUpdateDto;
@@ -13,10 +13,11 @@ import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.modelmapper.ModelMapper;
-import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -169,4 +170,14 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return user.get();
 
     }
+
+    @Override
+    public UserDTO findByUsername(String name) {
+        Optional<User> user = (userRepository.findByUsername(name));
+        if(user.isPresent()) {
+            return user.stream().map(u -> mapper.map(user, UserDTO.class)).toList().get(0);
+        }
+        return null;
+    }
+
 }

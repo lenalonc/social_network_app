@@ -1,9 +1,5 @@
-package com.example.SocialNetwork.dto;
-import com.example.SocialNetwork.entities.User;
-import jakarta.persistence.*;
+package com.example.SocialNetwork.dtos;
 import lombok.*;
-
-import java.util.List;
 
 @Getter
 @Setter

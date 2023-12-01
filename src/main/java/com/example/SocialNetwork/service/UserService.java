@@ -1,7 +1,6 @@
 package com.example.SocialNetwork.service;
 
 import com.example.SocialNetwork.dto.UserDTO;
-import com.example.SocialNetwork.dtos.UserUpdateDto;
 import com.example.SocialNetwork.entities.User;
 import org.springframework.http.ResponseEntity;
 
@@ -19,4 +18,6 @@ public interface UserService {
     UserDTO findByID(Long id);
 
     User findCurrentUser();
+
+    UserDTO findByUsername(String name);
 }

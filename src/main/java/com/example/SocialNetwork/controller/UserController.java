@@ -2,6 +2,11 @@ package com.example.SocialNetwork.controller;
 
 import com.example.SocialNetwork.dto.UserDTO;
 import com.example.SocialNetwork.dtos.*;
+import com.example.SocialNetwork.dtos.UserDTO;
+import com.example.SocialNetwork.dtos.LoginRequest;
+import com.example.SocialNetwork.dtos.LoginResponse;
+import com.example.SocialNetwork.dtos.PasswordDto;
+import com.example.SocialNetwork.dtos.UserCreateDto;
 import com.example.SocialNetwork.entities.User;
 import com.example.SocialNetwork.repository.UserRepository;
 import com.example.SocialNetwork.service.UserServiceImpl;
@@ -68,9 +73,9 @@ public class UserController {
     }
     @GetMapping("/currentuser")
     public User getCurrentUser() {
-        return userService.findCurrentUser()
-                ;
+        return userService.findCurrentUser();
     }
+
     @PostMapping("/")
     public ResponseEntity<String> saveUser(@RequestBody User user) {
         userService.saveUser(user);
@@ -127,8 +132,13 @@ public class UserController {
 
     @GetMapping("/dto/{id}")
     public UserDTO getUserDTOById(@PathVariable Long id) {
-        UserDTO user = userService.findByID(id);
-        return user;
+        return userService.findByIDDTO(id);
+    }
+
+    @GetMapping("/name/{name}")
+    public ResponseEntity<UserDTO> getUserByUsername(@PathVariable String name) {
+        UserDTO user = userService.findByUsername(name);
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
 }

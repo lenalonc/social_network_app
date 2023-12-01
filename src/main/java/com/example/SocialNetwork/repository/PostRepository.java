@@ -13,4 +13,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     List<Post> findAllBySocialGroupId(Long id);
 
+    List<Post> findAllByUserIdAndDeleted(Long id, boolean deleted);
+
+    List<Post> findAllBySocialGroupIdAndDeleted(Long id, boolean deleted);
 }
