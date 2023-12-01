@@ -16,4 +16,8 @@ public interface SocialGroupRepository extends JpaRepository<SocialGroup, Long> 
     @Modifying
     @Query(value = "DELETE FROM socialgroup WHERE id=:id_group AND id_admin =:id_user",nativeQuery = true)
     void deleteByIdAndUserId(@Param("id_group") Long id_group, @Param("id_user") Long id_user);
+
+    @Modifying
+    @Query(value = "UPDATE socialgroup SET name =:name_n WHERE id=:id_u", nativeQuery = true)
+    void changeGroupName(@Param("id_u") Long id_u,@Param("name_n") String name_n);
 }

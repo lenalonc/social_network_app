@@ -23,4 +23,5 @@ public interface SocialGroupService {
 
     SocialGroup getSocialGroupById(Long id);
 
+    void changeGroupName(Long id, String name);
 }

@@ -106,14 +106,17 @@ public class GroupMemberServiceImpl implements GroupMemberService{
     @Override
     @Transactional
     public void removeUserFromGroupByUserID(Long userId, Long groupId) {
-        Optional<User> userForRemoval = userRepository.findById(userId);
-        Optional<User> currentUser = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+        User userForRemoval = userRepository.findById(userId).orElseThrow(() ->
+                new NotFoundException("User not found"));
+        User currentUser = userRepository.findByEmail(SecurityContextHolder.
+                getContext().getAuthentication().getName()).orElseThrow(() ->
+                new NotFoundException("User not found"));
+        Optional<SocialGroup> socialGroup = socialGroupRepository.findById(groupId);
 
-        if(userForRemoval.isEmpty())
-            throw new NotFoundException("User not found");
-
-        if(currentUser.get().getId() == userForRemoval.get().getId())
+        if(socialGroup.get().getUser().equals(currentUser) && currentUser.
+                equals(userForRemoval))
             throw new ValidationException("You are admin of this group, cannot execute your operation");
+
 
         groupMemberRepository.deleteByUserId(userId,groupId);
     }
