@@ -1,7 +1,6 @@
 package com.example.SocialNetwork.service;
 
 import com.example.SocialNetwork.dto.SocialGroupDTO;
-import com.example.SocialNetwork.dto.UserDTO;
 import com.example.SocialNetwork.entities.GroupMember;
 import com.example.SocialNetwork.entities.SocialGroup;
 import com.example.SocialNetwork.entities.User;
@@ -25,21 +24,18 @@ public class SocialGroupServiceImpl implements SocialGroupService{
 
     private final SocialGroupRepository groupRepository;
     private final GroupMemberRepository groupMemberRepository;
-    private final GroupMemberService groupMemberService;
     private final UserService userService;
-    private final MembershipRequestService membershipRequestService;
     private final MembershipRequestRepository membershipRequestRepository;
 
     public SocialGroupServiceImpl(SocialGroupRepository groupRepository,
                                   ModelMapper mapper,
                                   GroupMemberRepository groupMemberRepository,
-                                  GroupMemberService groupMemberService, UserService userService, MembershipRequestService membershipRequestService, MembershipRequestRepository membershipRequestRepository){
+                                  UserService userService,
+                                  MembershipRequestRepository membershipRequestRepository) {
         this.groupRepository = groupRepository;
         this.mapper=mapper;
         this.groupMemberRepository = groupMemberRepository;
-        this.groupMemberService = groupMemberService;
         this.userService = userService;
-        this.membershipRequestService = membershipRequestService;
         this.membershipRequestRepository = membershipRequestRepository;
     }
     @Override
