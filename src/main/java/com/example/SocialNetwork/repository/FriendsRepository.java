@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -19,9 +20,16 @@ public interface FriendsRepository extends JpaRepository<Friends, Long> {
     )
     List<User> getFriendsByUser(@Param("user1id") Long userId);
 
+    /*@Query("select from Friends where user1Id.id = :user1id or user2Id.id = :user1id")
+    List<Friends> getFriendsByCurrentUser(@Param("user1id") Long userId);
+*/
     @Modifying
     @Query(
             "DELETE FROM Friends WHERE user1Id.id = :user1id AND user2Id.id= :user2id"
     )
     void deleteFriendByUser(@Param("user1id") Long user1Id, @Param("user2id") Long user2Id);
+
+
+    @Query("SELECT u FROM User u JOIN Friends f ON (u.id = f.user1Id.id OR u.id = f.user2Id.id) WHERE (f.user1Id.id = :id OR f.user2Id.id = :id) AND u.username LIKE %:search%")
+    List<User> searchFriends(@Param("id") Long userId, @Param("search") String search);
 }

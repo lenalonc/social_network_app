@@ -4,7 +4,7 @@ import com.example.SocialNetwork.entities.MembershipRequest;
 import com.example.SocialNetwork.entities.RequestStatus;
 import com.example.SocialNetwork.entities.SocialGroup;
 import com.example.SocialNetwork.entities.User;
-import com.example.SocialNetwork.helpercalsses.MyRequest;
+import com.example.SocialNetwork.helper.MyRequest;
 import com.example.SocialNetwork.service.MembershipRequestService;
 import com.example.SocialNetwork.service.SocialGroupService;
 import com.example.SocialNetwork.service.UserService;

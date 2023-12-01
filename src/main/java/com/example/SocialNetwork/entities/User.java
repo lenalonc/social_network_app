@@ -9,12 +9,9 @@ import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-import java.util.Date;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
+
 
 @Entity
 @Table(name = "user")
@@ -48,7 +45,7 @@ public class User {
     private Date donotdistrub;
 
 
-    @ManyToMany()
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(name="friends",
             joinColumns = {
                     @JoinColumn(name = "id_user1")
@@ -57,7 +54,7 @@ public class User {
                     @JoinColumn(name = "id_user2")
             }
     )
-    private List<Friends> friends;
+    private List<Friends> friends = new ArrayList<>();
 
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "groupmember",
@@ -107,6 +104,10 @@ public class User {
             return Collections.singleton(new SimpleGrantedAuthority("UNCONFIRMED"));
         }
         return roles.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
+    }
+
+    public void addFriend(Friends friends){
+        this.friends.add(friends);
     }
 
 }
