@@ -87,27 +87,25 @@ public class MembershipRequestServiceImpl implements MembershipRequestService {
     @Override
     public ResponseEntity<String> createMembershipRequest(Long groupId, User user) {
         try {
-            Optional<SocialGroup> socialGroupOptional = socialGroupRepository.findById(groupId);
+            Optional<SocialGroup> socialGroup = socialGroupRepository.findById(groupId);
 
-            if (socialGroupOptional.isPresent()) {
-                SocialGroup socialGroup = socialGroupOptional.get();
-
-                if (user != null) {
-                    MembershipRequest membershipRequest = new MembershipRequest();
-                    membershipRequest.setSocialGroup(socialGroup);
-                    membershipRequest.setUser(user);
-                    membershipRequest.setRequestStatus(RequestStatus.PENDING);
-                    membershipRequestsRepository.save(membershipRequest);
-
-                    return ResponseEntity.ok("Uspešno ste poslali request za učlanjenje u grupu");
-                } else {
-                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                            .body("Zahteve mogu poslati samo ulogovani korisnici");
-                }
-            } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body("Grupa sa ID " + groupId + " nije pronađena");
+            if (socialGroup.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Grupa nije pronadjena");
             }
+            else{
+                    if (user != null) {
+                        MembershipRequest membershipRequest = new MembershipRequest();
+                        membershipRequest.setSocialGroup(socialGroup.get());
+                        membershipRequest.setUser(user);
+                        membershipRequest.setRequestStatus(RequestStatus.PENDING);
+                        membershipRequestsRepository.save(membershipRequest);
+
+                        return ResponseEntity.ok("Uspešno ste poslali request za učlanjenje u grupu");
+                    } else {
+                        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                                .body("Zahteve mogu poslati samo ulogovani korisnici");
+                    }
+                }
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Došlo je do greške prilikom slanja zahteva za učlanjenje u grupu.");
@@ -122,22 +120,35 @@ public class MembershipRequestServiceImpl implements MembershipRequestService {
             if (socialGroupOptional.isPresent()) {
                 SocialGroup socialGroup = socialGroupOptional.get();
                 if (socialGroup.isType()==true) {
+                    List<MembershipRequest> membershiprequests = socialGroup.getMembershipRequest();
+                    for(MembershipRequest request:membershiprequests){
+                        if(request.getUser()==user){
+                            return ResponseEntity.ok("Vec ste poslali zahtev");
+                        }
+                    }
                     return createMembershipRequest(groupId, user);
                 } else {
+                    List<User> groupUsers= socialGroup.getUsers();
+                    for(User groupUser: groupUsers){
+                        if(groupUser==user){
+                            return ResponseEntity.ok("Vec ste clan grupe");
+                        }
+
+                    }
                     GroupMember groupMember = new GroupMember();
                     groupMember.setUser(user);
                     groupMember.setSocialGroup(socialGroup);
                     groupMember.setDateJoined(new Date());
                     groupMemberRepository.save(groupMember);
 
-                    return ResponseEntity.ok("Uspešno ste se pridružili grupi");
+                    return ResponseEntity.ok("Uspesno ste se pridruzili grupi");
                 }
             } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Grupa nije pronađena.");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Grupa nije pronadjena.");
             }
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Došlo je do greške prilikom pridruživanja grupe.");
+                    .body("Doslo je do greske prilikom pridruzivanja grupe.");
         }
     }
 
