@@ -18,7 +18,6 @@ import java.util.List;
 public class SocialGroupController extends MyRequest {
     private final SocialGroupService groupService;
     private final UserService userService;
-    private final GroupMemberService groupMemberService;
 
     private final MembershipRequestService membershipRequestService;
 
@@ -28,7 +27,6 @@ public class SocialGroupController extends MyRequest {
                                  MembershipRequestService membershipRequestService) {
         this.groupService = groupService;
         this.userService = userService;
-        this.groupMemberService = groupMemberService;
         this.membershipRequestService = membershipRequestService;
     }
 

@@ -90,11 +90,8 @@ public class SocialGroupServiceImpl implements SocialGroupService{
         SocialGroup socialGroup = groupRepository.findById(id).orElse(null);
 
         if (socialGroup != null && currentUser.getId().equals(socialGroup.getUser().getId())) {
-            //Obrisi zahteve za pridruzivanje grupi
             membershipRequestRepository.deleteAllBySocialGroupId(id);
-            //Obrisi sve clanove grupe
             groupMemberRepository.deleteAllBySocialGroupId(id);
-            //Obrisi i samu grupu na kraju
             socialGroupRepository.deleteByIdAndUserId(id, currentUser.getId());
 
             return ResponseEntity.ok("Uspesno ste obrisali grupu");
