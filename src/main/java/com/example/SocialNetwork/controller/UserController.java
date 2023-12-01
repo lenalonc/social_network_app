@@ -7,6 +7,7 @@ import com.example.SocialNetwork.dtos.PasswordDto;
 import com.example.SocialNetwork.dtos.UserCreateDto;
 import com.example.SocialNetwork.entities.User;
 import com.example.SocialNetwork.repository.UserRepository;
+import com.example.SocialNetwork.service.GroupMemberService;
 import com.example.SocialNetwork.service.UserServiceImpl;
 import com.example.SocialNetwork.utils.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
@@ -34,6 +35,7 @@ public class UserController {
     private final UserServiceImpl userService;
     private final JwtUtil jwtUtil;
     private UserRepository userRepository;
+    private final GroupMemberService groupMemberService;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest){
@@ -113,7 +115,6 @@ public class UserController {
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
-
     @PostMapping("/logout")
     public ResponseEntity<Object> logout(HttpServletRequest request) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -127,6 +128,12 @@ public class UserController {
         return new ResponseEntity<>("Logout success!" , HttpStatus.OK);
     }
 
+    @DeleteMapping("/removeuser")
+    public ResponseEntity<?> removeFromGroup(@RequestParam Long userId, @RequestParam Long groupId){
+        groupMemberService.removeUserFromGroupByUserID(userId, groupId);
+        return ResponseEntity.ok().build();
+    }
+
     private void invalidateSession(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
         if (session != null) {
@@ -136,8 +143,7 @@ public class UserController {
 
     @GetMapping("/dto/{id}")
     public UserDTO getUserDTOById(@PathVariable Long id) {
-        UserDTO user = userService.findByIDDTO(id);
-        return user;
+        return userService.findByIDDTO(id);
     }
 
 }
