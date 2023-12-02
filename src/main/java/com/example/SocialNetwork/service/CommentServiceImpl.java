@@ -1,6 +1,6 @@
 package com.example.SocialNetwork.service;
 
-import com.example.SocialNetwork.dto.CommentDTO;
+import com.example.SocialNetwork.dtos.CommentDTO;
 import com.example.SocialNetwork.entities.*;
 import com.example.SocialNetwork.exceptions.ForbiddenException;
 import com.example.SocialNetwork.exceptions.NotFoundException;

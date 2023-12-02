@@ -1,7 +1,7 @@
 package com.example.SocialNetwork.controller;
 
-import com.example.SocialNetwork.dto.FriendRequestDTO;
-import com.example.SocialNetwork.dto.UserDTO;
+import com.example.SocialNetwork.dtos.FriendRequestDTO;
+import com.example.SocialNetwork.dtos.UserDTO;
 import com.example.SocialNetwork.dtos.*;
 import com.example.SocialNetwork.dtos.LoginRequest;
 import com.example.SocialNetwork.dtos.LoginResponse;
@@ -140,8 +140,8 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable Long id) {
-        User user = userService.findByID(id);
+    public ResponseEntity<UserDTO> getUserById(@PathVariable Long id) {
+        UserDTO user = userService.findByID(id);
 
         if (user == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

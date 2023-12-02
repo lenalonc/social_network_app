@@ -1,6 +1,6 @@
 package com.example.SocialNetwork.repository;
 
-import com.example.SocialNetwork.dto.UserDTO;
+import com.example.SocialNetwork.dtos.UserDTO;
 import com.example.SocialNetwork.entities.Friends;
 import com.example.SocialNetwork.entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;

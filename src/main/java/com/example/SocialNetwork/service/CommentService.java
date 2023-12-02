@@ -1,6 +1,6 @@
 package com.example.SocialNetwork.service;
 
-import com.example.SocialNetwork.dto.CommentDTO;
+import com.example.SocialNetwork.dtos.CommentDTO;
 import com.example.SocialNetwork.entities.Comment;
 
 import java.util.List;
