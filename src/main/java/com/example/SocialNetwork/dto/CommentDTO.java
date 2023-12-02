@@ -14,6 +14,10 @@ import java.util.Date;
 @AllArgsConstructor
 public class CommentDTO {
 
+    private UserDTO user;
+
+    private PostDTO post;
+
     private Long id;
 
     private String text;
@@ -22,9 +26,5 @@ public class CommentDTO {
     private Date date;
 
     private CommentDTO parentComment;
-
-    private PostDTO post;
-
-    private UserDTO user;
 
 }

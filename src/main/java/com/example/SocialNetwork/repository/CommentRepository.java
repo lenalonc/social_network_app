@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface CommentRepository extends JpaRepository<Comment, Long> {
@@ -18,6 +19,9 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     @Query(value = "DELETE FROM comment WHERE id=:id_comment",nativeQuery = true)
     void deleteByCommentId(@Param("id_comment") Long id_comment);
 
-    //List<Comment> findAllByIdAndDeleted(Long id, Boolean deleted);
+    @Query(value = "SELECT * FROM comment WHERE id_parent_com=:id",nativeQuery = true)
+    List<Comment> findAllByParentId(Long id);
+
+
 }
 

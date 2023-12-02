@@ -1,7 +1,6 @@
 package com.example.SocialNetwork.service;
 
 import com.example.SocialNetwork.dto.CommentDTO;
-import com.example.SocialNetwork.dto.UserDTO;
 import com.example.SocialNetwork.entities.*;
 import com.example.SocialNetwork.exceptions.ForbiddenException;
 import com.example.SocialNetwork.exceptions.NotFoundException;
@@ -15,7 +14,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -31,11 +29,6 @@ public class CommentServiceImpl implements CommentService {
     private FriendsRepository friendsRepository;
     private ModelMapper modelMapper;
 
-    public User getCurrentUser() {
-        Optional<User> user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
-        return user.get();
-    }
-
     @Override
     public List<CommentDTO> getAllCommentsForPost(Long id) {
 
@@ -43,67 +36,25 @@ public class CommentServiceImpl implements CommentService {
         if(post.isDeleted()) throw new NotFoundException("Post with id " + id + " is deleted");
         User user = getCurrentUser();
 
-        isInSocialGroup(post, user);
+        checkSocialGroup(post, user);
 
-        if (!(post.isType())) {
-
-            /*List<Friends> friends = user.getFriends();
-            boolean privateChecksFlag = false;
-            for (Friends friend : friends) {
-                if (friend.getUser2Id().equals(post.getUser().getId())) {
-                    privateChecksFlag = true;
-                }
-            } if (!privateChecksFlag) throw new ForbiddenException("You are not allowed to comment on this post, because you are not friends");*/
-
-        }
+        checkFriendship(post, user);
 
         return commentRepository.findAllByPostIdOrderByDate(id).stream().map(comment -> modelMapper.map(comment, CommentDTO.class)).toList();
-
-
-
-        /*User user = getCurrentUser();
-
-        Post post = postRepository.findById(id).orElseThrow(() -> new NotFoundException("Post with id " + id + " not found"));
-
-        boolean userinSocialGroup;
-
-        if (post.getSocialGroup() != null) {
-            for(SocialGroup s: user.getSocialGroups()){
-                if(s.getId().equals(post.getSocialGroup().getId())){
-                    userinSocialGroup = true;
-                }
-            } if (!(userinSocialGroup)) new NotFoundException("You are not in this group");
-        }
-
-        if (!( post.isType())){
-
-            List<User> friends = friendsRepository.getFriendsByUser(user.getId());
-
-            for (User u: friends){
-                if (u.getId().equals(post.getUser().getId())){
-                    return commentRepository.findAllByPostIdOrderByDate(id).stream().map(comment -> modelMapper.map(comment, CommentDTO.class)).toList();
-                }
-            } throw new ForbiddenException("You are not allowed to see this comments");
-
-        return commentRepository.findAllByPostIdOrderByDate(id).stream().map(comment -> modelMapper.map(comment, CommentDTO.class)).toList();*/
-        }
-
-    private static void isInSocialGroup(Post post, User user) {
-        if (post.getSocialGroup() != null) {
-            boolean groupChecksFlag = false;
-            for(SocialGroup s: user.getSocialGroups()){
-                if(s.getId().equals(post.getSocialGroup().getId())){
-                    groupChecksFlag = true;
-                }
-            } if (!groupChecksFlag) throw new ForbiddenException("You are not in this group");
-        }
     }
 
 
     @Override
     public List<CommentDTO> getAllRepliesForComment(Long id) {
+        List<Comment> replies = commentRepository.findAllByParentId(id);
+        if (replies.isEmpty()) throw new NotFoundException("Comment with id " + id + " has no replies");
+
         Comment comment = commentRepository.findById(id).orElseThrow(() -> new NotFoundException("Comment with id " + id + " not found"));
-        return comment.getReplies().stream().map(reply -> modelMapper.map(reply, CommentDTO.class)).toList();
+
+        checkSocialGroup(comment.getPost(), getCurrentUser());
+        checkFriendship(comment.getPost(), getCurrentUser());
+
+        return replies.stream().map(reply -> modelMapper.map(reply, CommentDTO.class)).toList();
     }
 
     @Override
@@ -114,23 +65,21 @@ public class CommentServiceImpl implements CommentService {
 
         if(post.isDeleted()) throw new NotFoundException("Post with id " + postId + " is deleted");
 
-        boolean privateChecksFlag = false;
-
-        if (!(post.isType())){
-            /*
-        } if (!privateChecksFlag) throw new ForbiddenException("You are not allowed to comment on this post, because you are not friends");*/}
+        checkFriendship(post, user);
 
         comment.setPost(post);
         comment.setDate(new Date());
         comment.setUser(user);
-        isInSocialGroup(post, user);
+        checkSocialGroup(post, user);
 
         CommentDTO commentDTO = modelMapper.map(commentRepository.save(comment), CommentDTO.class);
-        return this.modelMapper.map(commentRepository.save(comment), CommentDTO.class);
+        return commentDTO;
     }
 
+
+
     @Override
-    public Comment replyToComment(Comment reply, Long commentId) {
+    public CommentDTO replyToComment(Comment reply, Long commentId) {
         Comment comment = commentRepository.findById(commentId).orElseThrow(() -> new NotFoundException("Comment with id " + commentId + " not found"));
 
         if (comment.getParentComment() != null) {
@@ -139,23 +88,19 @@ public class CommentServiceImpl implements CommentService {
 
         User user = getCurrentUser();
 
-        isInSocialGroup(comment.getPost(), user);
+        checkSocialGroup(comment.getPost(), user);
 
-        if (!(comment.getPost().isType())){
-
-        }
+        checkFriendship(comment.getPost(), user);
 
         reply.setUser(user);
         reply.setDate(new Date());
         reply.setParentComment(comment);
+        reply.setPost(comment.getPost());
+        commentRepository.save(reply);
 
-        comment.getReplies().add(reply);
-        commentRepository.save(comment);
+        CommentDTO commentDTO = modelMapper.map(reply, CommentDTO.class);
 
-       /*user.getComments().add(reply);
-        userRepository.save(user);*/
-
-        return commentRepository.save(reply);
+        return commentDTO;
     }
 
     @Override
@@ -170,5 +115,32 @@ public class CommentServiceImpl implements CommentService {
             throw new NotFoundException("You are not allowed to delete this comment");
         }
 
+    }
+
+    private static void checkSocialGroup(Post post, User user) {
+        if (post.getSocialGroup() != null) {
+            boolean groupChecksFlag = false;
+            for(SocialGroup s: user.getSocialGroups()){
+                if(s.getId().equals(post.getSocialGroup().getId())){
+                    groupChecksFlag = true;
+                }
+            } if (!groupChecksFlag) throw new ForbiddenException("You are not in this group");
+        }
+    }
+
+    private void checkFriendship(Post post, User user) {
+        if (!(post.isType())) {
+            List<Long> friends = friendsRepository.getFriendIdsByUserId(post.getUser().getId());
+            System.out.println(friends);
+
+            if(!(friends.contains(user.getId()))){
+                throw new ForbiddenException("You are not allowed to see this post");
+            }
+        }
+    }
+
+    public User getCurrentUser() {
+        Optional<User> user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+        return user.get();
     }
 }

@@ -13,7 +13,7 @@ public interface CommentService {
 
     CommentDTO createComment(Comment comment, Long postId);
 
-    Comment replyToComment(Comment reply, Long commentId);
+    CommentDTO replyToComment(Comment reply, Long commentId);
 
     void deleteCommentById(Long id);
 

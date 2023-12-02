@@ -79,6 +79,20 @@ public class DBSeeder implements CommandLineRunner {
 
     }
 
+    private void seedReplies(String text, Date date, int id_user, int id_comment) {
+        List<User> users = userRepository.findAll();
+        List<Comment> comments = commentRepository.findAll();
+
+        Comment comment = new Comment();
+        comment.setText(text);
+        comment.setPost(comments.get(id_comment).getPost());
+        comment.setUser(users.get(id_user));
+        comment.setDate(date);
+        comment.setParentComment(comments.get(id_comment));
+
+        commentRepository.save(comment);
+    }
+
     private void seedMembershipRequest(RequestStatus status, int id_user, int id_socialgroup) {
         List<User> users = userRepository.findAll();
         List<SocialGroup> socialGroups = socialGroupRepository.findAll();
@@ -144,7 +158,7 @@ public class DBSeeder implements CommandLineRunner {
         seedUser("John", "john@example.com", "password1", true);
         seedUser("Alice", "alice@example.com", "password2", true);
         seedUser("Bob", "bob@example.com", "password3", true);
-        seedUser("Eva", "eva@example.com", "password4", false);
+        seedUser("Eva", "eva@example.com", "password4", true);
         seedUser("Michael", "michael@example.com", "password5", false);
 
         seedSocialGroup("Group1", true,3);
@@ -159,9 +173,7 @@ public class DBSeeder implements CommandLineRunner {
         seedMembershipRequest(RequestStatus.REJECTED,2,2);
         seedMembershipRequest(RequestStatus.ACCEPTED,1,2);
 
-
-
-        seedGroupMember(0,1);
+        seedGroupMember(0,2);
         seedGroupMember(0,3);
         seedGroupMember(2,2);
         seedGroupMember(1,2);
@@ -186,11 +198,15 @@ public class DBSeeder implements CommandLineRunner {
         seedComment("com3", new Date(), 1, 3);
         seedComment("com4", new Date(), 0, 3);
 
+        seedReplies("rep1", new Date(), 0, 0);
+        seedReplies("rep2", new Date(), 1, 0);
+        seedReplies("rep3", new Date(), 2, 0);
+
     }
 
     private void clearDatabase() {
-        this.commentRepository.deleteAll();
         this.postRepository.deleteAll();
+        this.commentRepository.deleteAll();
         this.groupMemberRepository.deleteAll();
         this.membershipRequestRepository.deleteAll();
         this.socialGroupRepository.deleteAll();

@@ -16,9 +16,12 @@ import java.util.Optional;
 @Repository
 public interface FriendsRepository extends JpaRepository<Friends, Long> {
     @Query(
-            "SELECT user2Id FROM Friends WHERE user1Id.id = :user1id"
+            "SELECT user2Id FROM Friends WHERE user1Id.id = :user1id or user2Id.id = :user1id"
     )
     List<User> getFriendsByUser(@Param("user1id") Long userId);
+
+    @Query("SELECT CASE WHEN f.user1Id.id = :id THEN f.user2Id.id ELSE f.user1Id.id END FROM Friends f WHERE f.user1Id.id = :id OR f.user2Id.id = :id")
+    List<Long> getFriendIdsByUserId(@Param("id") Long userId);
 
     @Modifying
     @Query(
