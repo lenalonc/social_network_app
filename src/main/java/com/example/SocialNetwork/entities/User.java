@@ -42,7 +42,7 @@ public class User {
 
 
     @Column(name = "donotdisturb")
-    private Date donotdistrub;
+    private Date doNotDisturb;
 
 
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)

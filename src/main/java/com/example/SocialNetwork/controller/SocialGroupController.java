@@ -1,6 +1,6 @@
 package com.example.SocialNetwork.controller;
 
-import com.example.SocialNetwork.dto.SocialGroupDTO;
+import com.example.SocialNetwork.dtos.SocialGroupDTO;
 import com.example.SocialNetwork.entities.SocialGroup;
 import com.example.SocialNetwork.entities.User;
 import com.example.SocialNetwork.helper.MyRequest;
@@ -47,18 +47,18 @@ public class SocialGroupController extends MyRequest {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteSocialGroupById(@PathVariable Long id, User user) {
+    public ResponseEntity<?> deleteSocialGroupById(@PathVariable Long id, User user) {
         User currentUser = userService.findCurrentUser();
         return groupService.deleteSocialGroupById(id,currentUser);
     }
 
     @GetMapping("/name/{name}")
-    public ResponseEntity<List<SocialGroupDTO>> getSocialGroupByName(@PathVariable String name) {
+    public ResponseEntity<?> getSocialGroupByName(@PathVariable String name) {
         return groupService.getSocialGroupByName(name);
     }
 
     @GetMapping("/id/{id}")
-    public ResponseEntity<SocialGroupDTO> getSocialGroupDTOById(@PathVariable Long id) {
+    public ResponseEntity<?> getSocialGroupDTOById(@PathVariable Long id) {
         return groupService.getSocialGroupDTOById(id);
     }
 
@@ -68,9 +68,9 @@ public class SocialGroupController extends MyRequest {
         return ResponseEntity.ok(groupMemberService.saveGroupMember(id));
     }
 
-    @DeleteMapping("/deletemember/{id}")
-    public ResponseEntity<?> deleteMember(@PathVariable Long id){
-        groupMemberService.deleteGroupMemberByUserId(id);
+    @DeleteMapping("/leavegroup/{id}")
+    public ResponseEntity<?> leaveGroup(@PathVariable Long id){
+        groupMemberService.removeCurrentUserFromGroupByGroupId(id);
         return ResponseEntity.ok().build();
     }
 
@@ -80,13 +80,13 @@ public class SocialGroupController extends MyRequest {
     }
 
     @PostMapping("/createmembershiprequest/{id}")
-    public ResponseEntity<String> createMembershipRequest(@PathVariable Long id) {
+    public ResponseEntity<?> createMembershipRequest(@PathVariable Long id) {
         User currentUser = userService.findCurrentUser();
         return membershipRequestService.createMembershipRequest(id, currentUser);
     }
 
     @PostMapping("/join/{id}")
-    public ResponseEntity<String> joinGroup(@PathVariable Long id) {
+    public ResponseEntity<?> joinGroup(@PathVariable Long id) {
         User currentUser = userService.findCurrentUser();
         return membershipRequestService.processJoinGroupRequest(id, currentUser);
     }

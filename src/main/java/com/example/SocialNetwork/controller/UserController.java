@@ -2,6 +2,7 @@ package com.example.SocialNetwork.controller;
 
 import com.example.SocialNetwork.dto.FriendRequestDTO;
 import com.example.SocialNetwork.dto.UserDTO;
+import com.example.SocialNetwork.dtos.*;
 import com.example.SocialNetwork.dtos.LoginRequest;
 import com.example.SocialNetwork.dtos.LoginResponse;
 import com.example.SocialNetwork.dtos.PasswordDto;
@@ -16,6 +17,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import com.example.SocialNetwork.service.GroupMemberService;
 import com.example.SocialNetwork.service.UserServiceImpl;
 import com.example.SocialNetwork.utils.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
@@ -46,6 +48,7 @@ public class UserController {
     private UserRepository userRepository;
     private FriendRequestService friendRequestService;
     private FriendsService friendsService;
+    private final GroupMemberService groupMemberService;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest){
@@ -116,8 +119,8 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateUser(@PathVariable Long id, @RequestBody User user) {
-        return userService.updateUser(id, user);
+    public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody UserUpdateDto userUpdateDto) {
+        return ResponseEntity.ok(userService.updateUser(id, userUpdateDto));
     }
 
     @GetMapping("/")
@@ -181,6 +184,12 @@ public class UserController {
         return new ResponseEntity<>("Logout success!" , HttpStatus.OK);
     }
 
+    @DeleteMapping("/removeuser")
+    public ResponseEntity<?> removeFromGroup(@RequestParam Long userId, @RequestParam Long groupId){
+        groupMemberService.removeUserFromGroupByUserID(userId, groupId);
+        return ResponseEntity.ok().build();
+    }
+
     private void invalidateSession(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
         if (session != null) {
@@ -188,10 +197,10 @@ public class UserController {
         }
     }
 
-    @GetMapping("/dto/{id}")
-    public UserDTO getUserDTOById(@PathVariable Long id) {
-        UserDTO user = userService.findByIDDTO(id);
-        return user;
+    @GetMapping("/name/{name}")
+    public ResponseEntity<UserDTO> getUserByUsername(@PathVariable String name) {
+        UserDTO user = userService.findByUsername(name);
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
     private Long getUser() {

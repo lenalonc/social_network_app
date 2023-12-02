@@ -1,14 +1,17 @@
 package com.example.SocialNetwork.service;
 
-import com.example.SocialNetwork.dto.UserDTO;
+import com.example.SocialNetwork.dtos.UserDTO;
 import com.example.SocialNetwork.entities.GroupMember;
 import com.example.SocialNetwork.entities.MembershipRequest;
 import com.example.SocialNetwork.entities.SocialGroup;
 import com.example.SocialNetwork.entities.User;
+import com.example.SocialNetwork.exceptions.NotFoundException;
+import com.example.SocialNetwork.exceptions.ValidationException;
 import com.example.SocialNetwork.repository.GroupMemberRepository;
 import com.example.SocialNetwork.repository.MembershipRequestRepository;
 import com.example.SocialNetwork.repository.SocialGroupRepository;
 import com.example.SocialNetwork.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -42,8 +45,9 @@ public class GroupMemberServiceImpl implements GroupMemberService{
     public GroupMember saveGroupMember(Long id) {
 
         Optional<MembershipRequest> membershipRequest = membershipRequestRepository.findById(id);
+
         if(membershipRequest.orElse(null) == null)
-            return null;
+            throw new NotFoundException("Membership request not found");
 
         Optional<User> currentUser = userRepository.
                 findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
@@ -69,6 +73,10 @@ public class GroupMemberServiceImpl implements GroupMemberService{
     public List<UserDTO> getAllGroupMembers(Long id) {
         List<UserDTO> users = new ArrayList<>();
         List<Long> groupMemberId = groupMemberRepository.findAllM(id);
+
+        if(groupMemberId.isEmpty())
+            throw new NotFoundException("No members found in group");
+
         for (Long aLong: groupMemberId) {
             users.add(mapper.map(userRepository.findById(aLong).get(), UserDTO.class));
         }
@@ -76,7 +84,8 @@ public class GroupMemberServiceImpl implements GroupMemberService{
     }
 
     @Override
-    public void deleteGroupMemberByUserId(Long id) {
+    @Transactional
+    public void removeCurrentUserFromGroupByGroupId(Long id) {
         Optional<User> currentUser = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
         Optional<SocialGroup> socialGroup = socialGroupRepository.findById(id);
 
@@ -86,11 +95,27 @@ public class GroupMemberServiceImpl implements GroupMemberService{
     }
 
     @Override
+    @Transactional
     public void deleteAllGroupMembers(Long groupId) {
         List<UserDTO> groupMemberIds = getAllGroupMembers(groupId);
         for (UserDTO memberId : groupMemberIds) {
-            deleteGroupMemberByUserId(memberId.getId());
+            removeCurrentUserFromGroupByGroupId(memberId.getId());
         }
+    }
+
+    @Override
+    @Transactional
+    public void removeUserFromGroupByUserID(Long userId, Long groupId) {
+        Optional<User> userForRemoval = userRepository.findById(userId);
+        Optional<User> currentUser = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+
+        if(userForRemoval.isEmpty())
+            throw new NotFoundException("User not found");
+
+        if(currentUser.get().getId() == userForRemoval.get().getId())
+            throw new ValidationException("You are admin of this group, cannot execute your operation");
+
+        groupMemberRepository.deleteByUserId(userId,groupId);
     }
 
 
