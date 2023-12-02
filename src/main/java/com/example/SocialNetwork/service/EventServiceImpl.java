@@ -1,6 +1,6 @@
 package com.example.SocialNetwork.service;
 
-import com.example.SocialNetwork.dto.EventDTO;
+import com.example.SocialNetwork.dtos.EventDTO;
 import com.example.SocialNetwork.entities.Attending;
 import com.example.SocialNetwork.entities.Event;
 import com.example.SocialNetwork.entities.User;

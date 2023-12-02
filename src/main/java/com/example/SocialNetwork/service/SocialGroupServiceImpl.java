@@ -1,7 +1,7 @@
 package com.example.SocialNetwork.service;
 
-import com.example.SocialNetwork.dto.SocialGroupDTO;
-import com.example.SocialNetwork.dto.UserDTO;
+import com.example.SocialNetwork.dtos.SocialGroupDTO;
+import com.example.SocialNetwork.dtos.UserDTO;
 import com.example.SocialNetwork.entities.GroupMember;
 import com.example.SocialNetwork.entities.SocialGroup;
 import com.example.SocialNetwork.entities.User;
@@ -21,25 +21,21 @@ import java.util.Optional;
 @Service
 @Transactional
 public class SocialGroupServiceImpl implements SocialGroupService{
-    private ModelMapper mapper;
-
+    private final ModelMapper mapper;
     private final SocialGroupRepository groupRepository;
     private final GroupMemberRepository groupMemberRepository;
-    private final GroupMemberService groupMemberService;
     private final UserService userService;
-    private final MembershipRequestService membershipRequestService;
     private final MembershipRequestRepository membershipRequestRepository;
 
     public SocialGroupServiceImpl(SocialGroupRepository groupRepository,
                                   ModelMapper mapper,
                                   GroupMemberRepository groupMemberRepository,
-                                  GroupMemberService groupMemberService, UserService userService, MembershipRequestService membershipRequestService, MembershipRequestRepository membershipRequestRepository){
+                                  UserService userService,
+                                  MembershipRequestRepository membershipRequestRepository) {
         this.groupRepository = groupRepository;
-        this.mapper=mapper;
+        this.mapper = mapper;
         this.groupMemberRepository = groupMemberRepository;
-        this.groupMemberService = groupMemberService;
         this.userService = userService;
-        this.membershipRequestService = membershipRequestService;
         this.membershipRequestRepository = membershipRequestRepository;
     }
     @Override
@@ -49,7 +45,7 @@ public class SocialGroupServiceImpl implements SocialGroupService{
 
     @Override
     public List<SocialGroupDTO> getAllSocialGroups() {
-        List<SocialGroup> groups=groupRepository.findAll();
+        List<SocialGroup> groups = groupRepository.findAll();
         return groups.stream().map(social_group->mapper.map(social_group, SocialGroupDTO.class)).toList();
     }
 
@@ -88,6 +84,7 @@ public class SocialGroupServiceImpl implements SocialGroupService{
     }
 
     @Override
+    @Transactional
     public ResponseEntity<String> deleteSocialGroupById(Long id, User currentUser) {
         SocialGroup socialGroup = groupRepository.findById(id).orElse(null);
 

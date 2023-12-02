@@ -1,6 +1,6 @@
 package com.example.SocialNetwork.controller;
 
-import com.example.SocialNetwork.dto.SocialGroupDTO;
+import com.example.SocialNetwork.dtos.SocialGroupDTO;
 import com.example.SocialNetwork.entities.SocialGroup;
 import com.example.SocialNetwork.entities.User;
 import com.example.SocialNetwork.helper.MyRequest;
@@ -19,7 +19,6 @@ public class SocialGroupController extends MyRequest {
     private final SocialGroupService groupService;
     private final UserService userService;
     private final GroupMemberService groupMemberService;
-
     private final MembershipRequestService membershipRequestService;
 
     public SocialGroupController(SocialGroupService groupService,
@@ -43,25 +42,68 @@ public class SocialGroupController extends MyRequest {
     }
 
     @PostMapping("/")
-    public ResponseEntity<String> createGroup(@RequestBody SocialGroup group) {
+    public ResponseEntity<?> createGroup(@RequestBody SocialGroup group) {
         return groupService.createGroup(group);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteSocialGroupById(@PathVariable Long id) {
+    public ResponseEntity<?> deleteSocialGroupById(@PathVariable Long id, User user) {
         User currentUser = userService.findCurrentUser();
-        return groupService.deleteSocialGroupById(id, currentUser);
+        return groupService.deleteSocialGroupById(id,currentUser);
     }
 
     @GetMapping("/name/{name}")
-    public ResponseEntity<List<SocialGroupDTO>> getSocialGroupByName(@PathVariable String name) {
+    public ResponseEntity<?> getSocialGroupByName(@PathVariable String name) {
         return groupService.getSocialGroupByName(name);
     }
 
     @GetMapping("/id/{id}")
-    public ResponseEntity<SocialGroupDTO> getSocialGroupDTOById(@PathVariable Long id) {
+    public ResponseEntity<?> getSocialGroupDTOById(@PathVariable Long id) {
         return groupService.getSocialGroupDTOById(id);
     }
 
+
+    @PostMapping("/approve/{id}")
+    public ResponseEntity<?> approveRequest(@PathVariable Long id) {
+        return ResponseEntity.ok(groupMemberService.saveGroupMember(id));
+    }
+
+    @DeleteMapping("/leavegroup/{id}")
+    public ResponseEntity<?> leaveGroup(@PathVariable Long id){
+        groupMemberService.removeCurrentUserFromGroupByGroupId(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/allusers/{id}")
+    public ResponseEntity<?> showAllUsersForGroup(@PathVariable Long id) {
+        return ResponseEntity.ok(groupMemberService.getAllGroupMembers(id));
+    }
+
+    @PostMapping("/createmembershiprequest/{id}")
+    public ResponseEntity<?> createMembershipRequest(@PathVariable Long id) {
+        User currentUser = userService.findCurrentUser();
+        return membershipRequestService.createMembershipRequest(id, currentUser);
+    }
+
+    @PostMapping("/join/{id}")
+    public ResponseEntity<?> joinGroup(@PathVariable Long id) {
+        User currentUser = userService.findCurrentUser();
+        return membershipRequestService.processJoinGroupRequest(id, currentUser);
+    }
+
+    @GetMapping("/allrequestsforgroup/{id}")
+    public ResponseEntity<?> showAllRequests(@PathVariable Long id){
+        return ResponseEntity.ok(membershipRequestService.getAllRequestsForSocialGroup(id));
+    }
+    @GetMapping("/membershiprequest/{id}")
+    public ResponseEntity<?> getRequestsById(@PathVariable Long id) {
+        return ResponseEntity.ok(membershipRequestService.getRequestsById(id));
+    }
+
+    @DeleteMapping("/deleterequest/{id}")
+    public ResponseEntity<?> deleteRequestById(@PathVariable Long id) {
+        membershipRequestService.deleteRequestById(id);
+        return ResponseEntity.ok().build();
+    }
 
 }

@@ -1,10 +1,9 @@
 package com.example.SocialNetwork.service;
 
-import com.example.SocialNetwork.dto.EventDTO;
+import com.example.SocialNetwork.dtos.EventDTO;
 import com.example.SocialNetwork.entities.Event;
 import com.example.SocialNetwork.entities.User;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 

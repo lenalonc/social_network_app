@@ -1,11 +1,12 @@
 package com.example.SocialNetwork.service;
 
-import com.example.SocialNetwork.dto.FriendsDTO;
-import com.example.SocialNetwork.dto.UserDTO;
+import com.example.SocialNetwork.dtos.UserDTO;
+import com.example.SocialNetwork.dtos.UserDTO;
 import com.example.SocialNetwork.entities.Friends;
 import com.example.SocialNetwork.entities.User;
 import com.example.SocialNetwork.repository.FriendsRepository;
 import com.example.SocialNetwork.repository.UserRepository;
+import org.hibernate.boot.model.internal.CreateKeySecondPass;
 import org.modelmapper.ModelMapper;
 import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
@@ -13,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -44,12 +46,12 @@ public class FriendsServiceImpl implements FriendsService {
     @Transactional
     public ResponseEntity<String> deleteFriend(Long friendId) {
         User user = getCurrentUser();
-        List<Friends> friends = user.getFriends();
-        for (Friends friend : friends) {
+
+        List<UserDTO> friends = getFriendsByUser();
+
+        for (UserDTO friend : friends) {
             if (friend.getId().equals(friendId)) {
-                friends.remove(friend);
-                userRepository.save(user);
-                friendsRepository.deleteById(friendId);
+                friendsRepository.deleteFriendByUser(user.getId(), friendId);
                 return new ResponseEntity<>("Friend deleted", HttpStatus.OK);
             }
         }
@@ -62,6 +64,20 @@ public class FriendsServiceImpl implements FriendsService {
         friendsRepository.deleteFriendByUser(user1Id, user2Id);
         return new ResponseEntity<>("Friend deleted", HttpStatus.OK);
 
+    }
+
+    @Override
+    public ResponseEntity<?> searchFriends(String search) {
+        User user = getCurrentUser();
+        Long userId = user.getId();
+
+        List<UserDTO> searchResults = friendsRepository.searchFriends(userId, search).stream().map(friend->mapper.map(friend, UserDTO.class)).toList();
+
+        if (searchResults.isEmpty()) {
+            return new ResponseEntity<>("No friends found", HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity<>(searchResults, HttpStatus.OK);
     }
 
     public User getCurrentUser() {

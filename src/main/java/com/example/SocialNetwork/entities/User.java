@@ -1,18 +1,17 @@
 package com.example.SocialNetwork.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
 
 @Entity
 @Table(name = "user")
@@ -43,10 +42,10 @@ public class User {
 
 
     @Column(name = "donotdisturb")
-    private Date donotdistrub;
+    private Date doNotDisturb;
 
 
-    @ManyToMany()
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(name="friends",
             joinColumns = {
                     @JoinColumn(name = "id_user1")

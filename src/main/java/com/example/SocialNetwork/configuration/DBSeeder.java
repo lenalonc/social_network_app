@@ -2,7 +2,9 @@ package com.example.SocialNetwork.configuration;
 
 import com.example.SocialNetwork.entities.*;
 import com.example.SocialNetwork.repository.*;
+import com.example.SocialNetwork.service.FriendsService;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -23,7 +25,7 @@ public class DBSeeder implements CommandLineRunner {
     PostRepository postRepository;
 
     BCryptPasswordEncoder passwordEncoder;
-
+    CommentRepository commentRepository;
 
 
     DBSeeder(UserRepository userRepository,
@@ -31,7 +33,7 @@ public class DBSeeder implements CommandLineRunner {
              SocialGroupRepository socialGroupRepository,
              GroupMemberRepository groupMemberRepository,
              BCryptPasswordEncoder passwordEncoder, FriendRequestRepository friendRequestRepository, FriendsRepository friendsRepository,
-             PostRepository postRepository) {
+             PostRepository postRepository, CommentRepository commentRepository) {
         this.userRepository = userRepository;
         this.membershipRequestRepository = membershipRequestRepository;
         this.socialGroupRepository = socialGroupRepository;
@@ -40,6 +42,7 @@ public class DBSeeder implements CommandLineRunner {
         this.friendsRepository = friendsRepository;
         this.postRepository = postRepository;
         this.passwordEncoder = passwordEncoder;
+        this.commentRepository = commentRepository;
     }
 
     private void seedUser(String username, String email, String password, boolean active) {
@@ -60,6 +63,34 @@ public class DBSeeder implements CommandLineRunner {
         socialGroup.setUser(adminUser.get(id));
 
         socialGroupRepository.save(socialGroup);
+    }
+
+    private void seedComment(String text, Date date, int id_user, int id_post) {
+        List<User> users = userRepository.findAll();
+        List<Post> posts = postRepository.findAll();
+
+        Comment comment = new Comment();
+        comment.setText(text);
+        comment.setPost(posts.get(id_post));
+        comment.setUser(users.get(id_user));
+        comment.setDate(date);
+
+        commentRepository.save(comment);
+
+    }
+
+    private void seedReplies(String text, Date date, int id_user, int id_comment) {
+        List<User> users = userRepository.findAll();
+        List<Comment> comments = commentRepository.findAll();
+
+        Comment comment = new Comment();
+        comment.setText(text);
+        comment.setPost(comments.get(id_comment).getPost());
+        comment.setUser(users.get(id_user));
+        comment.setDate(date);
+        comment.setParentComment(comments.get(id_comment));
+
+        commentRepository.save(comment);
     }
 
     private void seedMembershipRequest(RequestStatus status, int id_user, int id_socialgroup) {
@@ -127,7 +158,7 @@ public class DBSeeder implements CommandLineRunner {
         seedUser("John", "john@example.com", "password1", true);
         seedUser("Alice", "alice@example.com", "password2", true);
         seedUser("Bob", "bob@example.com", "password3", true);
-        seedUser("Eva", "eva@example.com", "password4", false);
+        seedUser("Eva", "eva@example.com", "password4", true);
         seedUser("Michael", "michael@example.com", "password5", false);
 
         seedSocialGroup("Group1", true,3);
@@ -142,7 +173,7 @@ public class DBSeeder implements CommandLineRunner {
         seedMembershipRequest(RequestStatus.REJECTED,2,2);
         seedMembershipRequest(RequestStatus.ACCEPTED,1,2);
 
-        seedGroupMember(0,1);
+        seedGroupMember(0,2);
         seedGroupMember(0,3);
         seedGroupMember(2,2);
         seedGroupMember(1,2);
@@ -162,11 +193,20 @@ public class DBSeeder implements CommandLineRunner {
         seedPost("text4", true, new Date(2023, 11, 11, 12, 12, 12), 1, 2);
         seedPost("text4", true, new Date(2023, 11, 26, 12, 12, 12), 1, 1);
 
-    }
+        seedComment("com1", new Date(), 2, 2);
+        seedComment("com2", new Date(), 1, 2);
+        seedComment("com3", new Date(), 1, 3);
+        seedComment("com4", new Date(), 0, 3);
 
+        seedReplies("rep1", new Date(), 0, 0);
+        seedReplies("rep2", new Date(), 1, 0);
+        seedReplies("rep3", new Date(), 2, 0);
+
+    }
 
     private void clearDatabase() {
         this.postRepository.deleteAll();
+        this.commentRepository.deleteAll();
         this.groupMemberRepository.deleteAll();
         this.membershipRequestRepository.deleteAll();
         this.socialGroupRepository.deleteAll();

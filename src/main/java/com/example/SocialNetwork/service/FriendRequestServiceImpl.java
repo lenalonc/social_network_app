@@ -1,12 +1,14 @@
 package com.example.SocialNetwork.service;
 
-import com.example.SocialNetwork.dto.FriendRequestDTO;
+import com.example.SocialNetwork.dtos.FriendRequestDTO;
 import com.example.SocialNetwork.entities.FriendRequest;
 import com.example.SocialNetwork.entities.Friends;
+import com.example.SocialNetwork.entities.RequestStatus;
 import com.example.SocialNetwork.entities.User;
 import com.example.SocialNetwork.repository.FriendRequestRepository;
 import com.example.SocialNetwork.repository.FriendsRepository;
 import com.example.SocialNetwork.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +19,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Transactional
 public class FriendRequestServiceImpl implements FriendRequestService{
     private UserRepository userRepository;
     private FriendRequestRepository friendRequestRepository;
@@ -48,14 +51,17 @@ public class FriendRequestServiceImpl implements FriendRequestService{
 
         FriendRequest save = friendRequestRepository.save(friendRequest);
         User byId = userRepository.getById(user1Id);
-        byId.getFriendRequestSet().add(save);
+        byId.getFriendRequests().add(save);
+        userRepository.save(byId);
 
         return new ResponseEntity<>("Friend request sent", HttpStatus.OK);
     }
 
     @Override
     public List<FriendRequestDTO> getAllRequests(Long id) {
-        return friendRequestRepository.findAllByUser1Id(id).stream().map(request->mapper.map(request, FriendRequestDTO.class)).toList();
+        User user = getCurrentUser();
+        System.out.println(user.getFriendRequests());
+        return friendRequestRepository.findAllByUser2Id(id).stream().map(request->mapper.map(request, FriendRequestDTO.class)).toList();
     }
 
     @Override
@@ -69,7 +75,7 @@ public class FriendRequestServiceImpl implements FriendRequestService{
         Optional<User> user1 = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
 
         Long user1Id = user1.get().getId();
-        Long user2Id = friendRequest.getId_user2();
+        Long user2Id = friendRequest.getId_user1();
         Optional<User> user2 = userRepository.findById(user2Id);
 
         List<User> friends = friendsRepository.getFriendsByUser(user1Id);
@@ -82,12 +88,13 @@ public class FriendRequestServiceImpl implements FriendRequestService{
         if(user2.isPresent()){
              User firstUser = user1.get();
              User secondUser = user2.get();
-             return processRequest(firstUser, secondUser, status);
+             return processRequest(firstUser, secondUser, status, friendRequest);
         }
         return new ResponseEntity<>("User not found", HttpStatus.BAD_REQUEST);
     }
 
-    private ResponseEntity<Object> processRequest(User firstUser, User secondUser, Long status) {
+    @Transactional
+    private ResponseEntity<Object> processRequest(User firstUser, User secondUser, Long status, FriendRequest friendRequest) {
         if (status == 0) {
 
             Friends newFriend = new Friends();
@@ -100,14 +107,23 @@ public class FriendRequestServiceImpl implements FriendRequestService{
             userRepository.save(firstUser);
             userRepository.save(secondUser);
 
+            friendRequest.setStatus(RequestStatus.ACCEPTED);
+            friendRequestRepository.save(friendRequest);
+
             return new ResponseEntity<>("Friend request accepted", HttpStatus.OK);
         } else if (status == 1) {
             return new ResponseEntity<>("Friend request already on pending list", HttpStatus.OK);
         } else if (status == 2) {
+            friendRequest.setStatus(RequestStatus.REJECTED);
+            friendRequestRepository.save(friendRequest);
             return new ResponseEntity<>("Friend request declined", HttpStatus.OK);
         } else {
             return new ResponseEntity<>("Invalid status", HttpStatus.BAD_REQUEST);
         }
     }
 
+    public User getCurrentUser() {
+        Optional<User> user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+        return user.get();
+    }
 }
