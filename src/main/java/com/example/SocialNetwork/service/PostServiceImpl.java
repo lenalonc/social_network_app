@@ -6,6 +6,7 @@ import com.example.SocialNetwork.entities.SocialGroup;
 import com.example.SocialNetwork.entities.User;
 import com.example.SocialNetwork.exceptions.ForbiddenException;
 import com.example.SocialNetwork.exceptions.NotFoundException;
+import com.example.SocialNetwork.repository.FriendsRepository;
 import com.example.SocialNetwork.repository.PostRepository;
 import com.example.SocialNetwork.repository.SocialGroupRepository;
 import com.example.SocialNetwork.repository.UserRepository;
@@ -28,22 +29,29 @@ public class PostServiceImpl implements PostService {
 
     private UserRepository userRepository;
 
+    private FriendsRepository friendsRepository;
+
     private EmailService emailService;
 
     public PostServiceImpl(ModelMapper mapper, PostRepository postRepository, SocialGroupRepository socialGroupRepository,
-                           UserRepository userRepository, EmailService emailService) {
+                           UserRepository userRepository, EmailService emailService, FriendsRepository friendsRepository) {
         this.mapper = mapper;
         this.postRepository = postRepository;
         this.socialGroupRepository = socialGroupRepository;
         this.userRepository = userRepository;
+        this.friendsRepository = friendsRepository;
         this.emailService = emailService;
     }
 
     @Override
     public List<PostDTO> getAllPostsByUser(Long id) {
         User user = userRepository.findById(id).orElseThrow(() -> new NotFoundException("User does not exist."));
+        Optional<User> loggedUser = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+
+        checkFriendship();
+
         List<Post> userPosts = postRepository.findAllByUserIdAndDeleted(user.getId(), false);
-        userPosts = filterPosts(userPosts, user);
+
         return userPosts.stream().map(userPost -> mapper.map(userPost, PostDTO.class)).toList();
     }
 
@@ -182,6 +190,29 @@ public class PostServiceImpl implements PostService {
             posts.add(post);
         }
         return posts;
+    }
+
+    private static void checkSocialGroup(Post post, User user) {
+        if (post.getSocialGroup() != null) {
+            boolean groupChecksFlag = false;
+            for (SocialGroup s : user.getSocialGroups()) {
+                if (s.getId().equals(post.getSocialGroup().getId())) {
+                    groupChecksFlag = true;
+                }
+            }
+            if (!groupChecksFlag) throw new ForbiddenException("You are not in this group");
+        }
+    }
+
+    private void checkFriendship(User user, User loggedUser) {
+
+        List<Long> friends = friendsRepository.getFriendIdsByUserId(user.getId());
+        System.out.println(friends);
+
+        if (!(friends.contains(user.getId()))) {
+            throw new ForbiddenException("You are not allowed to see this post");
+        }
+
     }
 
     private void sendEmails(SocialGroup socialGroup) {
