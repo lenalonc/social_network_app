@@ -1,10 +1,12 @@
 package com.example.SocialNetwork.service;
 
+import com.example.SocialNetwork.dtos.GroupMemberDTO;
 import com.example.SocialNetwork.dtos.UserDTO;
 import com.example.SocialNetwork.entities.GroupMember;
 import com.example.SocialNetwork.entities.MembershipRequest;
 import com.example.SocialNetwork.entities.SocialGroup;
 import com.example.SocialNetwork.entities.User;
+import com.example.SocialNetwork.exceptions.ForbiddenException;
 import com.example.SocialNetwork.exceptions.NotFoundException;
 import com.example.SocialNetwork.exceptions.ValidationException;
 import com.example.SocialNetwork.repository.GroupMemberRepository;
@@ -42,29 +44,30 @@ public class GroupMemberServiceImpl implements GroupMemberService{
         this.mapper = mapper;
     }
     @Override
-    public GroupMember saveGroupMember(Long id) {
+    public GroupMemberDTO saveGroupMember(Long id) {
 
-        Optional<MembershipRequest> membershipRequest = membershipRequestRepository.findById(id);
+        MembershipRequest membershipRequest = membershipRequestRepository.findById(id).orElseThrow(
+                () -> new NotFoundException("Membership request not found"));
 
-        if(membershipRequest.orElse(null) == null)
-            throw new NotFoundException("Membership request not found");
+        User currentUser = userRepository.findByEmail(SecurityContextHolder.
+                getContext().getAuthentication().getName()).orElseThrow(() ->
+                new NotFoundException("User not found"));
 
-        Optional<User> currentUser = userRepository.
-                findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
-        SocialGroup socialGroup = membershipRequest.get().getSocialGroup();
+        SocialGroup socialGroup = membershipRequest.getSocialGroup();
 
-        if(currentUser.get().getId() == socialGroup.getUser().getId()){
+        if(currentUser.getId() == socialGroup.getUser().getId()){
             Date date = new Date();
             GroupMember groupMember = new GroupMember();
             groupMember.setDateJoined(date);
-            groupMember.setUser(membershipRequest.get().getUser());
+            groupMember.setUser(membershipRequest.getUser());
             groupMember.setSocialGroup(socialGroup);
 
-            groupMemberRepository.save(groupMember);
-            Optional<MembershipRequest> request = membershipRequestRepository.findById(id);
-            membershipRequestRepository.deleteById(request.get().getId());
+            GroupMemberDTO groupMemberDTO = this.mapper.map(groupMemberRepository.save(groupMember),
+                    GroupMemberDTO.class);
 
-            return groupMember;
+            membershipRequestRepository.deleteById(membershipRequest.getId());
+
+            return groupMemberDTO;
         }
 
         return null;
@@ -86,11 +89,14 @@ public class GroupMemberServiceImpl implements GroupMemberService{
     @Override
     @Transactional
     public void removeCurrentUserFromGroupByGroupId(Long id) {
-        Optional<User> currentUser = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
-        Optional<SocialGroup> socialGroup = socialGroupRepository.findById(id);
+        User currentUser = userRepository.findByEmail(SecurityContextHolder.
+                getContext().getAuthentication().getName()).orElseThrow(() ->
+                new NotFoundException("User not found"));
+        SocialGroup socialGroup = socialGroupRepository.findById(id).orElseThrow(() ->
+                new NotFoundException("Social group not found"));
 
-        if(currentUser.get().getId() != socialGroup.get().getUser().getId()){
-            groupMemberRepository.deleteByUserId(currentUser.get().getId(), id);
+        if(currentUser.getId() != socialGroup.getUser().getId()){
+            groupMemberRepository.deleteByUserId(currentUser.getId(), id);
         }
     }
 
@@ -111,11 +117,12 @@ public class GroupMemberServiceImpl implements GroupMemberService{
         User currentUser = userRepository.findByEmail(SecurityContextHolder.
                 getContext().getAuthentication().getName()).orElseThrow(() ->
                 new NotFoundException("User not found"));
-        Optional<SocialGroup> socialGroup = socialGroupRepository.findById(groupId);
+        SocialGroup socialGroup = socialGroupRepository.findById(groupId).orElseThrow(() ->
+                new NotFoundException("Social group not found"));
 
-        if(socialGroup.get().getUser().equals(currentUser) && currentUser.
+        if(socialGroup.getUser().equals(currentUser) && currentUser.
                 equals(userForRemoval))
-            throw new ValidationException("You are admin of this group, cannot execute your operation");
+            throw new ForbiddenException("You are admin of this group, cannot execute your operation");
 
 
         groupMemberRepository.deleteByUserId(userId,groupId);

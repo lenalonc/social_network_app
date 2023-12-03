@@ -79,7 +79,7 @@ public class MembershipRequestServiceImpl implements MembershipRequestService {
             return membershipRequestsRepository.findAllMembershipRequestsForSocialGroup(id);
         }
         else
-            throw new NotFoundException("There is no membership requests found");
+            throw new NotFoundException("You are not authorized");
     }
 
     @Override
