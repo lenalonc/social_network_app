@@ -12,11 +12,11 @@ public interface SocialGroupService {
 
     List<SocialGroupDTO> getAllSocialGroups();
 
-    ResponseEntity<String> createGroup(SocialGroup group);
+    SocialGroupDTO createGroup(SocialGroup group);
 
-    ResponseEntity<List<SocialGroupDTO>> getSocialGroupByName(String name);
+    List<SocialGroupDTO> getSocialGroupByName(String name);
 
-    ResponseEntity<String> deleteSocialGroupById(Long id, User currentUser);
+    void deleteSocialGroupById(Long id, User currentUser);
 
     ResponseEntity<SocialGroupDTO> getSocialGroupDTOById(Long id);
 

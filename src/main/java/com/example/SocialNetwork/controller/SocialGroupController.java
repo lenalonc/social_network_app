@@ -43,18 +43,19 @@ public class SocialGroupController extends MyRequest {
 
     @PostMapping("/")
     public ResponseEntity<?> createGroup(@RequestBody SocialGroup group) {
-        return groupService.createGroup(group);
+        return ResponseEntity.ok(groupService.createGroup(group));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteSocialGroupById(@PathVariable Long id, User user) {
         User currentUser = userService.findCurrentUser();
-        return groupService.deleteSocialGroupById(id,currentUser);
+        groupService.deleteSocialGroupById(id, currentUser);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/name/{name}")
     public ResponseEntity<?> getSocialGroupByName(@PathVariable String name) {
-        return groupService.getSocialGroupByName(name);
+        return ResponseEntity.ok(groupService.getSocialGroupByName(name));
     }
 
     @GetMapping("/id/{id}")
