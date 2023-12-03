@@ -40,12 +40,11 @@ public class User {
     @Column(name = "active", nullable = false)
     private boolean active;
 
-
     @Column(name = "donotdisturb")
     private Date doNotDisturb;
 
 
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name="friends",
             joinColumns = {
                     @JoinColumn(name = "id_user1")

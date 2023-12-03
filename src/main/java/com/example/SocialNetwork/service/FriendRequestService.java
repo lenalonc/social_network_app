@@ -12,4 +12,8 @@ public interface FriendRequestService {
     List<FriendRequestDTO> getAllRequests(Long id);
 
     ResponseEntity<Object> respondToRequest(Long id, Long status);
+
+    ResponseEntity<Object> deleteFriendRequest(Long id);
+
+    ResponseEntity<Object> getYourRequests();
 }

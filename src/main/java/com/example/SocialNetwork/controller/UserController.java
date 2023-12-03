@@ -8,7 +8,6 @@ import com.example.SocialNetwork.dtos.LoginResponse;
 import com.example.SocialNetwork.dtos.PasswordDto;
 import com.example.SocialNetwork.dtos.UserCreateDto;
 import com.example.SocialNetwork.entities.FriendRequest;
-import com.example.SocialNetwork.entities.Friends;
 import com.example.SocialNetwork.entities.User;
 import com.example.SocialNetwork.repository.UserRepository;
 import com.example.SocialNetwork.service.FriendRequestService;
@@ -20,12 +19,8 @@ import org.springframework.http.ResponseEntity;
 import com.example.SocialNetwork.service.GroupMemberService;
 import com.example.SocialNetwork.service.UserServiceImpl;
 import com.example.SocialNetwork.utils.JwtUtil;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -33,6 +28,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -45,9 +41,9 @@ public class UserController {
     private final AuthenticationManager authenticationManager;
     private final UserServiceImpl userService;
     private final JwtUtil jwtUtil;
-    private UserRepository userRepository;
-    private FriendRequestService friendRequestService;
-    private FriendsService friendsService;
+    private final UserRepository userRepository;
+    private final FriendRequestService friendRequestService;
+    private final FriendsService friendsService;
     private final GroupMemberService groupMemberService;
 
     @PostMapping("/login")
@@ -82,12 +78,12 @@ public class UserController {
     @GetMapping("/hello")
     public ResponseEntity<String> hello() {
         return new ResponseEntity<>("Hello Levi9 konferencijska sala uvek radi", HttpStatus.OK);
-
     }
 
     @PostMapping("/friendrequests")
     public ResponseEntity<Object> sendFriendRequest(@RequestBody FriendRequest friendRequest) {
         friendRequest.setId_user1(getCurrentUser().getId());
+        friendRequest.setDate(new Date());
         return friendRequestService.sendFriendRequest(friendRequest);
     }
 
@@ -108,10 +104,21 @@ public class UserController {
         return friendRequestService.respondToRequest(id, status);
     }
 
+    @DeleteMapping("/friendrequests/{id}")
+    public ResponseEntity<Object> deleteFriendRequest(@PathVariable Long id) {
+        return friendRequestService.deleteFriendRequest(id);
+    }
+
+    @GetMapping("/friendrequests/yourrequests")
+    public ResponseEntity<Object> getYourRequests() {
+        return friendRequestService.getYourRequests();
+    }
+
     @GetMapping("/currentuser")
     public User getCurrentUser() {
         return userService.findCurrentUser();
     }
+
     @PostMapping("/")
     public ResponseEntity<String> saveUser(@RequestBody User user) {
         userService.saveUser(user);
@@ -157,7 +164,7 @@ public class UserController {
     }
 
     @GetMapping("/friends/search")
-    public ResponseEntity<?> searchFriends(@RequestParam("search") String search) {
+    public ResponseEntity<?> searchFriends(@RequestParam("value") String search) {
         return friendsService.searchFriends(search);
     }
 
