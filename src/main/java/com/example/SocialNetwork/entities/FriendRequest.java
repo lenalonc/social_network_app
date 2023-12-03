@@ -26,7 +26,7 @@ public class FriendRequest {
 
     private Long id_user2;
 
-    @ManyToMany()
+    @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "user_friendrequest",
             joinColumns = {
                     @JoinColumn(name = "id_friendrequest")

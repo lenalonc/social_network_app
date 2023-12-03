@@ -5,6 +5,7 @@ import com.example.SocialNetwork.entities.FriendRequest;
 import com.example.SocialNetwork.entities.Friends;
 import com.example.SocialNetwork.entities.RequestStatus;
 import com.example.SocialNetwork.entities.User;
+import com.example.SocialNetwork.exceptions.NotFoundException;
 import com.example.SocialNetwork.repository.FriendRequestRepository;
 import com.example.SocialNetwork.repository.FriendsRepository;
 import com.example.SocialNetwork.repository.UserRepository;
@@ -19,7 +20,6 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-@Transactional
 public class FriendRequestServiceImpl implements FriendRequestService{
     private UserRepository userRepository;
     private FriendRequestRepository friendRequestRepository;
@@ -35,9 +35,14 @@ public class FriendRequestServiceImpl implements FriendRequestService{
         this.mapper = mapper;
     }
     @Override
+    @Transactional
     public ResponseEntity<Object> sendFriendRequest(FriendRequest friendRequest) {
         Long user1Id = friendRequest.getId_user1();
         Long user2Id = friendRequest.getId_user2();
+
+        User user2 = userRepository.getById(user2Id);
+        if(!(user2.isActive())) return new ResponseEntity<>("User is not active", HttpStatus.BAD_REQUEST);
+
         if (user1Id.equals(user2Id)) {
             return  new ResponseEntity<>("You can't send a friend request to yourself", HttpStatus.BAD_REQUEST);
         }
@@ -60,17 +65,13 @@ public class FriendRequestServiceImpl implements FriendRequestService{
     @Override
     public List<FriendRequestDTO> getAllRequests(Long id) {
         User user = getCurrentUser();
-        System.out.println(user.getFriendRequests());
         return friendRequestRepository.findAllByUser2Id(id).stream().map(request->mapper.map(request, FriendRequestDTO.class)).toList();
     }
 
     @Override
+    @Transactional
     public ResponseEntity<Object> respondToRequest(Long id, Long status) {
-        Optional<FriendRequest> friendRequestOptional = friendRequestRepository.findById(id);
-        if(friendRequestOptional.isEmpty()){
-            return new ResponseEntity<>("Friend request not found", HttpStatus.BAD_REQUEST);
-        }
-        FriendRequest friendRequest = friendRequestOptional.get();
+        FriendRequest friendRequest = friendRequestRepository.findById(id).orElseThrow(() -> new NotFoundException("Friend request not found"));
 
         Optional<User> user1 = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
 
@@ -89,8 +90,29 @@ public class FriendRequestServiceImpl implements FriendRequestService{
              User firstUser = user1.get();
              User secondUser = user2.get();
              return processRequest(firstUser, secondUser, status, friendRequest);
+        } return new ResponseEntity<>("User not found", HttpStatus.BAD_REQUEST);
+    }
+
+    @Override
+    @Transactional
+    public ResponseEntity<Object> deleteFriendRequest(Long id) {
+        FriendRequest friendRequest = friendRequestRepository.findById(id).orElseThrow(() -> new NotFoundException("Friend request not found"));
+        if (friendRequest.getStatus() == RequestStatus.ACCEPTED) {
+            return new ResponseEntity<>("Request already accepted, try with delete friend option.", HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>("User not found", HttpStatus.BAD_REQUEST);
+        friendRequestRepository.deletePendingById(id);
+        return new ResponseEntity<>("Friend request deleted", HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<Object> getYourRequests() {
+        User user = getCurrentUser();
+        List<FriendRequestDTO> sendedFriendRequests = friendRequestRepository.findAllByUser1Id(user.getId()).stream().filter(request -> request.getStatus() == RequestStatus.PENDING).map(request -> mapper.map(request, FriendRequestDTO.class)).toList();
+
+        if (sendedFriendRequests.isEmpty()){
+            return new ResponseEntity<>("You have no pending friend requests", HttpStatus.OK);
+        }
+        return new ResponseEntity<>(sendedFriendRequests, HttpStatus.OK);
     }
 
     @Transactional
@@ -101,11 +123,6 @@ public class FriendRequestServiceImpl implements FriendRequestService{
             newFriend.setUser1Id(firstUser);
             newFriend.setUser2Id(secondUser);
             friendsService.saveFriends(newFriend);
-
-            firstUser.getFriends().add(newFriend);
-            secondUser.getFriends().add(newFriend);
-            userRepository.save(firstUser);
-            userRepository.save(secondUser);
 
             friendRequest.setStatus(RequestStatus.ACCEPTED);
             friendRequestRepository.save(friendRequest);
