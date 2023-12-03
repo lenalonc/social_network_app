@@ -46,7 +46,6 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public List<PostDTO> getAllPostsByUser(Long id) {
-
         User user = userRepository.findById(id).orElseThrow(() -> new NotFoundException("User does not exist."));
         Optional<User> loggedUser = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
 
@@ -54,27 +53,23 @@ public class PostServiceImpl implements PostService {
 
         List<Post> filteredPosts = userPosts.stream()
                 .filter(post -> (post.isType() || (checkFriendship(user, loggedUser.get()))) &&
-                        (post.getSocialGroup() == null || checkSocialGroup(post.getSocialGroup(), loggedUser.get()))) // Include if type is true or checkFriends returns true
+                        (post.getSocialGroup() == null || checkSocialGroup(post.getSocialGroup(), loggedUser.get())))
                 .collect(Collectors.toList());
 
         return filteredPosts.stream().map(post -> mapper.map(post, PostDTO.class)).toList();
-
     }
 
 
     @Override
     public List<PostDTO> getAllPostsByLoggedInUser() {
-
         Optional<User> user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
         List<Post> userPosts = postRepository.findAllByUserIdAndDeleted(user.get().getId(), false);
         return userPosts.stream().map(userPost -> mapper.map(userPost, PostDTO.class)).toList();
-
     }
 
 
     @Override
     public List<PostDTO> getAllPostsBySocialGroup(Long id) {
-
         Optional<User> user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
         SocialGroup socialGroup = socialGroupRepository.findById(id).orElseThrow(() -> new NotFoundException("Social group not found."));
 
@@ -85,12 +80,10 @@ public class PostServiceImpl implements PostService {
         List<Post> postsInGroup = postRepository.findAllBySocialGroupIdAndDeleted(id, false);
 
         return postsInGroup.stream().map(post -> mapper.map(post, PostDTO.class)).toList();
-
     }
 
     @Override
     public PostDTO createPost(Post post) {
-
         Optional<User> user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
 
         post.setUser(user.get());
@@ -103,7 +96,6 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public PostDTO createPostInGroup(Post post, Long groupId) {
-
         Optional<User> user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
         SocialGroup socialGroup = socialGroupRepository.findById(groupId).orElseThrow(() -> new NotFoundException("Social group does not exist."));
 
@@ -122,13 +114,11 @@ public class PostServiceImpl implements PostService {
         sendEmails(socialGroup, post);
 
         return this.mapper.map(postRepository.save(post), PostDTO.class);
-
     }
 
 
     @Override
     public PostDTO updatePost(Long id, Post post) {
-
         Post tempPost = postRepository.findById(id).orElseThrow(() -> new NotFoundException("Post does not exist."));
         Optional<User> user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
 
@@ -140,12 +130,10 @@ public class PostServiceImpl implements PostService {
         tempPost.setText(post.getText());
 
         return this.mapper.map(postRepository.save(tempPost), PostDTO.class);
-
     }
 
     @Override
     public void deletePostById(Long id) {
-
         Optional<User> user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
         Post post = postRepository.findById(id).orElseThrow(() -> new NotFoundException("Post does not exist."));
 
@@ -155,12 +143,10 @@ public class PostServiceImpl implements PostService {
         } else {
             throw new ForbiddenException("You do not have permission to delete this post.");
         }
-
     }
 
     @Override
     public PostDTO makePostPrivate(Long id) {
-
         Optional<User> user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
         Post tempPost = postRepository.findById(id).orElseThrow(() -> new NotFoundException("Post does not exist."));
 
@@ -173,12 +159,10 @@ public class PostServiceImpl implements PostService {
         tempPost.setType(false);
 
         return this.mapper.map(postRepository.save(tempPost), PostDTO.class);
-
     }
 
     @Override
     public PostDTO makePostPublic(Long id) {
-
         Optional<User> user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
         Post tempPost = postRepository.findById(id).orElseThrow(() -> new NotFoundException("Post does not exist."));
 
@@ -187,12 +171,10 @@ public class PostServiceImpl implements PostService {
 
         tempPost.setType(true);
         return this.mapper.map(postRepository.save(tempPost), PostDTO.class);
-
     }
 
     @Scheduled(cron = "0 0/1 * * * *")
     private void getUnexpiredPosts() {
-
         List<Post> posts = postRepository.findAll();
         for (Post post : posts) {
             if (is24HoursOrMoreAfter(post.getDate())) {
@@ -200,7 +182,6 @@ public class PostServiceImpl implements PostService {
             }
         }
         postRepository.saveAll(posts);
-
     }
 
     private static boolean is24HoursOrMoreAfter(Date dateToCheck) {
@@ -217,14 +198,12 @@ public class PostServiceImpl implements PostService {
     }
 
     private boolean checkFriendship(User user, User loggedUser) {
-
         List<Long> friends = friendsRepository.getFriendIdsByUserId(user.getId());
 
         if (!(friends.contains(loggedUser.getId()))) {
             return false;
         }
         return true;
-
     }
 
     private void sendEmails(SocialGroup socialGroup, Post post) {
