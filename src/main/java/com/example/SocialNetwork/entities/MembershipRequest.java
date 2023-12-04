@@ -9,8 +9,8 @@ import lombok.*;
 @Getter
 @Setter
 @Builder
-@AllArgsConstructor(access = AccessLevel.PUBLIC)
 @NoArgsConstructor
+@AllArgsConstructor
 public class MembershipRequest {
 
     @Id
