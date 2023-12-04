@@ -82,14 +82,13 @@ public class SocialGroupController extends MyRequest {
 
     @PostMapping("/create_membership_request/{id}")
     public ResponseEntity<?> createMembershipRequest(@PathVariable Long id) {
-        User currentUser = userService.findCurrentUser();
-        return membershipRequestService.createMembershipRequest(id, currentUser);
+        return ResponseEntity.ok(membershipRequestService.createMembershipRequest(id));
     }
 
     @PostMapping("/join/{id}")
     public ResponseEntity<?> joinGroup(@PathVariable Long id) {
-        User currentUser = userService.findCurrentUser();
-        return membershipRequestService.processJoinGroupRequest(id, currentUser);
+        membershipRequestService.processJoinGroupRequest(id);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/all_requests_for_group/{id}")
