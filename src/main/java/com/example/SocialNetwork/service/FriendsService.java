@@ -14,4 +14,6 @@ public interface FriendsService {
     ResponseEntity<String> deleteFriend(Long friendId);
 
     ResponseEntity<String> deleteFriendByUser(Long user1Id, Long user2Id);
+
+    ResponseEntity<?> searchFriends(String search);
 }

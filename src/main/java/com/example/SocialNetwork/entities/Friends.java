@@ -17,13 +17,12 @@ public class Friends {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne()
     @JoinColumn(name = "id_user1", nullable = false)
     private User user1Id;
 
-    @ManyToOne
+    @ManyToOne()
     @JoinColumn (name = "id_user2", nullable = false)
     private User user2Id;
-
 
 }

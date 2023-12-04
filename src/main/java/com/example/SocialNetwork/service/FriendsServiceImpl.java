@@ -36,19 +36,19 @@ public class FriendsServiceImpl implements FriendsService {
     @Override
     public List<UserDTO> getFriendsByUser() {
         Long userId = getCurrentUser().getId();
-        return friendsRepository.getFriendsByUser(userId).stream().map(friend->mapper.map(friend, UserDTO.class)).toList();
+        return friendsRepository.getFriendsByUser(userId).stream().filter(user -> user.isActive()).map(friend->mapper.map(friend, UserDTO.class)).toList();
     }
 
     @Override
     @Transactional
     public ResponseEntity<String> deleteFriend(Long friendId) {
         User user = getCurrentUser();
-        List<Friends> friends = user.getFriends();
-        for (Friends friend : friends) {
+
+        List<UserDTO> friends = getFriendsByUser();
+
+        for (UserDTO friend : friends) {
             if (friend.getId().equals(friendId)) {
-                friends.remove(friend);
-                userRepository.save(user);
-                friendsRepository.deleteById(friendId);
+                friendsRepository.deleteFriendByUser(user.getId(), friendId);
                 return new ResponseEntity<>("Friend deleted", HttpStatus.OK);
             }
         }
@@ -61,6 +61,20 @@ public class FriendsServiceImpl implements FriendsService {
         friendsRepository.deleteFriendByUser(user1Id, user2Id);
         return new ResponseEntity<>("Friend deleted", HttpStatus.OK);
 
+    }
+
+    @Override
+    public ResponseEntity<?> searchFriends(String search) {
+        User user = getCurrentUser();
+        Long userId = user.getId();
+
+        List<UserDTO> searchResults = friendsRepository.searchFriends(userId, search).stream().map(friend->mapper.map(friend, UserDTO.class)).toList();
+
+        if (searchResults.isEmpty()) {
+            return new ResponseEntity<>("No friends found", HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity<>(searchResults, HttpStatus.OK);
     }
 
     public User getCurrentUser() {

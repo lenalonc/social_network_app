@@ -9,7 +9,7 @@ import lombok.Data;
 
 import java.io.Serializable;
 
-@Embeddable
+//@Embeddable
 @Data
 public class FriendsId implements Serializable {
 
