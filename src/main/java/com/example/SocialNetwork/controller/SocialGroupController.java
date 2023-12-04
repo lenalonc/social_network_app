@@ -87,6 +87,7 @@ public class SocialGroupController extends MyRequest {
 
     @PostMapping("/join/{id}")
     public ResponseEntity<?> joinGroup(@PathVariable Long id) {
+        membershipRequestService.processJoinGroupRequest(id);
         return ResponseEntity.ok().build();
     }
 
