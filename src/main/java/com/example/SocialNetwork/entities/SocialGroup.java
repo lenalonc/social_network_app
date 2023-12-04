@@ -12,8 +12,8 @@ import java.util.List;
 @Table(name="socialgroup")
 @Getter
 @Setter
-@NoArgsConstructor
 @Builder
+@NoArgsConstructor
 @AllArgsConstructor
 public class SocialGroup {
     @Id

@@ -106,28 +106,19 @@ public class SocialGroupServiceImpl implements SocialGroupService{
         }
     }
 
-
     @Override
-    public ResponseEntity<SocialGroupDTO> getSocialGroupDTOById(Long id) {
-        Optional<SocialGroup> socialGroup = groupRepository.findById(id);
+    public SocialGroupDTO getSocialGroupDTOById(Long id) {
+        SocialGroup socialGroup = groupRepository.findById(id).orElseThrow(() ->
+                new NotFoundException("Social group not found"));
 
-        if (socialGroup.isPresent()) {
-            SocialGroupDTO groupDTO = socialGroup
-                    .map(socialGroupObj -> mapper.map(socialGroupObj, SocialGroupDTO.class))
-                    .orElse(null);
-
-            return ResponseEntity.ok(groupDTO);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        return this.mapper.map(groupRepository.findById(id),
+                SocialGroupDTO.class);
     }
-
-
 
     @Override
     public SocialGroup getSocialGroupById(Long id) {
-        Optional<SocialGroup> socialGroup = groupRepository.findById(id);
-        return socialGroup.orElse(null);
+        return groupRepository.findById(id).orElseThrow(() ->
+                new NotFoundException("Social group does not exist"));
     }
 
     @Override
