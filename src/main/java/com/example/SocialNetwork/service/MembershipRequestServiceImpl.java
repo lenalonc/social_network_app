@@ -94,7 +94,7 @@ public class MembershipRequestServiceImpl implements MembershipRequestService {
             return  membershipRequestDTO;
         }
         else
-            throw new NotFoundException("You are not authorized");
+            throw new ForbiddenException("You are not authorized");
     }
 
     @Override

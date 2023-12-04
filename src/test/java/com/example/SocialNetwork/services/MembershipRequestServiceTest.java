@@ -285,6 +285,31 @@ public class MembershipRequestServiceTest {
         //verify(membershipRequestService, times(1)).createMembershipRequest(1L);
     }
 
+    @Test
+    void processJoinGroupRequest_UserNotFound() {
+        var authenticationToken = new UsernamePasswordAuthenticationToken("test", null, null);
+        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+        when(userRepository.findByEmail(any())).thenReturn(Optional.empty());
+
+        NotFoundException exception = assertThrows(NotFoundException.class,
+                () -> membershipRequestService.processJoinGroupRequest(1L));
+
+        assertEquals("User not found", exception.getMessage());
+        verify(membershipRequestRepository, never()).deleteById(anyLong());
+    }
+    @Test
+    void processJoinGroupRequest_SocialGroupNotFound() {
+        var authenticationToken = new UsernamePasswordAuthenticationToken("test", null, null);
+        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+
+        when(userRepository.findByEmail(any())).thenReturn(Optional.of(new User()));
+        when(socialGroupRepository.findById(1L)).thenReturn(Optional.empty());
+
+        NotFoundException exception = assertThrows(NotFoundException.class,
+                () -> membershipRequestService.processJoinGroupRequest(1L));
+
+        assertEquals("Social group not found", exception.getMessage());
+    }
 
     @Test
     void createMembershipRequest_Successful() {
