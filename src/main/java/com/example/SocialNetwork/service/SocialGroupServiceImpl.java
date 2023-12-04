@@ -5,12 +5,17 @@ import com.example.SocialNetwork.dtos.UserDTO;
 import com.example.SocialNetwork.entities.GroupMember;
 import com.example.SocialNetwork.entities.SocialGroup;
 import com.example.SocialNetwork.entities.User;
+import com.example.SocialNetwork.exceptions.ForbiddenException;
+import com.example.SocialNetwork.exceptions.NotFoundException;
+import com.example.SocialNetwork.exceptions.ValidationException;
 import com.example.SocialNetwork.repository.GroupMemberRepository;
 import com.example.SocialNetwork.repository.MembershipRequestRepository;
 import com.example.SocialNetwork.repository.SocialGroupRepository;
+import com.example.SocialNetwork.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -24,19 +29,19 @@ public class SocialGroupServiceImpl implements SocialGroupService{
     private final ModelMapper mapper;
     private final SocialGroupRepository groupRepository;
     private final GroupMemberRepository groupMemberRepository;
-    private final UserService userService;
+    private final UserRepository userRepository;
     private final MembershipRequestRepository membershipRequestRepository;
 
     public SocialGroupServiceImpl(SocialGroupRepository groupRepository,
                                   ModelMapper mapper,
                                   GroupMemberRepository groupMemberRepository,
-                                  UserService userService,
-                                  MembershipRequestRepository membershipRequestRepository) {
+                                  MembershipRequestRepository membershipRequestRepository,
+                                  UserRepository userRepository) {
         this.groupRepository = groupRepository;
         this.mapper = mapper;
         this.groupMemberRepository = groupMemberRepository;
-        this.userService = userService;
         this.membershipRequestRepository = membershipRequestRepository;
+        this.userRepository = userRepository;
     }
     @Override
     public void saveGroup(SocialGroup socialGroup) {
@@ -50,23 +55,26 @@ public class SocialGroupServiceImpl implements SocialGroupService{
     }
 
     @Override
-    public ResponseEntity<String> createGroup(SocialGroup group) {
-        User user = userService.findCurrentUser();
-        group.setUser(user);
+    public SocialGroupDTO createGroup(SocialGroup group) {
+        User currentUser = userRepository.findByEmail(SecurityContextHolder.
+                getContext().getAuthentication().getName()).orElseThrow(() ->
+                new NotFoundException("User not found"));
+        group.setUser(currentUser);
 
-        groupRepository.save(group);
+        SocialGroupDTO socialGroupDTO = this.mapper.map(groupRepository.save(group),
+                SocialGroupDTO.class);
 
         GroupMember groupMember = new GroupMember();
-        groupMember.setUser(user);
+        groupMember.setUser(currentUser);
         groupMember.setSocialGroup(group);
         groupMember.setDateJoined(new Date());
 
         groupMemberRepository.save(groupMember);
 
-        return ResponseEntity.ok("Uspesno sacuvana grupa");
+        return socialGroupDTO;
     }
 
-    public ResponseEntity<List<SocialGroupDTO>> getSocialGroupByName(String name) {
+    public List<SocialGroupDTO> getSocialGroupByName(String name) {
         List<SocialGroupDTO> groups = getAllSocialGroups();
         List<SocialGroupDTO> socialGroups = new ArrayList<>();
 
@@ -77,25 +85,24 @@ public class SocialGroupServiceImpl implements SocialGroupService{
         }
 
         if (!socialGroups.isEmpty()) {
-            return ResponseEntity.ok(socialGroups);
+            return socialGroups;
         } else {
-            return ResponseEntity.notFound().build();
+            throw new NotFoundException("There is no social groups with inserted name");
         }
     }
 
     @Override
     @Transactional
-    public ResponseEntity<String> deleteSocialGroupById(Long id, User currentUser) {
-        SocialGroup socialGroup = groupRepository.findById(id).orElse(null);
+    public void deleteSocialGroupById(Long id, User currentUser) {
+        SocialGroup socialGroup = groupRepository.findById(id).orElseThrow(() ->
+                new NotFoundException("Social group not found"));
 
         if (socialGroup != null && currentUser.getId().equals(socialGroup.getUser().getId())) {
             membershipRequestRepository.deleteAllBySocialGroupId(id);
             groupMemberRepository.deleteAllBySocialGroupId(id);
             groupRepository.deleteByIdAndUserId(id, currentUser.getId());
-
-            return ResponseEntity.ok("Uspesno ste obrisali grupu");
         } else {
-            return ResponseEntity.status(403).body("Niste ovlasceni da obrisete grupu");
+            throw new ForbiddenException("You are net allowed for this action");
         }
     }
 
@@ -121,5 +128,20 @@ public class SocialGroupServiceImpl implements SocialGroupService{
     public SocialGroup getSocialGroupById(Long id) {
         Optional<SocialGroup> socialGroup = groupRepository.findById(id);
         return socialGroup.orElse(null);
+    }
+
+    @Override
+    @Transactional
+    public void changeGroupName(Long id, String name) {
+        SocialGroup socialGroup = groupRepository.findById(id).orElseThrow(() ->
+                new NotFoundException("Social group does not exist"));
+        User currentUser = userRepository.findByEmail(SecurityContextHolder.
+                getContext().getAuthentication().getName()).orElseThrow(() ->
+                new NotFoundException("User not found"));
+
+        if(!currentUser.equals(socialGroup.getUser()))
+            throw new ValidationException("Forbidden access, you are not admin");
+
+        groupRepository.changeGroupName(id, name);
     }
 }

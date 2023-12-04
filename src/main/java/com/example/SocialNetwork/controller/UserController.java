@@ -113,8 +113,7 @@ public class UserController {
     public ResponseEntity<Object> getYourRequests() {
         return friendRequestService.getYourRequests();
     }
-
-    @GetMapping("/currentuser")
+    @GetMapping("/current_user")
     public User getCurrentUser() {
         return userService.findCurrentUser();
     }
@@ -191,7 +190,7 @@ public class UserController {
         return new ResponseEntity<>("Logout success!" , HttpStatus.OK);
     }
 
-    @DeleteMapping("/removeuser")
+    @DeleteMapping("/remove_user")
     public ResponseEntity<?> removeFromGroup(@RequestParam Long userId, @RequestParam Long groupId){
         groupMemberService.removeUserFromGroupByUserID(userId, groupId);
         return ResponseEntity.ok().build();

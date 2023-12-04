@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/socialgroup")
+@RequestMapping("/social_group")
 public class SocialGroupController extends MyRequest {
     private final SocialGroupService groupService;
     private final UserService userService;
@@ -43,18 +43,19 @@ public class SocialGroupController extends MyRequest {
 
     @PostMapping("/")
     public ResponseEntity<?> createGroup(@RequestBody SocialGroup group) {
-        return groupService.createGroup(group);
+        return ResponseEntity.ok(groupService.createGroup(group));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteSocialGroupById(@PathVariable Long id, User user) {
         User currentUser = userService.findCurrentUser();
-        return groupService.deleteSocialGroupById(id,currentUser);
+        groupService.deleteSocialGroupById(id, currentUser);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/name/{name}")
     public ResponseEntity<?> getSocialGroupByName(@PathVariable String name) {
-        return groupService.getSocialGroupByName(name);
+        return ResponseEntity.ok(groupService.getSocialGroupByName(name));
     }
 
     @GetMapping("/id/{id}")
@@ -68,7 +69,7 @@ public class SocialGroupController extends MyRequest {
         return ResponseEntity.ok(groupMemberService.saveGroupMember(id));
     }
 
-    @DeleteMapping("/leavegroup/{id}")
+    @DeleteMapping("/leave_group/{id}")
     public ResponseEntity<?> leaveGroup(@PathVariable Long id){
         groupMemberService.removeCurrentUserFromGroupByGroupId(id);
         return ResponseEntity.ok().build();
@@ -79,7 +80,7 @@ public class SocialGroupController extends MyRequest {
         return ResponseEntity.ok(groupMemberService.getAllGroupMembers(id));
     }
 
-    @PostMapping("/createmembershiprequest/{id}")
+    @PostMapping("/create_membership_request/{id}")
     public ResponseEntity<?> createMembershipRequest(@PathVariable Long id) {
         User currentUser = userService.findCurrentUser();
         return membershipRequestService.createMembershipRequest(id, currentUser);
@@ -91,19 +92,25 @@ public class SocialGroupController extends MyRequest {
         return membershipRequestService.processJoinGroupRequest(id, currentUser);
     }
 
-    @GetMapping("/allrequestsforgroup/{id}")
+    @GetMapping("/all_requests_for_group/{id}")
     public ResponseEntity<?> showAllRequests(@PathVariable Long id){
         return ResponseEntity.ok(membershipRequestService.getAllRequestsForSocialGroup(id));
     }
-    @GetMapping("/membershiprequest/{id}")
+    @GetMapping("/membership_request/{id}")
     public ResponseEntity<?> getRequestsById(@PathVariable Long id) {
         return ResponseEntity.ok(membershipRequestService.getRequestsById(id));
     }
 
-    @DeleteMapping("/deleterequest/{id}")
+    @DeleteMapping("/delete_request/{id}")
     public ResponseEntity<?> deleteRequestById(@PathVariable Long id) {
         membershipRequestService.deleteRequestById(id);
         return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/change_name")
+    public ResponseEntity<?> changeGroupName(@RequestParam Long id, @RequestParam String name){
+        groupService.changeGroupName(id, name);
+        return  ResponseEntity.ok().build();
     }
 
 }
