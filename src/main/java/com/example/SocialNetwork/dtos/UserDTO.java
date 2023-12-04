@@ -20,7 +20,5 @@ public class UserDTO {
 
     private boolean active;
 
-    private boolean admin;
-
     private Date doNotDisturb;
 }
