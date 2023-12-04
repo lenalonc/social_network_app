@@ -2,14 +2,14 @@ package com.example.SocialNetwork.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
 @Table(name = "membershiprequest")
 @Getter
 @Setter
+@Builder
+@AllArgsConstructor(access = AccessLevel.PUBLIC)
 @NoArgsConstructor
 public class MembershipRequest {
 
@@ -30,5 +30,6 @@ public class MembershipRequest {
     @JsonIgnore
     @JoinColumn(name = "id_user", nullable = false)
     private User user;
+
 
 }
