@@ -60,7 +60,7 @@ public class SocialGroupController extends MyRequest {
 
     @GetMapping("/id/{id}")
     public ResponseEntity<?> getSocialGroupDTOById(@PathVariable Long id) {
-        return groupService.getSocialGroupDTOById(id);
+        return ResponseEntity.ok(groupService.getSocialGroupDTOById(id));
     }
 
 
