@@ -177,7 +177,7 @@ public class DBSeeder implements CommandLineRunner {
         seedGroupMember(0,3);
         seedGroupMember(2,2);
         seedGroupMember(1,2);
-        seedGroupMember(1,3);
+        seedGroupMember(3,0);
 
         seedFriendRequest(RequestStatus.PENDING, 0, 1, new Date());
         seedFriendRequest(RequestStatus.ACCEPTED, 0, 2, new Date());
@@ -192,6 +192,7 @@ public class DBSeeder implements CommandLineRunner {
         seedPost("text3", true, new Date(), 2, 2);
         seedPost("text4", true, new Date(2023, 11, 11, 12, 12, 12), 1, 2);
         seedPost("text4", true, new Date(2023, 11, 26, 12, 12, 12), 1, 1);
+        seedPost("text5", true, new Date(), 3, 0);
 
         seedComment("com1", new Date(), 2, 2);
         seedComment("com2", new Date(), 1, 2);
