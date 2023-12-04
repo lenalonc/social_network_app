@@ -43,6 +43,37 @@ public class MembershipRequestServiceTest {
     }
 
     @Test
+    void getAllRequests_Successful() {
+        MembershipRequest membershipRequest1 = MembershipRequest.builder()
+                .id(1L)
+                .user(new User())
+                .socialGroup(new SocialGroup())
+                .requestStatus(RequestStatus.PENDING)
+                .build();
+
+        MembershipRequest membershipRequest2 = MembershipRequest.builder()
+                .id(2L)
+                .user(new User())
+                .socialGroup(new SocialGroup())
+                .requestStatus(RequestStatus.ACCEPTED)
+                .build();
+
+        when(membershipRequestRepository.findAll()).thenReturn(List.of(membershipRequest1, membershipRequest2));
+
+        List<MembershipRequestDTO> result = membershipRequestService.getAllRequests();
+
+        assertEquals(2, result.size());
+    }
+
+    @Test
+    void getAllRequests_EmptyList() {
+        when(membershipRequestRepository.findAll()).thenReturn(Collections.emptyList());
+        List<MembershipRequestDTO> result = membershipRequestService.getAllRequests();
+        assertTrue(result.isEmpty());
+    }
+
+
+    @Test
     void getRequestsById_Successful() {
         User user1 = User.builder()
                 .id(1L)
@@ -67,6 +98,33 @@ public class MembershipRequestServiceTest {
         var result = membershipRequestService.getRequestsById(1L);
         assertNotNull(result);
     }
+
+    @Test
+    void getRequestsById_UserNotLoggedIn() {
+        var authenticationToken = new UsernamePasswordAuthenticationToken("test", null, null);
+        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+
+        when(userRepository.findByEmail(any())).thenReturn(Optional.empty());
+
+        NotFoundException exception = assertThrows(NotFoundException.class,
+                () -> membershipRequestService.getRequestsById(1L));
+
+        assertEquals("User not found", exception.getMessage());
+    }
+    @Test
+    void getRequestsById_MembershipRequestNotFound() {
+        var authenticationToken = new UsernamePasswordAuthenticationToken("test", null, null);
+        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+
+        when(userRepository.findByEmail(any())).thenReturn(Optional.of(new User()));
+        when(membershipRequestRepository.findById(1L)).thenReturn(Optional.empty());
+
+        NotFoundException exception = assertThrows(NotFoundException.class,
+                () -> membershipRequestService.getRequestsById(1L));
+
+        assertEquals("Membership requests not found", exception.getMessage());
+    }
+
     @Test
     void getAllRequestsForSocialGroup_UserNotFound() {
         var authenticationToken = new UsernamePasswordAuthenticationToken("test", null, null);
