@@ -4,11 +4,14 @@ import com.example.SocialNetwork.dtos.EventDTO;
 import com.example.SocialNetwork.entities.Attending;
 import com.example.SocialNetwork.entities.Event;
 import com.example.SocialNetwork.entities.User;
+import com.example.SocialNetwork.exceptions.BadRequestException;
+import com.example.SocialNetwork.exceptions.NotFoundException;
 import com.example.SocialNetwork.repository.AttendingRepository;
 import com.example.SocialNetwork.repository.EventRepository;
 import com.example.SocialNetwork.repository.GroupMemberRepository;
 import com.example.SocialNetwork.repository.UserRepository;
 import jakarta.transaction.Transactional;
+import org.aspectj.weaver.ast.Not;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +21,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -27,7 +31,6 @@ public class EventServiceImpl implements EventService{
     private UserRepository userRepository;
     private GroupMemberRepository groupMemberRepository;
     private AttendingRepository attendingRepository;
-
     private EmailService emailService;
     private ModelMapper mapper;
 
@@ -42,57 +45,58 @@ public class EventServiceImpl implements EventService{
 
 
     @Override
-    public ResponseEntity<?> saveEvent(Event event) {
+    public EventDTO saveEvent(Event event) {
         List<Long> members=groupMemberRepository.findAllM(event.getSocialGroup().getId());
         for (Long id: members ) {
-            if(id == event.getUser().getId()){
+            if(id.equals(event.getUser().getId())){
                 LocalDateTime localDateTime = LocalDateTime.now();
                 Date currentDate = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
                 if(event.getDate().compareTo(currentDate) < 0){
-                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Trying to insert an event with bad Date");
+                    throw new BadRequestException("Trying to insert an event with bad Date");
                 }
-                this.eventRepository.save(event);
-                return ResponseEntity.status(HttpStatus.OK).body("Event successfully created");
+                return mapper.map(eventRepository.save(event), EventDTO.class);
             }
-
         }
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User is not a member of this social group");
+        throw new NotFoundException("User is not a member of this group");
     }
 
     @Override
     public List<EventDTO> getEventsBySocialGroup(Long id) {
-        return this.eventRepository.findAllBySocialGroupId(id).stream().map(event->mapper.map(event, EventDTO.class)).toList();
+        List<Event> events = eventRepository.findAllBySocialGroupId(id);
+        if(events.isEmpty()) {
+            throw new NotFoundException("There are no events associated with this social group");
+        }
+        return events.stream().map(event->mapper.map(event, EventDTO.class)).toList();
     }
 
     @Override
-    public ResponseEntity<?> confirmAttendance(Long id, User u) {
+    public String confirmAttendance(Long id, User u) {
         if(u == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User Error");
+            throw new NotFoundException("User not found");
+        }
+        if(!eventRepository.findById(id).isPresent()) {
+            throw new NotFoundException("Event not found");
         }
         Event event = eventRepository.findById(id).get();
-        if(event == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Event Error");
-        }
         List<Attending> all=u.getAttendings();
         for (Attending tmp : all) {
-            if(tmp.getEvent().getId()==event.getId()){
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User already confirmed attendance");
-
+            if(tmp.getEvent().getId().equals(event.getId())){
+                throw new BadRequestException("User already confirmed attendance");
             }
         }
         List<Long> members=groupMemberRepository.findAllM(event.getSocialGroup().getId());
         for (Long idMember: members ) {
-            if (idMember == u.getId()) {
+            if (idMember.equals(u.getId())) {
                 Attending attending = new Attending();
                 attending.setEvent(event);
                 attending.setUser(u);
                 u.addAttending(attending);
                 event.addAttending(attending);
                 attendingRepository.save(attending);
-                return ResponseEntity.status(HttpStatus.OK).body("Confirmed!");
+                return "You successfully confirmed";
             }
         }
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User is not a member of this social group");
+        throw new BadRequestException("You are not a member of this social group");
     }
 
     @Override

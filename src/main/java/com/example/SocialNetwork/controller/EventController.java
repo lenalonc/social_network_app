@@ -4,6 +4,7 @@ import com.example.SocialNetwork.dtos.EventDTO;
 import com.example.SocialNetwork.entities.Event;
 import com.example.SocialNetwork.entities.User;
 import com.example.SocialNetwork.service.*;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.*;
@@ -22,17 +23,17 @@ public class EventController {
     }
     @PostMapping("/save")
     public ResponseEntity<?> saveEvent(@RequestBody Event event){
-       return this.eventService.saveEvent(event);
+        return new ResponseEntity<>(eventService.saveEvent(event), HttpStatus.OK);
     }
     @GetMapping("/{id}")
-    public List<EventDTO> getEventsBySocialGroup(@PathVariable Long id){
+    public ResponseEntity<?> getEventsBySocialGroup(@PathVariable Long id){
         List<EventDTO> events=eventService.getEventsBySocialGroup(id);
-        return events;
+        return new ResponseEntity<>(events, HttpStatus.OK);
     }
-    @PostMapping("/attend/{id}/{idu}")
+    @PostMapping("/attend/{id}")
     public ResponseEntity<?> confirmAttendance(@PathVariable Long id) {
         User currentUser = userService.findCurrentUser();
-        return this.eventService.confirmAttendance(id,currentUser);
+        return new ResponseEntity<>(eventService.confirmAttendance(id, currentUser), HttpStatus.OK);
     }
 
     @Scheduled(cron = "0 */1 * * * *") // 5 minutes
