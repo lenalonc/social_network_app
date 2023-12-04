@@ -269,4 +269,18 @@ public class MembershipRequestServiceTest {
         assertEquals(RequestStatus.PENDING, result.getRequestStatus());
     }
 
+    @Test
+    void createMembershipRequest_SocialGroupNotFound() {
+        var authenticationToken = new UsernamePasswordAuthenticationToken("test", null, null);
+        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+
+        when(userRepository.findByEmail(any())).thenReturn(Optional.empty());
+        when(socialGroupRepository.findById(1L)).thenReturn(Optional.empty());
+
+        NotFoundException exception = assertThrows(NotFoundException.class,
+                () -> membershipRequestService.createMembershipRequest(1L));
+        assertEquals("Social group not found", exception.getMessage());
+    }
+
+
 }
