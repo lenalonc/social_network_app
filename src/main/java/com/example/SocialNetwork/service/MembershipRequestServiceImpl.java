@@ -41,7 +41,7 @@ public class MembershipRequestServiceImpl implements MembershipRequestService {
     public List<MembershipRequestDTO> getAllRequests() {
         List<MembershipRequest> requests = membershipRequestsRepository.findAll();
         return requests.stream().map(membership_request->mapper.map(membership_request, MembershipRequestDTO.class)).toList();
-    }
+}
 
     @Override
     public MembershipRequestDTO getRequestsById(Long id) {
@@ -51,8 +51,8 @@ public class MembershipRequestServiceImpl implements MembershipRequestService {
         MembershipRequest membershipRequest = membershipRequestsRepository.findById(id).orElseThrow(() ->
                 new NotFoundException("Membership requests not found"));
 
-        if(membershipRequest.getUser().getId()==currentUser.getId()
-                || membershipRequest.getSocialGroup().getUser().getId()==currentUser.getId()){
+        if(membershipRequest.getUser().getId().equals(currentUser.getId())
+                || membershipRequest.getSocialGroup().getUser().getId().equals(currentUser.getId())){
             return this.mapper.map(membershipRequestsRepository.save(membershipRequest),MembershipRequestDTO.class);
         }
         else
@@ -84,15 +84,17 @@ public class MembershipRequestServiceImpl implements MembershipRequestService {
                 new NotFoundException("Social group not found"));
 
         if(socialGroup.getUser().getId() == currentUser.getId()){
-            List<MembershipRequest> membershipRequests = membershipRequestsRepository.findAllMembershipRequestsForSocialGroup(id);
+            List<MembershipRequest> membershipRequests = membershipRequestsRepository.
+                    findAllMembershipRequestsForSocialGroup(id);
             List<MembershipRequestDTO> membershipRequestDTO = new ArrayList<>();
             for(MembershipRequest membershipRequest: membershipRequests){
-                membershipRequestDTO.add(mapper.map(membershipRequestsRepository.findById(membershipRequest.getId()).get(),MembershipRequestDTO.class));
+                membershipRequestDTO.add(mapper.map(membershipRequestsRepository.
+                        findById(membershipRequest.getId()).get(),MembershipRequestDTO.class));
             }
             return  membershipRequestDTO;
         }
         else
-            throw new NotFoundException("You are not authorized");
+            throw new ForbiddenException("You are not authorized");
     }
 
     @Override

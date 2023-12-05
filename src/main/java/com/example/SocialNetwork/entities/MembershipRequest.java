@@ -31,4 +31,5 @@ public class MembershipRequest {
     @JoinColumn(name = "id_user", nullable = false)
     private User user;
 
+
 }
