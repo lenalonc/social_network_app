@@ -79,7 +79,7 @@ public class SocialGroupServiceImpl implements SocialGroupService{
         List<SocialGroupDTO> socialGroups = new ArrayList<>();
 
         for (SocialGroupDTO g : groups) {
-            if (g.getName().equals(name)) {
+            if (g.getName().equalsIgnoreCase(name)) {
                 socialGroups.add(g);
             }
         }

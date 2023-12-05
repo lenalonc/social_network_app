@@ -31,11 +31,6 @@ public class SocialGroupController extends MyRequest {
         this.membershipRequestService = membershipRequestService;
     }
 
-    @GetMapping("/hello")
-    public String hello() {
-        return "Hello Levi9";
-    }
-
     @GetMapping("/")
     public List<SocialGroupDTO> showAllSocialGroups(){
         return groupService.getAllSocialGroups();
@@ -75,7 +70,7 @@ public class SocialGroupController extends MyRequest {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/allusers/{id}")
+    @GetMapping("/all_users/{id}")
     public ResponseEntity<?> showAllUsersForGroup(@PathVariable Long id) {
         return ResponseEntity.ok(groupMemberService.getAllGroupMembers(id));
     }
