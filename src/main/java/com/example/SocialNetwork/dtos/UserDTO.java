@@ -1,5 +1,6 @@
 package com.example.SocialNetwork.dtos;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 
 import java.util.Date;

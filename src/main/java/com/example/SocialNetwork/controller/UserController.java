@@ -113,6 +113,7 @@ public class UserController {
     public ResponseEntity<Object> getYourRequests() {
         return friendRequestService.getYourRequests();
     }
+
     @GetMapping("/current_user")
     public User getCurrentUser() {
         return userService.findCurrentUser();
@@ -175,6 +176,11 @@ public class UserController {
     @DeleteMapping("/friends")
     public ResponseEntity<String> deleteFriend(@RequestParam("friendId") Long friendId) {
         return friendsService.deleteFriend(friendId);
+    }
+
+    @PostMapping("/set_date")
+    public ResponseEntity<Object> setDoNotDisturb(@RequestParam("date") String date) {
+        return userService.setDoNotDisturb(date);
     }
 
     @PostMapping("/logout")

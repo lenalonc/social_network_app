@@ -22,6 +22,13 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -168,6 +175,20 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     public UserDTO findByUsername(String name) {
         User user = userRepository.findByUsernameIgnoreCase(name).orElseThrow(() -> new NotFoundException("User has not been found."));
         return mapper.map(user, UserDTO.class);
+    }
+
+    @Override
+    public ResponseEntity<Object> setDoNotDisturb(String date) {
+        User user = findCurrentUser();
+    DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        try {
+            Date date1 = formatter.parse(date);
+            user.setDoNotDisturb(date1);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+
+        return new ResponseEntity<>("Do not disturb successfully set.", HttpStatus.OK);
     }
 
 }
