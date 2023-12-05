@@ -33,7 +33,7 @@ public class CommentServiceImpl implements CommentService {
     public List<CommentDTO> getAllCommentsForPost(Long id) {
 
         Post post = postRepository.findById(id).orElseThrow(() -> new NotFoundException("Post with id " + id + " not found"));
-        if(post.isDeleted()) throw new NotFoundException("Post with id " + id + " is deleted");
+        if (post.isDeleted()) throw new NotFoundException("Post with id " + id + " is deleted");
         User user = getCurrentUser();
 
         checkSocialGroup(post, user);
@@ -63,7 +63,7 @@ public class CommentServiceImpl implements CommentService {
         User user = getCurrentUser();
         Post post = postRepository.findById(postId).orElseThrow(() -> new NotFoundException("Post with id " + postId + " not found"));
 
-        if(post.isDeleted()) throw new NotFoundException("Post with id " + postId + " is deleted");
+        if (post.isDeleted()) throw new NotFoundException("Post with id " + postId + " is deleted");
 
         if(!(post.getUser().equals(user))){
             checkFriendship(post, user);
@@ -72,12 +72,12 @@ public class CommentServiceImpl implements CommentService {
         comment.setPost(post);
         comment.setDate(new Date());
         comment.setUser(user);
+
         checkSocialGroup(post, user);
 
         CommentDTO commentDTO = modelMapper.map(commentRepository.save(comment), CommentDTO.class);
         return commentDTO;
     }
-
 
 
     @Override
@@ -124,11 +124,12 @@ public class CommentServiceImpl implements CommentService {
     private static void checkSocialGroup(Post post, User user) {
         if (post.getSocialGroup() != null) {
             boolean groupChecksFlag = false;
-            for(SocialGroup s: user.getSocialGroups()){
-                if(s.getId().equals(post.getSocialGroup().getId())){
+            for (SocialGroup s : user.getSocialGroups()) {
+                if (s.getId().equals(post.getSocialGroup().getId())) {
                     groupChecksFlag = true;
                 }
-            } if (!groupChecksFlag) throw new ForbiddenException("You are not in this group");
+            }
+            if (!groupChecksFlag) throw new ForbiddenException("You are not in this group");
         }
     }
 
@@ -136,7 +137,7 @@ public class CommentServiceImpl implements CommentService {
         if (!(post.isType())) {
             List<Long> friends = friendsRepository.getFriendIdsByUserId(post.getUser().getId());
 
-            if(!(friends.contains(user.getId()))){
+            if (!(friends.contains(user.getId()))) {
                 throw new ForbiddenException("You are not allowed to see this post");
             }
         }

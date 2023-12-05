@@ -109,8 +109,6 @@ public class PostServiceImpl implements PostService {
         post.setSocialGroup(socialGroup);
         post.setType(true);
 
-        PostDTO postDTO = this.mapper.map(postRepository.save(post), PostDTO.class);
-
         sendEmails(socialGroup, post);
 
         return this.mapper.map(postRepository.save(post), PostDTO.class);
@@ -120,6 +118,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public PostDTO updatePost(Long id, Post post) {
         Post tempPost = postRepository.findById(id).orElseThrow(() -> new NotFoundException("Post does not exist."));
+        if(tempPost.isDeleted()) throw new NotFoundException("Post is deleted.");
         Optional<User> user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
 
         if (!tempPost.getUser().equals(user.get()))

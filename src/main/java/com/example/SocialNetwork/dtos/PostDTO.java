@@ -1,7 +1,7 @@
 package com.example.SocialNetwork.dtos;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -28,6 +28,8 @@ public class PostDTO {
     private boolean deleted;
 
     private UserDTO user;
+
+    private SocialGroupDTO socialGroup;
 
     @JsonManagedReference
     private List<CommentDTO> comments;

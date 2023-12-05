@@ -9,6 +9,7 @@ import java.util.List;
 @Table(name = "friends")
 @Getter
 @Setter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class Friends {
