@@ -86,7 +86,6 @@ class GroupMemberServiceTest {
 
         assertNotNull(result);
         assertEquals(groupMember.getId(), result.getId());
-
     }
 
     @Test
@@ -146,6 +145,38 @@ class GroupMemberServiceTest {
         when(userRepository.findByEmail(anyString())).thenReturn(Optional.empty());
 
         assertThrows(NotFoundException.class, () -> groupMemberService.saveGroupMember(socialGroup.getId()));
+    }
+
+    @Test
+    void saveGroupMemberThrowsForbiddenException() {
+        User user1 = User.builder()
+                .id(1L)
+                .email("user")
+                .username("user")
+                .password(passwordEncoder.encode("user2password"))
+                .active(true)
+                .doNotDisturb(null)
+                .build();
+        SocialGroup socialGroup = SocialGroup.builder()
+                .id(2L)
+                .name("Group2")
+                .user(new User())
+                .type(true)
+                .build();
+        MembershipRequest membershipRequest = MembershipRequest.builder()
+                .id(1L)
+                .requestStatus(RequestStatus.PENDING)
+                .socialGroup(socialGroup)
+                .user(user1)
+                .build();
+
+        var authenticationToken = new UsernamePasswordAuthenticationToken("test", null, null);
+        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+
+        when(membershipRequestRepository.findById(any())).thenReturn(Optional.ofNullable(membershipRequest));
+        when(userRepository.findByEmail(anyString())).thenReturn(Optional.ofNullable(user1));
+
+        assertThrows(ForbiddenException.class, () -> groupMemberService.saveGroupMember(socialGroup.getId()));
     }
 
     @Test
@@ -242,7 +273,7 @@ class GroupMemberServiceTest {
         SocialGroup socialGroup = SocialGroup.builder()
                 .id(2L)
                 .name("Group2")
-                .user(user1)
+                .user(new User())
                 .type(true)
                 .build();
 
