@@ -53,7 +53,7 @@ public class UserServiceTest {
     void getAllUsersSuccessfully() {
         User user1 = User.builder()
                 .id(1L)
-                .email("user1_email@gmail.com")
+                .email("user@gmail.com")
                 .username("TestUser1")
                 .password(passwordEncoder.encode("user1password"))
                 .active(true)
@@ -61,7 +61,7 @@ public class UserServiceTest {
 
         User user2 = User.builder()
                 .id(2L)
-                .email("user2_email@gmail.com")
+                .email("user2@gmail.com")
                 .username("TestUser2")
                 .password(passwordEncoder.encode("user2password"))
                 .active(true)

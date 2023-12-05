@@ -1,21 +1,22 @@
 package com.example.SocialNetwork.service;
 
+import com.example.SocialNetwork.dtos.MembershipRequestDTO;
 import com.example.SocialNetwork.entities.*;
 import com.example.SocialNetwork.exceptions.ForbiddenException;
 import com.example.SocialNetwork.exceptions.NotFoundException;
+import com.example.SocialNetwork.exceptions.ValidationException;
 import com.example.SocialNetwork.repository.GroupMemberRepository;
 import com.example.SocialNetwork.repository.MembershipRequestRepository;
 import com.example.SocialNetwork.repository.SocialGroupRepository;
 import com.example.SocialNetwork.repository.UserRepository;
 import jakarta.transaction.Transactional;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.modelmapper.ModelMapper;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class MembershipRequestServiceImpl implements MembershipRequestService {
@@ -24,141 +25,133 @@ public class MembershipRequestServiceImpl implements MembershipRequestService {
     private final GroupMemberRepository groupMemberRepository;
     private final SocialGroupRepository socialGroupRepository;
     private final UserRepository userRepository;
+    private final ModelMapper mapper;
 
     public MembershipRequestServiceImpl(MembershipRequestRepository requestsRepository,
                                         GroupMemberRepository groupMemberRepository,
                                         SocialGroupRepository socialGroupRepository,
-                                        UserRepository userRepository){
+                                        UserRepository userRepository, ModelMapper mapper){
         this.membershipRequestsRepository = requestsRepository;
         this.groupMemberRepository = groupMemberRepository;
         this.socialGroupRepository = socialGroupRepository;
         this.userRepository = userRepository;
+        this.mapper = mapper;
     }
     @Override
-    public List<MembershipRequest> getAllRequests() {
-        return membershipRequestsRepository.findAll();
-    }
+    public List<MembershipRequestDTO> getAllRequests() {
+        List<MembershipRequest> requests = membershipRequestsRepository.findAll();
+        return requests.stream().map(membership_request->mapper.map(membership_request, MembershipRequestDTO.class)).toList();
+}
 
     @Override
-    public MembershipRequest getRequestsById(Long id) {
-        Optional<User> currentUser = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
-        Optional<MembershipRequest> membershipRequest = membershipRequestsRepository.findById(id);
+    public MembershipRequestDTO getRequestsById(Long id) {
+        User currentUser = userRepository.findByEmail(SecurityContextHolder.
+                getContext().getAuthentication().getName()).orElseThrow(() ->
+                new NotFoundException("User not found"));
+        MembershipRequest membershipRequest = membershipRequestsRepository.findById(id).orElseThrow(() ->
+                new NotFoundException("Membership requests not found"));
 
-        if(membershipRequest.orElse(null).getUser().getId() == currentUser.get().getId()
-            || membershipRequest.orElse(null).getSocialGroup().getUser().getId()
-                == currentUser.get().getId()){
-            return membershipRequest.get();
+        if(membershipRequest.getUser().getId().equals(currentUser.getId())
+                || membershipRequest.getSocialGroup().getUser().getId().equals(currentUser.getId())){
+            return this.mapper.map(membershipRequestsRepository.save(membershipRequest),MembershipRequestDTO.class);
         }
         else
-            throw new NotFoundException("Membership request not found");
+            throw new ValidationException("Forbidden access.");
     }
 
     @Override
     @Transactional
     public void deleteRequestById(Long id) {
-        Optional<User> currentUser = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
-        MembershipRequest membershipRequest = getRequestsById(id);
+        User currentUser = userRepository.findByEmail(SecurityContextHolder.
+                getContext().getAuthentication().getName()).orElseThrow(() ->
+                new NotFoundException("User not found"));
 
-        if(membershipRequest.getUser().getId() == currentUser.get().getId() ||
-            membershipRequest.getSocialGroup().getUser().getId() == currentUser.get().getId()){
+        MembershipRequestDTO membershipRequest = getRequestsById(id);
+
+        if(membershipRequest.getUser().getId() == currentUser.getId() ||
+            membershipRequest.getSocialGroup().getUser().getId() == currentUser.getId()){
             membershipRequestsRepository.deleteById(id);
         }
     }
 
     @Override
-    public void saveRequest(MembershipRequest membershipRequest) {
-        membershipRequestsRepository.save(membershipRequest);
-    }
+    public List<MembershipRequestDTO> getAllRequestsForSocialGroup(Long id) {
+        User currentUser = userRepository.findByEmail(SecurityContextHolder.
+                getContext().getAuthentication().getName()).orElseThrow(() ->
+                new NotFoundException("User not found"));
 
-    @Override
-    public List<MembershipRequest> getAllRequestsForSocialGroup(Long id) {
-        Optional<User> currentUser = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
-        Optional<SocialGroup> socialGroup = socialGroupRepository.findById(id);
+        SocialGroup socialGroup = socialGroupRepository.findById(id).orElseThrow(() ->
+                new NotFoundException("Social group not found"));
 
-        if(socialGroup.get().getUser().getId() == currentUser.get().getId()){
-            return membershipRequestsRepository.findAllMembershipRequestsForSocialGroup(id);
+        if(socialGroup.getUser().getId() == currentUser.getId()){
+            List<MembershipRequest> membershipRequests = membershipRequestsRepository.
+                    findAllMembershipRequestsForSocialGroup(id);
+            List<MembershipRequestDTO> membershipRequestDTO = new ArrayList<>();
+            for(MembershipRequest membershipRequest: membershipRequests){
+                membershipRequestDTO.add(mapper.map(membershipRequestsRepository.
+                        findById(membershipRequest.getId()).get(),MembershipRequestDTO.class));
+            }
+            return  membershipRequestDTO;
         }
         else
-            throw new NotFoundException("You are not authorized");
+            throw new ForbiddenException("You are not authorized");
     }
 
     @Override
     @Transactional
     public void deleteAllRequestsForSocialGroup(Long groupId) {
-        List<MembershipRequest> requests = getAllRequestsForSocialGroup(groupId);
-        for (MembershipRequest request : requests) {
+        List<MembershipRequestDTO> requests = getAllRequestsForSocialGroup(groupId);
+        for (MembershipRequestDTO request : requests) {
             deleteRequestById(request.getId());
         }
     }
 
     @Override
-    public ResponseEntity<String> createMembershipRequest(Long groupId, User user) {
-        try {
-            Optional<SocialGroup> socialGroup = socialGroupRepository.findById(groupId);
+    public MembershipRequestDTO createMembershipRequest(Long groupId) {
+        SocialGroup socialGroup = socialGroupRepository.findById(groupId).orElseThrow(() ->
+                new NotFoundException("Social group not found"));
+        User currentUser = userRepository.findByEmail(SecurityContextHolder.
+                getContext().getAuthentication().getName()).orElseThrow(() ->
+                new NotFoundException("User not found"));
 
-            if (socialGroup.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Grupa nije pronadjena");
-            }
-            else{
-                    if (user != null) {
-                        MembershipRequest membershipRequest = new MembershipRequest();
-                        membershipRequest.setSocialGroup(socialGroup.get());
-                        membershipRequest.setUser(user);
-                        membershipRequest.setRequestStatus(RequestStatus.PENDING);
-                        membershipRequestsRepository.save(membershipRequest);
+        MembershipRequest membershipRequest = new MembershipRequest();
+        membershipRequest.setUser(currentUser);
+        membershipRequest.setSocialGroup(socialGroup);
+        membershipRequest.setRequestStatus(RequestStatus.PENDING);
+        membershipRequestsRepository.save(membershipRequest);
 
-                        return ResponseEntity.ok("Uspešno ste poslali request za učlanjenje u grupu");
-                    } else {
-                        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                                .body("Zahteve mogu poslati samo ulogovani korisnici");
-                    }
-                }
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Došlo je do greške prilikom slanja zahteva za učlanjenje u grupu.");
-        }
+        return this.mapper.map(membershipRequestsRepository.save(membershipRequest),MembershipRequestDTO.class);
     }
 
     @Override
-    public ResponseEntity<String> processJoinGroupRequest(Long groupId, User user) {
-        try {
-            Optional<SocialGroup> socialGroupOptional = socialGroupRepository.findById(groupId);
+    public void processJoinGroupRequest(Long groupId) {
+        User currentUser = userRepository.findByEmail(SecurityContextHolder.
+                getContext().getAuthentication().getName()).orElseThrow(() ->
+                new NotFoundException("User not found"));
+        SocialGroup socialGroup = socialGroupRepository.findById(groupId).orElseThrow(() ->
+                new NotFoundException("Social group not found"));
 
-            if (socialGroupOptional.isPresent()) {
-                SocialGroup socialGroup = socialGroupOptional.get();
-                if (socialGroup.isType()) {
-                    List<MembershipRequest> membershiprequests = socialGroup.getMembershipRequest();
-                    for(MembershipRequest request:membershiprequests){
-                        if(request.getUser()==user){
-                            return ResponseEntity.ok("Vec ste poslali zahtev");
-                        }
-                    }
-                    return createMembershipRequest(groupId, user);
-                } else {
-                    List<User> groupUsers= socialGroup.getUsers();
-                    for(User groupUser: groupUsers){
-                        if(groupUser==user){
-                            return ResponseEntity.ok("Vec ste clan grupe");
-                        }
-
-                    }
-                    GroupMember groupMember = new GroupMember();
-                    groupMember.setUser(user);
-                    groupMember.setSocialGroup(socialGroup);
-                    groupMember.setDateJoined(new Date());
-                    groupMemberRepository.save(groupMember);
-
-                    return ResponseEntity.ok("Uspesno ste se pridruzili grupi");
+        if (socialGroup.isType()) {
+            List<MembershipRequest> membershiprequests = socialGroup.getMembershipRequest();
+            for(MembershipRequest request:membershiprequests){
+                if(request.getUser()==currentUser){
+                    throw new ForbiddenException("The request already exists");
                 }
-            } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Grupa nije pronadjena.");
             }
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Doslo je do greske prilikom pridruzivanja grupe.");
+             createMembershipRequest(groupId);
+
+        } else {
+            List<User> groupUsers= socialGroup.getUsers();
+            for(User groupUser: groupUsers)
+                if(groupUser==currentUser){
+                    throw new ForbiddenException("You are already a member of the group");
+                }
+            GroupMember groupMember = new GroupMember();
+            groupMember.setUser(currentUser);
+            groupMember.setSocialGroup(socialGroup);
+            groupMember.setDateJoined(new Date());
+            groupMemberRepository.save(groupMember);
         }
     }
-
-
 
 }

@@ -1,5 +1,6 @@
 package com.example.SocialNetwork.dtos;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,6 +17,7 @@ public class CommentDTO {
 
     private UserDTO user;
 
+    @JsonBackReference
     private PostDTO post;
 
     private Long id;

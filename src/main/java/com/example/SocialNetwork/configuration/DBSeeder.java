@@ -2,9 +2,7 @@ package com.example.SocialNetwork.configuration;
 
 import com.example.SocialNetwork.entities.*;
 import com.example.SocialNetwork.repository.*;
-import com.example.SocialNetwork.service.FriendsService;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -171,7 +169,7 @@ public class DBSeeder implements CommandLineRunner {
         seedMembershipRequest(RequestStatus.ACCEPTED,0,1);
         seedMembershipRequest(RequestStatus.PENDING,0, 2);
         seedMembershipRequest(RequestStatus.REJECTED,2,2);
-        seedMembershipRequest(RequestStatus.ACCEPTED,1,2);
+        seedMembershipRequest(RequestStatus.ACCEPTED,1,4);
 
         seedGroupMember(0,2);
         seedGroupMember(0,3);
@@ -202,7 +200,6 @@ public class DBSeeder implements CommandLineRunner {
         seedReplies("rep1", new Date(), 0, 0);
         seedReplies("rep2", new Date(), 1, 0);
         seedReplies("rep3", new Date(), 2, 0);
-
     }
 
     private void clearDatabase() {

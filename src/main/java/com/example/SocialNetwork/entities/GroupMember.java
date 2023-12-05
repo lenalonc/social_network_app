@@ -3,10 +3,8 @@ package com.example.SocialNetwork.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.stereotype.Service;
 
 import java.util.Date;
-import java.util.List;
 
 @Entity
 @Table(name = "groupmember")
