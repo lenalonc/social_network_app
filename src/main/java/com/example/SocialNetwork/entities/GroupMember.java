@@ -3,15 +3,16 @@ package com.example.SocialNetwork.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+
 import java.util.Date;
 
 @Entity
 @Table(name = "groupmember")
 @Getter
 @Setter
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class GroupMember {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

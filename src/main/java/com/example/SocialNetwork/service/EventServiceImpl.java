@@ -54,7 +54,8 @@ public class EventServiceImpl implements EventService{
                 if(event.getDate().compareTo(currentDate) < 0){
                     throw new BadRequestException("Trying to insert an event with bad Date");
                 }
-                return mapper.map(eventRepository.save(event), EventDTO.class);
+                eventRepository.save(event);
+                return mapper.map(event, EventDTO.class);
             }
         }
         throw new NotFoundException("User is not a member of this group");
@@ -139,20 +140,5 @@ public class EventServiceImpl implements EventService{
                 events.add(e);
             }
         }
-    }
-
-    @Override
-    public Event findEventById(Long id) {
-        return this.eventRepository.findById(id).get();
-    }
-
-    @Override
-    public List<Event> findAll() {
-        return this.eventRepository.findAll();
-    }
-
-    @Override
-    public void deleteById(Long id) {
-    this.eventRepository.deleteById(id);
     }
 }
