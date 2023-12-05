@@ -417,7 +417,7 @@ public class PostServiceTest {
     }
 
     @Test
-    void updatePostThrowsForbiddenException(){
+    void updatePostThrowsForbiddenException() {
         User user1 = User.builder()
                 .id(1L)
                 .email("john@example.com")
