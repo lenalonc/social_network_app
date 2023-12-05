@@ -53,12 +53,12 @@ public class PostController {
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping("/makePrivate/{id}")
+    @PutMapping("/make_private/{id}")
     public ResponseEntity<?> makePostPrivate(@PathVariable Long id) {
         return ResponseEntity.ok(postService.makePostPrivate(id));
     }
 
-    @PutMapping("/makePublic/{id}")
+    @PutMapping("/make_public/{id}")
     public ResponseEntity<?> makePostPublic(@PathVariable Long id) {
         return ResponseEntity.ok(postService.makePostPublic(id));
     }
