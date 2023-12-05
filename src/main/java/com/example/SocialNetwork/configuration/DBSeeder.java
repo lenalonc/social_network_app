@@ -143,7 +143,6 @@ public class DBSeeder implements CommandLineRunner {
                 .type(type)
                 .deleted(false)
                 .user(users.get(id_user))
-                .socialGroup(socialGroups.get(id_socialgroup))
                 .date(date)
                 .build();
 
