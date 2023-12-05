@@ -2,7 +2,9 @@ package com.example.SocialNetwork.configuration;
 
 import com.example.SocialNetwork.entities.*;
 import com.example.SocialNetwork.repository.*;
+import com.example.SocialNetwork.service.FriendsService;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -142,9 +144,12 @@ public class DBSeeder implements CommandLineRunner {
                 .type(type)
                 .deleted(false)
                 .user(users.get(id_user))
-                .socialGroup(socialGroups.get(id_socialgroup))
                 .date(date)
                 .build();
+
+        if (id_socialgroup >= socialGroups.size()) {
+            post.setSocialGroup(null);
+        } else post.setSocialGroup(socialGroups.get(id_socialgroup));
 
         postRepository.save(post);
     }
@@ -160,11 +165,11 @@ public class DBSeeder implements CommandLineRunner {
         seedUser("Eva", "eva@example.com", "password4", true);
         seedUser("Michael", "michael@example.com", "password5", false);
 
-        seedSocialGroup("Group1", true,3);
-        seedSocialGroup("Group2", false,0);
-        seedSocialGroup("Group3", true,0);
-        seedSocialGroup("Group4", false,0);
-        seedSocialGroup("Group5", true,1);
+        seedSocialGroup("Group1", true, 3);
+        seedSocialGroup("Group2", false, 0);
+        seedSocialGroup("Group3", true, 0);
+        seedSocialGroup("Group4", false, 0);
+        seedSocialGroup("Group5", true, 1);
 
         seedMembershipRequest(RequestStatus.PENDING,3,0);
         seedMembershipRequest(RequestStatus.ACCEPTED,0,1);
@@ -172,11 +177,11 @@ public class DBSeeder implements CommandLineRunner {
         seedMembershipRequest(RequestStatus.REJECTED,2,2);
         seedMembershipRequest(RequestStatus.ACCEPTED,1,4);
 
-        seedGroupMember(0,2);
-        seedGroupMember(0,3);
-        seedGroupMember(2,2);
-        seedGroupMember(1,2);
-        seedGroupMember(3,0);
+        seedGroupMember(0, 2);
+        seedGroupMember(0, 3);
+        seedGroupMember(2, 2);
+        seedGroupMember(1, 2);
+        seedGroupMember(3, 0);
 
         seedFriendRequest(RequestStatus.PENDING, 0, 1, new Date());
         seedFriendRequest(RequestStatus.ACCEPTED, 0, 2, new Date());
@@ -186,9 +191,9 @@ public class DBSeeder implements CommandLineRunner {
         seedFriends(0, 2);
         seedFriends(1, 2);
 
-        seedPost("text1", true, new Date(), 0, 1);
-        seedPost("text2", false, new Date(), 0, 3);
-        seedPost("text3", true, new Date(), 2, 2);
+        seedPost("text1", true, new Date(), 0, 10);
+        seedPost("text2", false, new Date(), 0, 30);
+        seedPost("text3", true, new Date(), 2, 20);
         seedPost("text4", true, new Date(2023, 11, 11, 12, 12, 12), 1, 2);
         seedPost("text4", true, new Date(2023, 11, 26, 12, 12, 12), 1, 1);
         seedPost("text5", true, new Date(), 3, 0);
@@ -201,6 +206,7 @@ public class DBSeeder implements CommandLineRunner {
         seedReplies("rep1", new Date(), 0, 0);
         seedReplies("rep2", new Date(), 1, 0);
         seedReplies("rep3", new Date(), 2, 0);
+
     }
 
     private void clearDatabase() {

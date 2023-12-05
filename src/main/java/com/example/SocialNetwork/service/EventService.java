@@ -19,9 +19,4 @@ public interface EventService {
     void notifyUsers();
 
     void deleteEvents();
-    Event findEventById(Long id);
-
-    List<Event> findAll();
-
-    void deleteById(Long id);
 }

@@ -70,7 +70,7 @@ public class GroupMemberServiceImpl implements GroupMemberService{
             return groupMemberDTO;
         }
 
-        return null;
+        throw new ForbiddenException("You are not allowed for this action");
     }
     @Override
     public List<UserDTO> getAllGroupMembers(Long id) {
@@ -95,9 +95,10 @@ public class GroupMemberServiceImpl implements GroupMemberService{
         SocialGroup socialGroup = socialGroupRepository.findById(id).orElseThrow(() ->
                 new NotFoundException("Social group not found"));
 
-        if(currentUser.getId() != socialGroup.getUser().getId()){
-            groupMemberRepository.deleteByUserId(currentUser.getId(), id);
+        if(currentUser.getId() == socialGroup.getUser().getId()){
+            throw new ForbiddenException("You are admin, cannot leave a group you created");
         }
+        groupMemberRepository.deleteByUserId(currentUser.getId(), id);
     }
 
     @Override
