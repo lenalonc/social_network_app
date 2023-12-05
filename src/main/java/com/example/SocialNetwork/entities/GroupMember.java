@@ -2,20 +2,16 @@ package com.example.SocialNetwork.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.springframework.stereotype.Service;
-
+import lombok.*;
 import java.util.Date;
-import java.util.List;
 
 @Entity
 @Table(name = "groupmember")
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class GroupMember {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

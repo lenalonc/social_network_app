@@ -18,7 +18,7 @@ public interface SocialGroupService {
 
     void deleteSocialGroupById(Long id, User currentUser);
 
-    ResponseEntity<SocialGroupDTO> getSocialGroupDTOById(Long id);
+    SocialGroupDTO getSocialGroupDTOById(Long id);
 
 
     SocialGroup getSocialGroupById(Long id);

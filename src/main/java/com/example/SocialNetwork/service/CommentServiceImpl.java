@@ -65,7 +65,9 @@ public class CommentServiceImpl implements CommentService {
 
         if (post.isDeleted()) throw new NotFoundException("Post with id " + postId + " is deleted");
 
-        checkFriendship(post, user);
+        if(!(post.getUser().equals(user))){
+            checkFriendship(post, user);
+        }
 
         comment.setPost(post);
         comment.setDate(new Date());
@@ -88,9 +90,11 @@ public class CommentServiceImpl implements CommentService {
 
         User user = getCurrentUser();
 
-        checkSocialGroup(comment.getPost(), user);
+        if(!(comment.getUser().equals(user))){
+            checkFriendship(comment.getPost(), user);
+        }
 
-        checkFriendship(comment.getPost(), user);
+        checkSocialGroup(comment.getPost(), user);
 
         reply.setUser(user);
         reply.setDate(new Date());
