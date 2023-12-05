@@ -28,6 +28,7 @@ import java.text.SimpleDateFormat;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -178,15 +179,17 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public ResponseEntity<Object> setDoNotDisturb(String date) {
+    public ResponseEntity<Object> setDoNotDisturb(int days) {
         User user = findCurrentUser();
-    DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-        try {
-            Date date1 = formatter.parse(date);
-            user.setDoNotDisturb(date1);
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
+
+        Date currentDate = new Date();
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(currentDate);
+        calendar.add(Calendar.DATE, days);
+        Date date = calendar.getTime();
+
+        user.setDoNotDisturb(date);
 
         return new ResponseEntity<>("Do not disturb successfully set.", HttpStatus.OK);
     }

@@ -178,9 +178,9 @@ public class UserController {
         return friendsService.deleteFriend(friendId);
     }
 
-    @PostMapping("/set_date")
-    public ResponseEntity<Object> setDoNotDisturb(@RequestParam("date") String date) {
-        return userService.setDoNotDisturb(date);
+    @PostMapping("/set_do_not_disturb")
+    public ResponseEntity<Object> setDoNotDisturb(@RequestParam("days") int days) {
+        return userService.setDoNotDisturb(days);
     }
 
     @PostMapping("/logout")

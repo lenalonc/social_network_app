@@ -23,5 +23,5 @@ public interface UserService {
 
     UserDTO findByUsername(String name);
 
-    ResponseEntity<Object> setDoNotDisturb(String date);
+    ResponseEntity<Object> setDoNotDisturb(int days);
 }
