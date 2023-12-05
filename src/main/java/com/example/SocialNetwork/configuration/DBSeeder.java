@@ -4,6 +4,7 @@ import com.example.SocialNetwork.entities.*;
 import com.example.SocialNetwork.repository.*;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -22,7 +23,7 @@ public class DBSeeder implements CommandLineRunner {
 
     PostRepository postRepository;
 
-    BCryptPasswordEncoder passwordEncoder;
+    PasswordEncoder passwordEncoder;
     CommentRepository commentRepository;
 
 
@@ -30,7 +31,7 @@ public class DBSeeder implements CommandLineRunner {
              MembershipRequestRepository membershipRequestRepository,
              SocialGroupRepository socialGroupRepository,
              GroupMemberRepository groupMemberRepository,
-             BCryptPasswordEncoder passwordEncoder, FriendRequestRepository friendRequestRepository, FriendsRepository friendsRepository,
+             PasswordEncoder passwordEncoder, FriendRequestRepository friendRequestRepository, FriendsRepository friendsRepository,
              PostRepository postRepository, CommentRepository commentRepository) {
         this.userRepository = userRepository;
         this.membershipRequestRepository = membershipRequestRepository;
