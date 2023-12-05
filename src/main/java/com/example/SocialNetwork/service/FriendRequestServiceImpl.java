@@ -55,9 +55,9 @@ public class FriendRequestServiceImpl implements FriendRequestService{
         }
 
         FriendRequest save = friendRequestRepository.save(friendRequest);
-        User byId = userRepository.getById(user1Id);
+        /*User byId = userRepository.getById(user1Id);
         byId.getFriendRequests().add(save);
-        userRepository.save(byId);
+        userRepository.save(byId);*/
 
         return new ResponseEntity<>("Friend request sent", HttpStatus.OK);
     }
@@ -116,7 +116,7 @@ public class FriendRequestServiceImpl implements FriendRequestService{
     }
 
     @Transactional
-    private ResponseEntity<Object> processRequest(User firstUser, User secondUser, Long status, FriendRequest friendRequest) {
+    public ResponseEntity<Object> processRequest(User firstUser, User secondUser, Long status, FriendRequest friendRequest) {
         if (status == 0) {
 
             Friends newFriend = new Friends();

@@ -200,7 +200,6 @@ public class DBSeeder implements CommandLineRunner {
         seedReplies("rep1", new Date(), 0, 0);
         seedReplies("rep2", new Date(), 1, 0);
         seedReplies("rep3", new Date(), 2, 0);
-
     }
 
     private void clearDatabase() {

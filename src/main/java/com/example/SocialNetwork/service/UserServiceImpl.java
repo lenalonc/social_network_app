@@ -151,7 +151,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
         if(!user.isActive()){
             throw new ForbiddenException("User is not active.");
-
         }
 
         return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), user.getAuthorities());
