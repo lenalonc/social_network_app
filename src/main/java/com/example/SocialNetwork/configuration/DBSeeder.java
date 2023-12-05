@@ -143,7 +143,6 @@ public class DBSeeder implements CommandLineRunner {
                 .type(type)
                 .deleted(false)
                 .user(users.get(id_user))
-                .socialGroup(socialGroups.get(id_socialgroup))
                 .date(date)
                 .build();
 
@@ -171,11 +170,11 @@ public class DBSeeder implements CommandLineRunner {
         seedSocialGroup("Group4", false, 0);
         seedSocialGroup("Group5", true, 1);
 
-        seedMembershipRequest(RequestStatus.PENDING,3,0);
-        seedMembershipRequest(RequestStatus.ACCEPTED,0,1);
-        seedMembershipRequest(RequestStatus.PENDING,0, 2);
-        seedMembershipRequest(RequestStatus.REJECTED,2,2);
-        seedMembershipRequest(RequestStatus.ACCEPTED,1,4);
+        seedMembershipRequest(RequestStatus.PENDING, 3, 0);
+        seedMembershipRequest(RequestStatus.ACCEPTED, 0, 1);
+        seedMembershipRequest(RequestStatus.PENDING, 0, 2);
+        seedMembershipRequest(RequestStatus.REJECTED, 2, 2);
+        seedMembershipRequest(RequestStatus.ACCEPTED, 1, 4);
 
         seedGroupMember(0, 2);
         seedGroupMember(0, 3);

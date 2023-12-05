@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static org.apache.tomcat.util.http.FastHttpDateFormat.formatDate;
+
 @Service
 public class PostServiceImpl implements PostService {
 
@@ -118,7 +120,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public PostDTO updatePost(Long id, Post post) {
         Post tempPost = postRepository.findById(id).orElseThrow(() -> new NotFoundException("Post does not exist."));
-        if(tempPost.isDeleted()) throw new NotFoundException("Post is deleted.");
+        if (tempPost.isDeleted()) throw new NotFoundException("Post is deleted.");
         Optional<User> user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
 
         if (!tempPost.getUser().equals(user.get()))
@@ -208,9 +210,12 @@ public class PostServiceImpl implements PostService {
     private void sendEmails(SocialGroup socialGroup, Post post) {
         List<User> members = socialGroup.getUsers();
         for (User user : members) {
-            String text = "There is a new post in your group: " + socialGroup.getName() +
-                    "\n+" + post.getDate() + "\n" + post.getText() + "\nBy: " + post.getUser().getUsername();
-            emailService.sendEmail(user.getEmail(), "New post", text);
+            if (user.getDoNotDisturb() == null || user.getDoNotDisturb().before(new Date())) {
+                System.out.println("user rn: " + user.getUsername());
+                String text = "There is a new post in your group: " + socialGroup.getName() +
+                        "\n+" + post.getDate().toString() + "\n" + post.getText() + "\nBy: " + post.getUser().getUsername();
+                emailService.sendEmail(user.getEmail(), "New post", text);
+            }
         }
     }
 
