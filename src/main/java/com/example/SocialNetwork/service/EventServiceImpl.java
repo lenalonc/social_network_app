@@ -113,6 +113,8 @@ public class EventServiceImpl implements EventService{
                 List<Attending> attendings=attendingRepository.findAllByEventId(event.getId());
                 for (Attending a : attendings) {
                     User u=a.getUser();
+                    if(u.getDoNotDisturb()!=null && u.getDoNotDisturb().getTime()>currentDate.getTime())
+                        continue;
                     String text= "Event " + event.getId() + "is starting in less than 15 minutes";
                     String subject="Event reminder";
                     emailService.sendEmail(u.getEmail(), subject, text);

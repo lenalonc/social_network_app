@@ -5,6 +5,7 @@ import com.example.SocialNetwork.dtos.UserUpdateDto;
 import com.example.SocialNetwork.entities.User;
 import org.springframework.http.ResponseEntity;
 
+import java.util.Date;
 import java.util.List;
 
 public interface UserService {
@@ -21,4 +22,6 @@ public interface UserService {
     User findCurrentUser();
 
     UserDTO findByUsername(String name);
+
+    ResponseEntity<Object> setDoNotDisturb(int days);
 }

@@ -63,13 +63,13 @@ public class UserController {
         return ResponseEntity.ok(userService.createUser(userCreateDto));
     }
 
-    @PostMapping("/activate-password/{id}")
+    @PostMapping("/activate_password/{id}")
     public ResponseEntity<?> resetPassword(@Valid @RequestBody PasswordDto passwordDto, @PathVariable Long id) {
         userService.resetUserPassword(passwordDto, id);
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping(value = "/forgot-password")
+    @GetMapping(value = "/forgot_password")
     public ResponseEntity<?> forgotPassword(@RequestParam String email) {
         userService.forgotPassword(email);
         return ResponseEntity.ok().build();
@@ -80,14 +80,14 @@ public class UserController {
         return new ResponseEntity<>("Hello Levi9 konferencijska sala uvek radi", HttpStatus.OK);
     }
 
-    @PostMapping("/friendrequests")
+    @PostMapping("/friend_requests")
     public ResponseEntity<Object> sendFriendRequest(@RequestBody FriendRequest friendRequest) {
         friendRequest.setId_user1(getCurrentUser().getId());
         friendRequest.setDate(new Date());
         return friendRequestService.sendFriendRequest(friendRequest);
     }
 
-    @GetMapping("/friendrequests")
+    @GetMapping("/friend_requests")
     public ResponseEntity<Object> getAllRequests() {
         Long uid = getUser();
         List<FriendRequestDTO> listOfFriends = friendRequestService.getAllRequests(uid);
@@ -99,20 +99,21 @@ public class UserController {
         }
     }
 
-    @PutMapping("/friendrequests/respond")
+    @PutMapping("/friend_requests/respond")
     public ResponseEntity<Object> respondToRequest(@RequestParam(name = "id") Long id, @RequestParam(name = "status") Long status) {
         return friendRequestService.respondToRequest(id, status);
     }
 
-    @DeleteMapping("/friendrequests/{id}")
+    @DeleteMapping("/friend_requests/{id}")
     public ResponseEntity<Object> deleteFriendRequest(@PathVariable Long id) {
         return friendRequestService.deleteFriendRequest(id);
     }
 
-    @GetMapping("/friendrequests/yourrequests")
+    @GetMapping("/friend_requests/your_requests")
     public ResponseEntity<Object> getYourRequests() {
         return friendRequestService.getYourRequests();
     }
+
     @GetMapping("/current_user")
     public User getCurrentUser() {
         return userService.findCurrentUser();
@@ -175,6 +176,11 @@ public class UserController {
     @DeleteMapping("/friends")
     public ResponseEntity<String> deleteFriend(@RequestParam("friendId") Long friendId) {
         return friendsService.deleteFriend(friendId);
+    }
+
+    @PostMapping("/set_do_not_disturb")
+    public ResponseEntity<Object> setDoNotDisturb(@RequestParam("days") int days) {
+        return userService.setDoNotDisturb(days);
     }
 
     @PostMapping("/logout")
