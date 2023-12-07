@@ -211,7 +211,6 @@ public class PostServiceImpl implements PostService {
         List<User> members = socialGroup.getUsers();
         for (User user : members) {
             if (user.getDoNotDisturb() == null || user.getDoNotDisturb().before(new Date())) {
-                System.out.println("user rn: " + user.getUsername());
                 String text = "There is a new post in your group: " + socialGroup.getName() +
                         "\n+" + post.getDate().toString() + "\n" + post.getText() + "\nBy: " + post.getUser().getUsername();
                 emailService.sendEmail(user.getEmail(), "New post", text);
