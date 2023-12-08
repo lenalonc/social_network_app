@@ -65,7 +65,7 @@ public class CommentServiceImpl implements CommentService {
 
         if (post.isDeleted()) throw new NotFoundException("Post with id " + postId + " is deleted");
 
-        if(!(post.getUser().equals(user))){
+        if (!(post.getUser().equals(user))) {
             checkFriendship(post, user);
         }
 
@@ -90,7 +90,7 @@ public class CommentServiceImpl implements CommentService {
 
         User user = getCurrentUser();
 
-        if(!(comment.getUser().equals(user))){
+        if (!(comment.getUser().equals(user))) {
             checkFriendship(comment.getPost(), user);
         }
 
@@ -136,8 +136,7 @@ public class CommentServiceImpl implements CommentService {
     private void checkFriendship(Post post, User user) {
         if (!(post.isType())) {
             List<Long> friends = friendsRepository.getFriendIdsByUserId(post.getUser().getId());
-
-            if (!(friends.contains(user.getId()))) {
+            if (!(friends.contains(user.getId())) && !post.getUser().equals(user)) {
                 throw new ForbiddenException("You are not allowed to see this post");
             }
         }

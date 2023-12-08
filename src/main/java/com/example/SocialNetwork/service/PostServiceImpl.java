@@ -201,6 +201,8 @@ public class PostServiceImpl implements PostService {
     private boolean checkFriendship(User user, User loggedUser) {
         List<Long> friends = friendsRepository.getFriendIdsByUserId(user.getId());
 
+        if(loggedUser.equals(user)) return true;
+
         if (!(friends.contains(loggedUser.getId()))) {
             return false;
         }
