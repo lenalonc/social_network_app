@@ -31,7 +31,6 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public List<CommentDTO> getAllCommentsForPost(Long id) {
-
         Post post = postRepository.findById(id).orElseThrow(() -> new NotFoundException("Post with id " + id + " not found"));
         if (post.isDeleted()) throw new NotFoundException("Post with id " + id + " is deleted");
         User user = getCurrentUser();

@@ -35,13 +35,10 @@ public class PostServiceTest {
 
     private UserRepository userRepository;
     private EmailService emailService;
-
     private SocialGroupRepository socialGroupRepository;
-
     private FriendsRepository friendsRepository;
     private PostRepository postRepository;
     private PostServiceImpl postService;
-
     private ModelMapper modelMapper;
 
     @BeforeEach
